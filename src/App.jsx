@@ -1,8 +1,8 @@
 function App() {
   return (
-    <>
-      <h1 className="text-lg flex justify-center items-center">Hello World!</h1>
-    </>
+    <div className="min-h-screen flex justify-center items-center text-3xl">
+      CV Creator
+    </div>
   );
 }
 
