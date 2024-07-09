@@ -19,7 +19,7 @@ function App() {
   return (
     <div className="min-h-screen flex">
       <EditMenu resumeData={resumeData} inputHandler={onInput}></EditMenu>
-      <div className="w-6/12 flex justify-center items-center">
+      <div className="w-6/12 flex overflow-scroll justify-center items-center">
         <CVPage resumeData={resumeData}></CVPage>
       </div>
     </div>
