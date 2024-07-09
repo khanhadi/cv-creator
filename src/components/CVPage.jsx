@@ -1,7 +1,9 @@
-export default function CVPage() {
+export default function CVPage({ resumeData }) {
   return (
-    <div className="cv-page h-[90%] w-11/12 shadow-2xl bg-white">
-      <p>Hello from CVPage</p>
+    <div className="cv-page h-[90%] w-11/12 max-w-full flex justify-center shadow-2xl bg-white">
+      <h1>
+        {resumeData.firstName} {resumeData.lastName}
+      </h1>
     </div>
   );
 }
