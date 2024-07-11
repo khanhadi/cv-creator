@@ -1,8 +1,26 @@
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import CVContent from './CVContent';
+
 export default function EditMenu({ resumeData, inputHandler }) {
   return (
     <div className="w-6/12 bg-black p-3 flex justify-center">
       <div className="w-11/12">
-        <h1 className=" text-white m-1">cvCreator.io</h1>
+        <div className="flex justify-around m-3 mb-5">
+          <h1 className=" text-white m-1">cvCreator.io</h1>
+
+          {/* Download Button */}
+          <PDFDownloadLink
+            className="text-white"
+            document={<CVContent resumeData={resumeData} />}
+            fileName="somename.pdf"
+          >
+            <button className="btn btn-accent btn-sm">
+              Download
+              <i className="icon icon-16 icon-download"></i>
+            </button>
+          </PDFDownloadLink>
+        </div>
+
         <div className="collapse collapse-arrow bg-white m-1">
           <input type="radio" name="my-accordion-2" defaultChecked />
           <div className="collapse-title text-xl text-black font-medium">
