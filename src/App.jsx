@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import PDFRenderer from './components/PDFRenderer';
 import EditMenu from './components/EditMenu';
-import CVContent from './components/CVContent';
 
 function App() {
   const [resumeData, setResumeData] = useState({
@@ -21,7 +21,7 @@ function App() {
       <EditMenu resumeData={resumeData} inputHandler={onInput}></EditMenu>
       <div className="w-6/12 flex overflow-scroll justify-center items-center">
         <div className="shadow-2xl">
-          <CVContent resumeData={resumeData}></CVContent>
+          <PDFRenderer resumeData={resumeData}></PDFRenderer>
         </div>
       </div>
     </div>

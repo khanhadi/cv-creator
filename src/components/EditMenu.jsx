@@ -12,7 +12,9 @@ export default function EditMenu({ resumeData, inputHandler }) {
           <PDFDownloadLink
             className="text-white"
             document={<CVContent resumeData={resumeData} />}
-            fileName="somename.pdf"
+            fileName={
+              resumeData.firstName + ' ' + resumeData.lastName + '-CV.pdf'
+            }
           >
             <button className="btn btn-accent btn-sm">
               Download
