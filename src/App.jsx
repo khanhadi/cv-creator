@@ -1,12 +1,10 @@
 import { useState } from 'react';
+import { testResumeData } from './testResumeData';
 import PDFRenderer from './components/PDFRenderer';
 import EditMenu from './components/EditMenu';
 
 function App() {
-  const [resumeData, setResumeData] = useState({
-    firstName: '',
-    lastName: '',
-  });
+  const [resumeData, setResumeData] = useState(testResumeData);
 
   function onInput(event) {
     const { name, value } = event.target;

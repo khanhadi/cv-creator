@@ -32,6 +32,10 @@
   font-size: 32px;
 }
 
+.icon-64 {
+  font-size: 64px;
+}
+
 /* rotate the icon infinitely */
 .icon-is-spinning {
   animation: icon-spin 1s infinite linear;
@@ -70,4 +74,12 @@
 /* icons */
 .icon-download::before {
   content: '\ea01';
+}
+
+.icon-linkedin::before {
+  content: '\ea02';
+}
+
+.icon-x::before {
+  content: '\ea03';
 }

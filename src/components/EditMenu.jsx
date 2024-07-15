@@ -1,5 +1,6 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import CVContent from './CVContent';
+import SocialInput from './ui/SocialInput';
 
 export default function EditMenu({ resumeData, inputHandler }) {
   return (
@@ -12,9 +13,7 @@ export default function EditMenu({ resumeData, inputHandler }) {
           <PDFDownloadLink
             className="text-white"
             document={<CVContent resumeData={resumeData} />}
-            fileName={
-              resumeData.firstName + ' ' + resumeData.lastName + '-CV.pdf'
-            }
+            fileName={resumeData.fullName + '-CV.pdf'}
           >
             <button className="btn btn-accent btn-sm">
               Download
@@ -32,11 +31,11 @@ export default function EditMenu({ resumeData, inputHandler }) {
             <div className="flex flex-row gap-2">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
-                  <span className="label-text">First Name</span>
+                  <span className="label-text">Name</span>
                 </div>
                 <input
-                  name="firstName"
-                  value={resumeData.firstName}
+                  name="fullName"
+                  value={resumeData.fullName}
                   onChange={inputHandler}
                   type="text"
                   placeholder="Type here"
@@ -45,17 +44,36 @@ export default function EditMenu({ resumeData, inputHandler }) {
               </label>
               <label className="form-control w-full max-w-xs">
                 <div className="label">
-                  <span className="label-text">Last Name</span>
+                  <span className="label-text">Mobile No.</span>
                 </div>
                 <input
-                  name="lastName"
-                  value={resumeData.lastName}
+                  name="mobileNo"
+                  value={resumeData.mobileNo}
                   onChange={inputHandler}
                   type="text"
                   placeholder="Type here"
                   className="input input-bordered w-full max-w-xs"
                 />
               </label>
+            </div>
+            <div className="flex flex-row gap-2 items-end mt-3">
+              <label className="form-control w-full max-w-xs">
+                <div className="label">
+                  <span className="label-text">Email</span>
+                </div>
+                <input
+                  name="email"
+                  value={resumeData.email}
+                  onChange={inputHandler}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full max-w-xs"
+                />
+              </label>
+              <SocialInput
+                socialLink={resumeData.socialLink}
+                inputHandler={inputHandler}
+              ></SocialInput>
             </div>
           </div>
         </div>

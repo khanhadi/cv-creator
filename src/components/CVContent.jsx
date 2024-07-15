@@ -1,13 +1,24 @@
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import {
+  Page,
+  Image,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+} from '@react-pdf/renderer';
 
 export default function CVContent({ resumeData }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.section}>
-          <Text>
-            {resumeData.firstName} {resumeData.lastName}
-          </Text>
+        <View>
+          <Text style={styles.fullName}>{resumeData.fullName}</Text>
+        </View>
+        <View style={styles.contact}>
+          <Image src="" style={styles.icon}></Image>
+          <Text style={styles.contactItem}>{resumeData.email}</Text>
+          <Text style={styles.contactItem}>{resumeData.mobileNo}</Text>
+          <Text>{resumeData.socialLink}</Text>
         </View>
       </Page>
     </Document>
@@ -20,12 +31,24 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: 'white',
-    width: '168mm',
-    height: '237.6mm',
     margin: '10px',
+    fontSize: '16',
   },
-  section: {
-    margin: 10,
-    padding: 10,
+  fullName: {
+    fontSize: '30',
+  },
+  contact: {
+    fontSize: '12',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  contactItem: {
+    marginRight: '8px',
+  },
+  icon: {
+    alignSelf: 'center',
+    marginRight: 3,
+    width: 10,
+    height: 10,
   },
 });
