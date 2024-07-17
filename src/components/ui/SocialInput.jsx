@@ -11,7 +11,7 @@ export default function SocialInput({
       </div>
       <div className="join w-full max-w-xs">
         <button
-          className={`btn ${
+          className={`btn  ${
             selectedSocial == 'linkedin' ? 'btn-active' : ''
           } join-item`}
           onClick={() => socialHandler('linkedin')}

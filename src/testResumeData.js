@@ -3,4 +3,5 @@ export const testResumeData = {
   mobileNo: ***REMOVED***,
   email: 'john@doe.com',
   socialLink: 'linkedin.com/in/johndoe',
+  experienceList: [{ companyName: 'Apple', jobTitle: 'Software Engineer' }],
 };

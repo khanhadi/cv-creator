@@ -1,11 +1,13 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import CVContent from './CVContent';
 import SocialInput from './ui/SocialInput';
+import ProfessionCard from './ui/ProfessionCard';
 
 export default function EditMenu({
   resumeData,
   inputHandler,
   socialHandler,
+  experienceHandler,
   selectedSocial,
 }) {
   return (
@@ -95,7 +97,10 @@ export default function EditMenu({
             Professional Experience
           </div>
           <div className="collapse-content">
-            <p>hello</p>
+            <ProfessionCard
+              experienceList={resumeData.experienceList}
+              onExperienceUpdate={experienceHandler}
+            ></ProfessionCard>
           </div>
         </div>
         <div className="collapse collapse-arrow text-black bg-white m-1">

@@ -7,6 +7,13 @@ function App() {
   const [resumeData, setResumeData] = useState(testResumeData);
   const [socialButton, setSocialButton] = useState('linkedin');
 
+  function handleExperienceUpdate(updatedExperienceList) {
+    setResumeData({
+      ...resumeData,
+      experienceList: updatedExperienceList,
+    });
+  }
+
   function onInput(event) {
     const { name, value } = event.target;
     setResumeData({
@@ -25,6 +32,7 @@ function App() {
         resumeData={resumeData}
         inputHandler={onInput}
         socialHandler={handleSelectSocial}
+        experienceHandler={handleExperienceUpdate}
         selectedSocial={socialButton}
       ></EditMenu>
       <div className="w-6/12 flex overflow-scroll justify-center items-center">
