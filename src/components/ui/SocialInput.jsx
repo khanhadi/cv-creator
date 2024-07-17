@@ -1,29 +1,28 @@
-import { useState } from 'react';
-
-export default function SocialInput({ socialLink, inputHandler }) {
-  const [activeButton, setActiveButton] = useState('linkedin');
-
-  function handleSelect(button) {
-    setActiveButton(button);
-  }
-
+export default function SocialInput({
+  socialLink,
+  inputHandler,
+  socialHandler,
+  selectedSocial,
+}) {
   return (
-    <div>
+    <div className="w-full">
       <div className="label">
         <span className="label-text">Social Media</span>
       </div>
-      <div className="join">
+      <div className="join w-full max-w-xs">
         <button
           className={`btn ${
-            activeButton == 'linkedin' ? 'btn-active' : ''
+            selectedSocial == 'linkedin' ? 'btn-active' : ''
           } join-item`}
-          onClick={() => handleSelect('linkedin')}
+          onClick={() => socialHandler('linkedin')}
         >
           <i className="icon icon-linkedin"></i>
         </button>
         <button
-          className={`btn ${activeButton == 'x' ? 'btn-active' : ''} join-item`}
-          onClick={() => handleSelect('x')}
+          className={`btn ${
+            selectedSocial == 'x' ? 'btn-active' : ''
+          } join-item`}
+          onClick={() => socialHandler('x')}
         >
           <i className="icon icon-x"></i>
         </button>
@@ -33,7 +32,7 @@ export default function SocialInput({ socialLink, inputHandler }) {
           onChange={inputHandler}
           value={socialLink}
           placeholder="Profile Link"
-          className="input join-item input-bordered"
+          className="input join-item input-bordered w-full"
         />
       </div>
     </div>

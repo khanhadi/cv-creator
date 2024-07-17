@@ -2,7 +2,12 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import CVContent from './CVContent';
 import SocialInput from './ui/SocialInput';
 
-export default function EditMenu({ resumeData, inputHandler }) {
+export default function EditMenu({
+  resumeData,
+  inputHandler,
+  socialHandler,
+  selectedSocial,
+}) {
   return (
     <div className="w-6/12 bg-black p-3 flex justify-center">
       <div className="w-11/12">
@@ -12,7 +17,12 @@ export default function EditMenu({ resumeData, inputHandler }) {
           {/* Download Button */}
           <PDFDownloadLink
             className="text-white"
-            document={<CVContent resumeData={resumeData} />}
+            document={
+              <CVContent
+                resumeData={resumeData}
+                selectedSocial={selectedSocial}
+              />
+            }
             fileName={resumeData.fullName + '-CV.pdf'}
           >
             <button className="btn btn-accent btn-sm">
@@ -56,7 +66,7 @@ export default function EditMenu({ resumeData, inputHandler }) {
                 />
               </label>
             </div>
-            <div className="flex flex-row gap-2 items-end mt-3">
+            <div className="flex flex-row gap-2 mt-3">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
                   <span className="label-text">Email</span>
@@ -73,6 +83,8 @@ export default function EditMenu({ resumeData, inputHandler }) {
               <SocialInput
                 socialLink={resumeData.socialLink}
                 inputHandler={inputHandler}
+                socialHandler={socialHandler}
+                selectedSocial={selectedSocial}
               ></SocialInput>
             </div>
           </div>
