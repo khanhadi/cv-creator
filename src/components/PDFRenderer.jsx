@@ -2,6 +2,7 @@ import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
+import BulletPointText from './ui/BulletPointText';
 
 export default function PDFRenderer({ resumeData, selectedSocial }) {
   return (
@@ -50,24 +51,27 @@ export default function PDFRenderer({ resumeData, selectedSocial }) {
           </p>
         </div>
       </div>
-      <div className="self-start mt-3">
+      <div className="self-start mt-3 w-full">
         <p className="text-2xl">Professional Experience</p>
         <hr className="w-full border-black"></hr>
         <div className="self-start">
-          <div className="flex justify-between">
-            <p className="font-semibold text-sm">Apple</p>
-            <p className="text-rose-950 text-sm">Feb. 2019 - Present</p>
-          </div>
-          <div className="flex justify-between">
-            <p className="text-rose-950 text-sm leading-3">Software Engineer</p>
-            <p className="text-sm text-rose-950 italic">Java, SwiftUI</p>
-          </div>
-          <p className="text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis
-            quibusdam libero ducimus eveniet porro alias nam totam, ea id unde a
-            iusto aperiam officia necessitatibus quos illum, ullam corrupti.
-            Omnis.
-          </p>
+          {resumeData.experienceList.map((experience, index) => (
+            <div key={index}>
+              <div className="flex justify-between">
+                <p className="font-semibold text-sm">
+                  {experience.companyName}
+                </p>
+                <p className="text-rose-950 text-sm">Feb. 2019 - Present</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-rose-950 text-sm leading-3">
+                  {experience.jobTitle}
+                </p>
+                <p className="text-sm text-rose-950 italic">Java, SwiftUI</p>
+              </div>
+              <BulletPointText text={experience.description}></BulletPointText>
+            </div>
+          ))}
         </div>
       </div>
     </div>

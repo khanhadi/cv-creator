@@ -11,7 +11,7 @@ export default function EditMenu({
   selectedSocial,
 }) {
   return (
-    <div className="w-6/12 bg-black p-3 flex justify-center">
+    <div className="p-3 flex justify-center">
       <div className="w-11/12">
         <div className="flex justify-around m-3 mb-5">
           <h1 className=" text-white m-1">cvCreator.io</h1>
@@ -34,6 +34,7 @@ export default function EditMenu({
           </PDFDownloadLink>
         </div>
 
+        {/* Professional Experience */}
         <div className="collapse collapse-arrow bg-white m-1">
           <input type="radio" name="my-accordion-2" defaultChecked />
           <div className="collapse-title text-xl text-black font-medium">
@@ -69,7 +70,7 @@ export default function EditMenu({
               </label>
             </div>
             <div className="flex flex-row gap-2 mt-3">
-              <label className="form-control w-full max-w-xs">
+              <label className="form-control w-full max-w-xs flex">
                 <div className="label">
                   <span className="label-text">Email</span>
                 </div>
@@ -91,6 +92,8 @@ export default function EditMenu({
             </div>
           </div>
         </div>
+
+        {/* Professional Experience */}
         <div className="collapse collapse-arrow bg-white m-1">
           <input type="radio" name="my-accordion-2" />
           <div className="collapse-title text-xl text-black font-medium">
@@ -103,6 +106,8 @@ export default function EditMenu({
             ></ProfessionCard>
           </div>
         </div>
+
+        {/* Education */}
         <div className="collapse collapse-arrow text-black bg-white m-1">
           <input type="radio" name="my-accordion-2" />
           <div className="collapse-title text-xl font-medium">Education</div>

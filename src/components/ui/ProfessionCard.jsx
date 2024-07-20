@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import addIcon from '../../assets/icons/add.svg';
 import pencilIcon from '../../assets/icons/pencil.svg';
+import SkillsInput from './SkillsInput';
 
 export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   const defaultFormData = { companyName: '', jobTitle: '' };
@@ -31,7 +32,6 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   }
 
   function handleEditClick(index) {
-    console.log(index);
     setEditIndex(index);
     setFormData(experienceList[index]);
   }
@@ -39,6 +39,14 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   function handleAddClick() {
     setEditIndex(experienceList.length);
     setFormData(defaultFormData);
+  }
+
+  function handleDeleteClick() {
+    let updatedExperienceList = experienceList;
+    updatedExperienceList.splice(editIndex, 1);
+    onExperienceUpdate(updatedExperienceList);
+    setFormData(defaultFormData);
+    setEditIndex(null);
   }
 
   return (
@@ -76,12 +84,36 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                   />
                 </label>
               </div>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">Description</span>
+                </div>
+                <textarea
+                  name="description"
+                  className="textarea textarea-bordered h-24"
+                  placeholder="..."
+                  value={formData.description}
+                  onChange={handleInputChange}
+                ></textarea>
+              </label>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">Skills</span>
+                </div>
+                <SkillsInput></SkillsInput>
+              </label>
               <div className="flex w-full justify-end gap-2 mt-2">
+                <button
+                  onClick={handleDeleteClick}
+                  className="btn btn-error btn-sm mr-auto"
+                >
+                  Delete
+                </button>
                 <button
                   onClick={handleCancelClick}
                   className="btn btn-secondary btn-sm"
                 >
-                  Cancel{' '}
+                  Cancel
                 </button>
                 <button
                   onClick={handleSaveClick}

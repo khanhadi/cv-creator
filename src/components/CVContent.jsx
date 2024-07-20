@@ -33,6 +33,32 @@ export default function CVContent({ resumeData, selectedSocial }) {
             {resumeData.socialLink}
           </Text>
         </View>
+        <View style={styles.hrContainer}>
+          <Text style={styles.subTitle}>Education</Text>
+          <View style={styles.hr} />
+        </View>
+        <View className="self-start mt-3">
+          <div className="self-start">
+            <div className="flex justify-between">
+              <p className="font-semibold text-sm">University of Leeds</p>
+              <p className="text-rose-950 text-sm">
+                Expected graduation date: Jun. 2026
+              </p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-rose-950 text-sm leading-3">
+                B.Sc (Hons) in Computer Science
+              </p>
+              <p className="text-rose-950 text-sm italic font-bold">
+                Predicted: First Class (1:1)
+              </p>
+            </div>
+            <p className="text-sm">
+              Relevant Courses: Procedural Programming (C), Fundamental
+              Mathematics, Computer Architecture and Professional Computing
+            </p>
+          </div>
+        </View>
       </Page>
     </Document>
   );
@@ -44,7 +70,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: 'white',
-    margin: '10px',
+    paddingTop: 30,
+    paddingBottom: 30,
+    paddingHorizontal: 30,
     fontSize: '16',
   },
   fullName: {
@@ -64,5 +92,15 @@ const styles = StyleSheet.create({
     marginRight: 3,
     width: 13,
     height: 13,
+  },
+  subTitle: {
+    marginTop: 12,
+  },
+  hrContainer: {
+    width: '100%',
+  },
+  hr: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#000000',
   },
 });
