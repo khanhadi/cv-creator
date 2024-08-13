@@ -22,6 +22,13 @@ function App() {
     setScale(newScale <= 1 ? newScale : 1);
   });
 
+  function handleEducationUpdate(updatedEducationList) {
+    setResumeData({
+      ...resumeData,
+      educationList: updatedEducationList,
+    });
+  }
+
   function handleExperienceUpdate(updatedExperienceList) {
     setResumeData({
       ...resumeData,
@@ -58,6 +65,7 @@ function App() {
           inputHandler={onInput}
           socialHandler={handleSelectSocial}
           experienceHandler={handleExperienceUpdate}
+          educationHandler={handleEducationUpdate}
           selectedSocial={socialButton}
         ></EditMenu>
       </div>

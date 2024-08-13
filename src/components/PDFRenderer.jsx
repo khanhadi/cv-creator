@@ -31,24 +31,25 @@ export default function PDFRenderer({ resumeData, selectedSocial }) {
         <p className="text-2xl">Education</p>
         <hr className="w-full border-black"></hr>
         <div className="self-start">
-          <div className="flex justify-between">
-            <p className="font-semibold text-sm">University of Leeds</p>
-            <p className="text-rose-950 text-sm">
-              Expected graduation date: Jun. 2026
-            </p>
-          </div>
-          <div className="flex justify-between">
-            <p className="text-rose-950 text-sm leading-3">
-              B.Sc (Hons) in Computer Science
-            </p>
-            <p className="text-rose-950 text-sm italic font-bold">
-              Predicted: First Class (1:1)
-            </p>
-          </div>
-          <p className="text-sm">
-            Relevant Courses: Procedural Programming (C), Fundamental
-            Mathematics, Computer Architecture and Professional Computing
-          </p>
+          {resumeData.educationList.map((education, index) => (
+            <div key={index}>
+              <div className="flex justify-between">
+                <p className="font-semibold text-sm">
+                  {education.institutionName}
+                </p>
+                <p className="text-rose-950 text-sm">{education.date}</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-rose-950 text-sm leading-3">
+                  {education.courseTitle}
+                </p>
+                <p className="text-rose-950 text-sm italic font-bold">
+                  {education.date}
+                </p>
+              </div>
+              <BulletPointText text={education.description}></BulletPointText>
+            </div>
+          ))}
         </div>
       </div>
       <div className="self-start mt-3 w-full">
@@ -61,13 +62,18 @@ export default function PDFRenderer({ resumeData, selectedSocial }) {
                 <p className="font-semibold text-sm">
                   {experience.companyName}
                 </p>
-                <p className="text-rose-950 text-sm">Feb. 2019 - Present</p>
+                <p className="text-rose-950 text-sm">
+                  {experience.date} •{' '}
+                  <span className="font-semibold">{experience.location}</span>
+                </p>
               </div>
               <div className="flex justify-between">
                 <p className="text-rose-950 text-sm leading-3">
                   {experience.jobTitle}
                 </p>
-                <p className="text-sm text-rose-950 italic">Java, SwiftUI</p>
+                <p className="text-sm text-rose-950 italic">
+                  {experience.skills.join(', ')}
+                </p>
               </div>
               <BulletPointText text={experience.description}></BulletPointText>
             </div>

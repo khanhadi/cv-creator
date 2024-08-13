@@ -1,12 +1,9 @@
 import { useState, useCallback } from 'react';
 import addIcon from '../../assets/icons/add.svg';
 import pencilIcon from '../../assets/icons/pencil.svg';
-import SkillsInput from './SkillsInput';
 
-export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
-  const defaultFormData = {
-    skills: [],
-  };
+export default function EducationCard({ educationList, onEducationUpdate }) {
+  const defaultFormData = {};
 
   const [editIndex, setEditIndex] = useState(null);
   const [formData, setFormData] = useState(defaultFormData);
@@ -17,13 +14,13 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   }, []);
 
   function handleSaveClick() {
-    const updatedExperienceList =
-      editIndex !== null && editIndex < experienceList.length
-        ? experienceList.map((item, index) =>
+    const updatedEducationList =
+      editIndex !== null && editIndex < educationList.length
+        ? educationList.map((item, index) =>
             index === editIndex ? formData : item
           )
-        : [...experienceList, formData];
-    onExperienceUpdate(updatedExperienceList);
+        : [...educationList, formData];
+    onEducationUpdate(updatedEducationList);
     setFormData(defaultFormData);
     setEditIndex(null);
   }
@@ -35,37 +32,37 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
 
   function handleEditClick(index) {
     setEditIndex(index);
-    setFormData(experienceList[index]);
+    setFormData(educationList[index]);
   }
 
   function handleAddClick() {
-    setEditIndex(experienceList.length);
+    setEditIndex(educationList.length);
     setFormData(defaultFormData);
   }
 
   function handleDeleteClick() {
-    let updatedExperienceList = experienceList;
+    let updatedExperienceList = educationList;
     updatedExperienceList.splice(editIndex, 1);
-    onExperienceUpdate(updatedExperienceList);
+    onEducationUpdate(updatedExperienceList);
     setFormData(defaultFormData);
     setEditIndex(null);
   }
 
   return (
     <>
-      {experienceList.map((experienceItem, index) => (
+      {educationList.map((experienceItem, index) => (
         <div key={index} className="card bg-zinc-100 w-full shadow-sm mt-3">
           {editIndex === index ? (
             <div className="p-3">
-              <p className="font-semibold">Edit Experience</p>
+              <p className="font-semibold">Edit Education</p>
               <div className="flex flex-row gap-2">
                 <label className="form-control flex-grow w-full">
                   <div className="label">
-                    <span className="label-text">Company</span>
+                    <span className="label-text">Institution</span>
                   </div>
                   <input
-                    name="companyName"
-                    value={formData.companyName}
+                    name="institutionName"
+                    value={formData.institutionName}
                     onChange={handleInputChange}
                     type="text"
                     placeholder="Type here"
@@ -74,11 +71,11 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                 </label>
                 <label className="form-control flex-grow w-full">
                   <div className="label">
-                    <span className="label-text">Job Title</span>
+                    <span className="label-text">Course Title</span>
                   </div>
                   <input
-                    name="jobTitle"
-                    value={formData.jobTitle}
+                    name="courseTitle"
+                    value={formData.courseTitle}
                     onChange={handleInputChange}
                     type="text"
                     placeholder="Type here"
@@ -126,15 +123,6 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                   />
                 </label>
               </div>
-              <div>
-                <div className="label">
-                  <span className="label-text">Skills</span>
-                </div>
-                <SkillsInput
-                  initialSkills={formData.skills}
-                  inputHandler={handleInputChange}
-                ></SkillsInput>
-              </div>
               <div className="flex w-full justify-end gap-2 mt-2">
                 <button
                   onClick={handleDeleteClick}
@@ -159,9 +147,13 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
           ) : (
             <div className="p-3">
               <div className="h-8 flex items-center gap-1">
-                <p className="font-semibold">{experienceItem.companyName}</p>
+                <p className="font-semibold">
+                  {experienceItem.institutionName}
+                </p>
                 <p>&#8226;</p>
-                <p className="font-light text-sm">{experienceItem.jobTitle}</p>
+                <p className="font-light text-sm">
+                  {experienceItem.courseTitle}
+                </p>
                 <button
                   onClick={() => handleEditClick(index)}
                   className="btn btn-square btn-accent btn-sm ml-auto"
@@ -174,10 +166,10 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
         </div>
       ))}
 
-      <div className="card bg-zinc-100 w-full shadow-sm mt-3">
-        {editIndex === experienceList.length ? (
+      {editIndex === educationList.length ? (
+        <div className="card bg-zinc-100 w-full shadow-sm mt-3">
           <div className="p-3">
-            <p className="font-semibold">Edit Experience</p>
+            <p className="font-semibold">New Education</p>
             <div className="flex flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
@@ -206,62 +198,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                 />
               </label>
             </div>
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text">Description</span>
-              </div>
-              <textarea
-                name="description"
-                className="textarea textarea-bordered h-24"
-                placeholder="..."
-                value={formData.description}
-                onChange={handleInputChange}
-              ></textarea>
-            </label>
-            <div className="flex flex-row gap-2">
-              <label className="form-control flex-grow w-full">
-                <div className="label">
-                  <span className="label-text">Date</span>
-                </div>
-                <input
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control flex-grow w-full">
-                <div className="label">
-                  <span className="label-text">Location</span>
-                </div>
-                <input
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-            </div>
-            <div>
-              <div className="label">
-                <span className="label-text">Skills</span>
-              </div>
-              <SkillsInput
-                initialSkills={formData.skills}
-                inputHandler={handleInputChange}
-              ></SkillsInput>
-            </div>
             <div className="flex w-full justify-end gap-2 mt-2">
-              <button
-                onClick={handleDeleteClick}
-                className="btn btn-error btn-sm mr-auto"
-              >
-                Delete
-              </button>
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"
@@ -276,10 +213,12 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
               </button>
             </div>
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="card bg-zinc-100 w-full shadow-sm h-14 mt-3">
           <div className="p-3">
             <div className="flex justify-between items-center">
-              <p>Add Experience</p>
+              <p>Add Education</p>
               <button
                 onClick={handleAddClick}
                 className="btn btn-square btn-accent btn-sm"
@@ -288,8 +227,8 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
               </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }

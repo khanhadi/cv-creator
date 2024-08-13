@@ -1,9 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-export default function SkillsInput() {
-  const [skills, setSkills] = useState([]);
+export default function SkillsInput({ initialSkills, inputHandler }) {
+  const [skills, setSkills] = useState(initialSkills);
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputHandler({ target: { name: 'skills', value: skills } });
+  }, [skills, inputHandler]);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -21,24 +25,20 @@ export default function SkillsInput() {
     setSkills(skills.filter((_, i) => i !== index));
   };
 
-  const handleContainerClick = () => {
-    inputRef.current.focus();
-  };
-
   return (
-    <div
-      className="w-full mx-auto border rounded-lg flex items-center flex-wrap gap-2 input-bordered bg-white p-2"
-      onClick={handleContainerClick}
-    >
+    <div className="w-full mx-auto border rounded-lg flex items-center flex-wrap gap-2 input-bordered bg-white p-2">
       {skills.map((skill, index) => (
         <div key={index} className="badge badge-warning flex items-center">
-          {skill}
           <button
-            onClick={() => handleDelete(index)}
-            className="ml-2 text-black"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(index);
+            }}
+            className="mr-2 text-black"
           >
-            x
+            &times;
           </button>
+          {skill}
         </div>
       ))}
       <input
