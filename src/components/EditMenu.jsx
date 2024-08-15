@@ -14,13 +14,11 @@ export default function EditMenu({
   experienceHandler,
   educationHandler,
   selectedSocial,
+  sectionsOrder,
+  setSectionsOrder,
+  scale,
 }) {
   const [reorderToggle, setReorderToggle] = useState(false);
-
-  const [sectionsOrder, setSectionsOrder] = useState([
-    'Professional Experience',
-    'Education',
-  ]);
 
   function handleReorderToggle(e) {
     setReorderToggle(e.target.checked);
@@ -137,9 +135,8 @@ export default function EditMenu({
   return (
     <div className="p-3 flex justify-center">
       <div className="w-11/12">
-        <div className="flex justify-around m-3 mb-5">
+        <div className="flex text-white justify-around m-3 mb-5">
           <h1 className=" text-white m-1">cvCreator.io</h1>
-
           {/* Download Button */}
           <PDFDownloadLink
             className="text-white"
@@ -147,6 +144,7 @@ export default function EditMenu({
               <CVContent
                 resumeData={resumeData}
                 selectedSocial={selectedSocial}
+                sectionsOrder={sectionsOrder}
               />
             }
             fileName={resumeData.fullName + '-CV.pdf'}
@@ -157,8 +155,7 @@ export default function EditMenu({
             </button>
           </PDFDownloadLink>
         </div>
-
-        <div>
+        <div className="">
           <label className="label justify-end gap-2 cursor-pointer">
             <span className="label-text text-white">Reorder</span>
             <input
@@ -169,13 +166,13 @@ export default function EditMenu({
             />
           </label>
         </div>
-
         {/* Sections */}
         {renderSection('Personal Information')}
         <Reorder.Group
           axis="y"
           values={sectionsOrder}
           onReorder={setSectionsOrder}
+          key={scale}
         >
           {sectionsOrder.map((section) => {
             return (

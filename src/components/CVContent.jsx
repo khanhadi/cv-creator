@@ -6,13 +6,91 @@ import {
   View,
   Document,
   StyleSheet,
+  Font,
 } from '@react-pdf/renderer';
 import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
 
-export default function CVContent({ resumeData, selectedSocial }) {
+Font.register({
+  family: 'Proxima Nova',
+  fonts: [
+    {
+      src: 'https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Regular.woff',
+    },
+    {
+      src: 'https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Semibold.woff',
+      fontWeight: 'semibold',
+    },
+  ],
+});
+
+export default function CVContent({
+  resumeData,
+  selectedSocial,
+  sectionsOrder,
+}) {
+  function renderSection(section) {
+    switch (section) {
+      case 'Education':
+        return resumeData.educationList.map((education, index) => {
+          return (
+            <View key={index}>
+              <View>{renderSectionHeader('Education')}</View>
+              <View style={styles.section}>
+                <View style={styles.sectionSplit}>
+                  <Text style={styles.leftTitle}>
+                    {education.institutionName}
+                  </Text>
+                  <Text style={styles.rightTitle}>{education.date}</Text>
+                </View>
+                <View style={styles.sectionSplit}>
+                  <Text style={styles.rightTitle}>{education.courseTitle}</Text>
+                  <Text style={styles.rightTitleBold}>{education.grade}</Text>
+                </View>
+                <Text>{education.description}</Text>
+              </View>
+            </View>
+          );
+        });
+      case 'Professional Experience': {
+        return resumeData.experienceList.map((experience, index) => {
+          return (
+            <View key={index}>
+              <View>{renderSectionHeader('Professional Experience')}</View>
+              <View style={styles.section}>
+                <View style={styles.sectionSplit}>
+                  <Text style={styles.leftTitle}>{experience.companyName}</Text>
+                  <Text style={styles.rightTitle}>{experience.date}</Text>
+                </View>
+                <View style={styles.sectionSplit}>
+                  <Text style={styles.rightTitle}>{experience.jobTitle}</Text>
+                  <Text style={styles.rightTitleBold}>
+                    {experience.skills.join(', ')}
+                  </Text>
+                </View>
+                <Text>{experience.description}</Text>
+              </View>
+            </View>
+          );
+        });
+      }
+
+      default:
+        return null;
+    }
+  }
+
+  function renderSectionHeader(title) {
+    return (
+      <View style={styles.hrContainer}>
+        <Text style={styles.title}>{title}</Text>
+        <View style={styles.hr} />
+      </View>
+    );
+  }
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -33,31 +111,10 @@ export default function CVContent({ resumeData, selectedSocial }) {
             {resumeData.socialLink}
           </Text>
         </View>
-        <View style={styles.hrContainer}>
-          <Text style={styles.subTitle}>Education</Text>
-          <View style={styles.hr} />
-        </View>
-        <View className="self-start mt-3">
-          <div className="self-start">
-            <div className="flex justify-between">
-              <p className="font-semibold text-sm">University of Leeds</p>
-              <p className="text-rose-950 text-sm">
-                Expected graduation date: Jun. 2026
-              </p>
-            </div>
-            <div className="flex justify-between">
-              <p className="text-rose-950 text-sm leading-3">
-                B.Sc (Hons) in Computer Science
-              </p>
-              <p className="text-rose-950 text-sm italic font-bold">
-                Predicted: First Class (1:1)
-              </p>
-            </div>
-            <p className="text-sm">
-              Relevant Courses: Procedural Programming (C), Fundamental
-              Mathematics, Computer Architecture and Professional Computing
-            </p>
-          </div>
+        <View>
+          {sectionsOrder.map((section) => {
+            return renderSection(section);
+          })}
         </View>
       </Page>
     </Document>
@@ -74,6 +131,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingHorizontal: 30,
     fontSize: '16',
+    fontFamily: 'Proxima Nova',
   },
   fullName: {
     fontSize: '30',
@@ -93,7 +151,7 @@ const styles = StyleSheet.create({
     width: 13,
     height: 13,
   },
-  subTitle: {
+  title: {
     marginTop: 12,
   },
   hrContainer: {
@@ -102,5 +160,29 @@ const styles = StyleSheet.create({
   hr: {
     borderBottomWidth: 1,
     borderBottomColor: '#000000',
+  },
+  section: {
+    width: '100%',
+    alignSelf: 'flex-start',
+    fontSize: 12,
+  },
+  sectionSplit: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  leftTitle: {
+    fontWeight: 'semibold',
+  },
+  rightTitle: {
+    color: '#4c0519',
+  },
+  rightTitleBold: {
+    fontWeight: 'semibold',
+    color: '#4c0519',
+  },
+  flexStart: {
+    alignSelf: 'flex-start',
   },
 });

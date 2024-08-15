@@ -111,11 +111,11 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                 </label>
                 <label className="form-control flex-grow w-full">
                   <div className="label">
-                    <span className="label-text">Location</span>
+                    <span className="label-text">Grade</span>
                   </div>
                   <input
                     name="location"
-                    value={formData.location}
+                    value={formData.grade}
                     onChange={handleInputChange}
                     type="text"
                     placeholder="Type here"

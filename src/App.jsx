@@ -9,6 +9,10 @@ function App() {
   const [viewMode, setViewMode] = useState('edit');
   const [resumeData, setResumeData] = useState(testResumeData);
   const [socialButton, setSocialButton] = useState('linkedin');
+  const [sectionsOrder, setSectionsOrder] = useState([
+    'Education',
+    'Professional Experience',
+  ]);
 
   const previewContainerRef = useRef(null);
 
@@ -18,7 +22,7 @@ function App() {
   useResizeObserver(previewContainerRef, (entry) => {
     const { width } = entry.contentRect;
     const docWidth = DOC_WIDTH_MM * MM_TO_PIXEL;
-    const newScale = width / docWidth;
+    const newScale = width / docWidth - 0.01;
     setScale(newScale <= 1 ? newScale : 1);
   });
 
@@ -36,7 +40,7 @@ function App() {
     });
   }
 
-  function onInput(event) {
+  function handleResumeData(event) {
     const { name, value } = event.target;
     setResumeData({
       ...resumeData,
@@ -46,6 +50,10 @@ function App() {
 
   function handleSelectSocial(button) {
     setSocialButton(button);
+  }
+
+  function handleSectionsOrder(order) {
+    setSectionsOrder(order);
   }
 
   function toggleViewMode() {
@@ -62,11 +70,14 @@ function App() {
       >
         <EditMenu
           resumeData={resumeData}
-          inputHandler={onInput}
+          inputHandler={handleResumeData}
+          selectedSocial={socialButton}
           socialHandler={handleSelectSocial}
           experienceHandler={handleExperienceUpdate}
           educationHandler={handleEducationUpdate}
-          selectedSocial={socialButton}
+          sectionsOrder={sectionsOrder}
+          setSectionsOrder={handleSectionsOrder}
+          scale={scale}
         ></EditMenu>
       </div>
 
@@ -84,6 +95,7 @@ function App() {
           <PDFRenderer
             resumeData={resumeData}
             selectedSocial={socialButton}
+            sectionsOrder={sectionsOrder}
           ></PDFRenderer>
         </div>
       </div>
