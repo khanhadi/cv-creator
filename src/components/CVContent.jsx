@@ -31,9 +31,13 @@ export default function CVContent({
   selectedSocial,
   sectionsOrder,
 }) {
+  const sectionsToRender = sectionsOrder.filter(
+    (section) => resumeData.includeSections[section]
+  );
+
   function renderSection(section) {
     switch (section) {
-      case 'Education':
+      case 'education':
         return resumeData.educationList.map((education, index) => {
           return (
             <View key={index}>
@@ -54,7 +58,7 @@ export default function CVContent({
             </View>
           );
         });
-      case 'Professional Experience': {
+      case 'professionalExperience': {
         return resumeData.experienceList.map((experience, index) => {
           return (
             <View key={index}>
@@ -112,7 +116,7 @@ export default function CVContent({
           </Text>
         </View>
         <View>
-          {sectionsOrder.map((section) => {
+          {sectionsToRender.map((section) => {
             return renderSection(section);
           })}
         </View>

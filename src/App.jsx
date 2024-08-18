@@ -10,8 +10,8 @@ function App() {
   const [resumeData, setResumeData] = useState(testResumeData);
   const [socialButton, setSocialButton] = useState('linkedin');
   const [sectionsOrder, setSectionsOrder] = useState([
-    'Education',
-    'Professional Experience',
+    'education',
+    'professionalExperience',
   ]);
 
   const previewContainerRef = useRef(null);
@@ -26,6 +26,30 @@ function App() {
     setScale(newScale <= 1 ? newScale : 1);
   });
 
+  const handlers = {
+    inclusionHandler: handleInclusion,
+    resumeDataHandler: handleResumeData,
+    socialHandler: handleSelectSocial,
+    experienceHandler: handleExperienceUpdate,
+    educationHandler: handleEducationUpdate,
+    sectionOrderHandler: handleSectionsOrder,
+  };
+
+  function handleResumeData(event) {
+    const { name, value } = event.target;
+    setResumeData({
+      ...resumeData,
+      [name]: value,
+    });
+  }
+
+  function handleInclusion(updatedInclusionObject) {
+    setResumeData({
+      ...resumeData,
+      includeSections: updatedInclusionObject,
+    });
+  }
+
   function handleEducationUpdate(updatedEducationList) {
     setResumeData({
       ...resumeData,
@@ -37,14 +61,6 @@ function App() {
     setResumeData({
       ...resumeData,
       experienceList: updatedExperienceList,
-    });
-  }
-
-  function handleResumeData(event) {
-    const { name, value } = event.target;
-    setResumeData({
-      ...resumeData,
-      [name]: value,
     });
   }
 
@@ -70,14 +86,10 @@ function App() {
       >
         <EditMenu
           resumeData={resumeData}
-          inputHandler={handleResumeData}
           selectedSocial={socialButton}
-          socialHandler={handleSelectSocial}
-          experienceHandler={handleExperienceUpdate}
-          educationHandler={handleEducationUpdate}
           sectionsOrder={sectionsOrder}
-          setSectionsOrder={handleSectionsOrder}
           scale={scale}
+          handlers={handlers}
         ></EditMenu>
       </div>
 

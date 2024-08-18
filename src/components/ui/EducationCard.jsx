@@ -21,13 +21,15 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
           )
         : [...educationList, formData];
     onEducationUpdate(updatedEducationList);
-    setFormData(defaultFormData);
-    setEditIndex(null);
+    setTimeout(() => {
+      setEditIndex(null);
+      setFormData(defaultFormData);
+    }, 10);
   }
 
   function handleCancelClick() {
-    setFormData(defaultFormData);
     setEditIndex(null);
+    setFormData(defaultFormData);
   }
 
   function handleEditClick(index) {
@@ -44,8 +46,10 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
     let updatedExperienceList = educationList;
     updatedExperienceList.splice(editIndex, 1);
     onEducationUpdate(updatedExperienceList);
-    setFormData(defaultFormData);
-    setEditIndex(null);
+    setTimeout(() => {
+      setEditIndex(null);
+      setFormData(defaultFormData);
+    }, 10);
   }
 
   return (

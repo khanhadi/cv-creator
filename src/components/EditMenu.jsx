@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { PDFDownloadLink } from '@react-pdf/renderer';
+import { useState, useEffect, useMemo } from 'react';
 import { Reorder } from 'framer-motion';
+import { usePDF } from '@react-pdf/renderer';
 import DraggableItem from './ui/DraggableItem';
 import CVContent from './CVContent';
 import SocialInput from './ui/SocialInput';
@@ -9,25 +9,76 @@ import EducationCard from './ui/EducationCard';
 
 export default function EditMenu({
   resumeData,
-  inputHandler,
-  socialHandler,
-  experienceHandler,
-  educationHandler,
   selectedSocial,
   sectionsOrder,
-  setSectionsOrder,
   scale,
+  handlers,
 }) {
-  const [reorderToggle, setReorderToggle] = useState(false);
+  const {
+    inclusionHandler,
+    resumeDataHandler,
+    socialHandler,
+    experienceHandler,
+    educationHandler,
+    sectionOrderHandler,
+  } = handlers;
 
-  function handleReorderToggle(e) {
-    setReorderToggle(e.target.checked);
-  }
+  const document = useMemo(
+    () => (
+      <CVContent
+        resumeData={resumeData}
+        selectedSocial={selectedSocial}
+        sectionsOrder={sectionsOrder}
+      />
+    ),
+    [resumeData, selectedSocial, sectionsOrder]
+  );
+
+  const [instance, update] = usePDF({ document });
+  const [uiState, setUiState] = useState({
+    reorderToggle: false,
+    doneEditing: false,
+    isGenerateButtonEnabled: true,
+  });
+
+  useEffect(() => {
+    setUiState((prevState) => ({
+      ...prevState,
+      isGenerateButtonEnabled: true,
+      doneEditing: false,
+    }));
+  }, [resumeData, sectionsOrder]);
+
+  const OnReorderToggle = (e) => {
+    setUiState((prevState) => ({
+      ...prevState,
+      reorderToggle: e.target.checked,
+    }));
+  };
+
+  const OnGeneratePDF = () => {
+    setUiState((prevState) => ({
+      ...prevState,
+      doneEditing: true,
+      isGenerateButtonEnabled: false,
+    }));
+    update(document);
+  };
+
+  const OnIncludeCheckboxChange = (sectionName) => {
+    const updatedInclusionObject = {
+      ...resumeData.includeSections,
+      [sectionName]: !resumeData.includeSections[sectionName],
+    };
+
+    inclusionHandler(updatedInclusionObject);
+  };
 
   function renderSection(sectionName) {
+    const { reorderToggle } = uiState;
+
     switch (sectionName) {
-      // Personal Information
-      case 'Personal Information':
+      case 'personalInformation':
         return (
           <div className="collapse collapse-arrow bg-white m-1">
             <input type="radio" name="my-accordion-2" defaultChecked />
@@ -43,7 +94,7 @@ export default function EditMenu({
                   <input
                     name="fullName"
                     value={resumeData.fullName}
-                    onChange={inputHandler}
+                    onChange={resumeDataHandler}
                     type="text"
                     placeholder="Type here"
                     className="input input-bordered w-full max-w-xs"
@@ -56,7 +107,7 @@ export default function EditMenu({
                   <input
                     name="mobileNo"
                     value={resumeData.mobileNo}
-                    onChange={inputHandler}
+                    onChange={resumeDataHandler}
                     type="text"
                     placeholder="Type here"
                     className="input input-bordered w-full max-w-xs"
@@ -71,7 +122,7 @@ export default function EditMenu({
                   <input
                     name="email"
                     value={resumeData.email}
-                    onChange={inputHandler}
+                    onChange={resumeDataHandler}
                     type="text"
                     placeholder="Type here"
                     className="input input-bordered w-full max-w-xs"
@@ -79,7 +130,7 @@ export default function EditMenu({
                 </label>
                 <SocialInput
                   socialLink={resumeData.socialLink}
-                  inputHandler={inputHandler}
+                  resumeDataHandler={resumeDataHandler}
                   socialHandler={socialHandler}
                   selectedSocial={selectedSocial}
                 />
@@ -88,8 +139,7 @@ export default function EditMenu({
           </div>
         );
 
-      // Professional Experience
-      case 'Professional Experience':
+      case 'professionalExperience':
         return (
           <div
             className={`collapse ${
@@ -97,7 +147,15 @@ export default function EditMenu({
             } collapse-arrow bg-white m-1`}
           >
             <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title text-xl text-black font-medium">
+            <div className="collapse-title flex text-xl text-black font-medium">
+              <input
+                type="checkbox"
+                checked={resumeData.includeSections.professionalExperience}
+                onChange={() =>
+                  OnIncludeCheckboxChange('professionalExperience')
+                }
+                className="checkbox z-10 checkbox-accent mr-2"
+              />
               Professional Experience
             </div>
             <div className="collapse-content">
@@ -109,8 +167,7 @@ export default function EditMenu({
           </div>
         );
 
-      // Education
-      case 'Education':
+      case 'education':
         return (
           <div
             className={`collapse ${
@@ -118,7 +175,15 @@ export default function EditMenu({
             } collapse-arrow bg-white m-1`}
           >
             <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title text-xl font-medium">Education</div>
+            <div className="collapse-title flex text-xl font-medium">
+              <input
+                type="checkbox"
+                checked={resumeData.includeSections.education}
+                onChange={() => OnIncludeCheckboxChange('education')}
+                className="checkbox z-10 checkbox-accent mr-2"
+              />
+              Education
+            </div>
             <div className="collapse-content">
               <EducationCard
                 educationList={resumeData.educationList}
@@ -136,54 +201,63 @@ export default function EditMenu({
     <div className="p-3 flex justify-center">
       <div className="w-11/12">
         <div className="flex text-white justify-around m-3 mb-5">
-          <h1 className=" text-white m-1">cvCreator.io</h1>
-          {/* Download Button */}
-          <PDFDownloadLink
-            className="text-white"
-            document={
-              <CVContent
-                resumeData={resumeData}
-                selectedSocial={selectedSocial}
-                sectionsOrder={sectionsOrder}
-              />
-            }
-            fileName={resumeData.fullName + '-CV.pdf'}
+          <h1 className="text-white m-1">cvCreator.io</h1>
+
+          {/* Generate Button */}
+          <button
+            onClick={OnGeneratePDF}
+            disabled={!uiState.isGenerateButtonEnabled}
+            className={`btn btn-accent btn-sm ${
+              !uiState.isGenerateButtonEnabled ? 'hidden' : ''
+            }`}
           >
-            <button className="btn btn-accent btn-sm">
-              Download
-              <i className="icon icon-16 icon-download"></i>
-            </button>
-          </PDFDownloadLink>
+            Generate PDF
+          </button>
+
+          {/* Download Button */}
+          {uiState.doneEditing &&
+            (instance.loading ? (
+              <span className="loading loading-spinner text-accent"></span>
+            ) : (
+              <div className="flex">
+                <button className="btn btn-accent btn-sm">
+                  <a href={instance.url} download="CV.pdf">
+                    Download
+                  </a>
+                  <i className="icon icon-16 icon-download"></i>
+                </button>
+              </div>
+            ))}
         </div>
+
         <div className="">
           <label className="label justify-end gap-2 cursor-pointer">
             <span className="label-text text-white">Reorder</span>
             <input
               type="checkbox"
-              onChange={handleReorderToggle}
-              checked={reorderToggle}
+              onChange={OnReorderToggle}
+              checked={uiState.reorderToggle}
               className="toggle toggle-accent border-white bg-white [--tglbg:black] hover:bg-zinc-200"
             />
           </label>
         </div>
+
         {/* Sections */}
-        {renderSection('Personal Information')}
+        {renderSection('personalInformation')}
         <Reorder.Group
           axis="y"
           values={sectionsOrder}
-          onReorder={setSectionsOrder}
+          onReorder={sectionOrderHandler}
           key={scale}
         >
-          {sectionsOrder.map((section) => {
-            return (
-              <DraggableItem
-                key={section}
-                item={section}
-                renderSection={renderSection}
-                isReorderingEnabled={reorderToggle}
-              ></DraggableItem>
-            );
-          })}
+          {sectionsOrder.map((section) => (
+            <DraggableItem
+              key={section}
+              item={section}
+              renderSection={renderSection}
+              isReorderingEnabled={uiState.reorderToggle}
+            />
+          ))}
         </Reorder.Group>
       </div>
     </div>

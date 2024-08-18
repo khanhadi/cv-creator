@@ -11,7 +11,7 @@ export default function PDFRenderer({
 }) {
   function renderSection(sectionName) {
     switch (sectionName) {
-      case 'Education':
+      case 'education':
         return (
           <div className="self-start mt-3">
             <p className="text-2xl">Education</p>
@@ -41,7 +41,7 @@ export default function PDFRenderer({
             </div>
           </div>
         );
-      case 'Professional Experience':
+      case 'professionalExperience':
         return (
           <div className="self-start mt-3 w-full">
             <p className="text-2xl">Professional Experience</p>
@@ -102,8 +102,11 @@ export default function PDFRenderer({
         </div>
       </div>
 
-      {sectionsOrder.map((section) => {
-        return renderSection(section);
+      {sectionsOrder.map((section, index) => {
+        if (resumeData.includeSections[section]) {
+          return <div key={index}>{renderSection(section)}</div>;
+        }
+        return null;
       })}
     </div>
   );

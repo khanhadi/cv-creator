@@ -24,13 +24,16 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
           )
         : [...experienceList, formData];
     onExperienceUpdate(updatedExperienceList);
-    setFormData(defaultFormData);
-    setEditIndex(null);
+
+    setTimeout(() => {
+      setEditIndex(null);
+      setFormData(defaultFormData);
+    }, 10);
   }
 
   function handleCancelClick() {
-    setFormData(defaultFormData);
     setEditIndex(null);
+    setFormData(defaultFormData);
   }
 
   function handleEditClick(index) {
@@ -47,8 +50,10 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
     let updatedExperienceList = experienceList;
     updatedExperienceList.splice(editIndex, 1);
     onExperienceUpdate(updatedExperienceList);
-    setFormData(defaultFormData);
-    setEditIndex(null);
+    setTimeout(() => {
+      setEditIndex(null);
+      setFormData(defaultFormData);
+    }, 10);
   }
 
   return (

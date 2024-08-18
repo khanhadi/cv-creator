@@ -11,6 +11,7 @@ export default function DraggableItem({
   const handlePointerDown = (e) => {
     if (isReorderingEnabled) {
       e.stopPropagation(); // Prevent the event from bubbling up
+      e.preventDefault();
       dragControls.start(e);
     }
   };
@@ -26,7 +27,7 @@ export default function DraggableItem({
         {isReorderingEnabled && (
           <div className={`${isReorderingEnabled ? 'cursor-grab' : ''}`}>
             <img
-              className={`relative z-10 p-1 left-2 top-1 bg-white rounded-lg rounded-r-none`}
+              className={`touch-none relative z-10 p-1 left-2 top-1 bg-white rounded-lg rounded-r-none`}
               src={ReorderIcon}
               onPointerDown={handlePointerDown}
               draggable={false}

@@ -1,6 +1,6 @@
 export default function SocialInput({
   socialLink,
-  inputHandler,
+  resumeDataHandler,
   socialHandler,
   selectedSocial,
 }) {
@@ -29,7 +29,7 @@ export default function SocialInput({
         <input
           type="text"
           name="socialLink"
-          onChange={inputHandler}
+          onChange={resumeDataHandler}
           value={socialLink}
           placeholder="Profile Link"
           className="input join-item input-bordered w-full"
