@@ -77,7 +77,7 @@ function App() {
   }
 
   return (
-    <div className="max-h-screen h-screen flex">
+    <div className="min-h-screen h-screen flex antialiased">
       {/* Edit Menu */}
       <div
         className={`w-full lg:w-6/12 bg-black overflow-y-scroll h-full ${
@@ -96,14 +96,14 @@ function App() {
       {/* CV Preview */}
       <div
         ref={previewContainerRef}
-        className={`p-10 w-full lg:w-6/12 flex justify-center items-center ${
+        className={`p-10 w-full bg-base-100 lg:w-6/12 flex justify-center items-center ${
           viewMode === 'preview' ? 'flex' : 'hidden'
         } lg:flex`}
         style={{
           transform: `scale(${scale})`,
         }}
       >
-        <div className="shadow-2xl border-slate-200 border-2">
+        <div className="shadow-2xl bg-white text-black border-slate-200 border-2">
           <PDFRenderer
             resumeData={resumeData}
             selectedSocial={socialButton}

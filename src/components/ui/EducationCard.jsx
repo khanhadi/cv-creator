@@ -55,7 +55,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
   return (
     <>
       {educationList.map((experienceItem, index) => (
-        <div key={index} className="card bg-zinc-100 w-full shadow-sm mt-3">
+        <div key={index} className="card bg-base-200 w-full shadow-sm mt-3">
           {editIndex === index ? (
             <div className="p-3">
               <p className="font-semibold">Edit Education</p>
@@ -171,17 +171,17 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
       ))}
 
       {editIndex === educationList.length ? (
-        <div className="card bg-zinc-100 w-full shadow-sm mt-3">
+        <div className="card bg-base-200 w-full shadow-sm mt-3">
           <div className="p-3">
-            <p className="font-semibold">New Education</p>
+            <p className="font-semibold">Add Education</p>
             <div className="flex flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
-                  <span className="label-text">Company</span>
+                  <span className="label-text">Institution</span>
                 </div>
                 <input
-                  name="companyName"
-                  value={formData.companyName}
+                  name="institutionName"
+                  value={formData.institutionName}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -190,11 +190,51 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
               </label>
               <label className="form-control flex-grow w-full">
                 <div className="label">
-                  <span className="label-text">Job Title</span>
+                  <span className="label-text">Course Title</span>
                 </div>
                 <input
-                  name="jobTitle"
-                  value={formData.jobTitle}
+                  name="courseTitle"
+                  value={formData.courseTitle}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full"
+                />
+              </label>
+            </div>
+            <label className="form-control">
+              <div className="label">
+                <span className="label-text">Description</span>
+              </div>
+              <textarea
+                name="description"
+                className="textarea textarea-bordered h-24"
+                placeholder="..."
+                value={formData.description}
+                onChange={handleInputChange}
+              ></textarea>
+            </label>
+            <div className="flex flex-row gap-2">
+              <label className="form-control flex-grow w-full">
+                <div className="label">
+                  <span className="label-text">Date</span>
+                </div>
+                <input
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full"
+                />
+              </label>
+              <label className="form-control flex-grow w-full">
+                <div className="label">
+                  <span className="label-text">Grade</span>
+                </div>
+                <input
+                  name="location"
+                  value={formData.grade}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -203,6 +243,12 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
               </label>
             </div>
             <div className="flex w-full justify-end gap-2 mt-2">
+              <button
+                onClick={handleDeleteClick}
+                className="btn btn-error btn-sm mr-auto"
+              >
+                Delete
+              </button>
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"
@@ -213,13 +259,13 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                 onClick={handleSaveClick}
                 className="btn btn-accent btn-sm"
               >
-                Save
+                Add
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="card bg-zinc-100 w-full shadow-sm h-14 mt-3">
+        <div className="card bg-base-200 w-full shadow-sm h-14 mt-3">
           <div className="p-3">
             <div className="flex justify-between items-center">
               <p>Add Education</p>

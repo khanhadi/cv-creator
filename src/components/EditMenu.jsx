@@ -158,7 +158,7 @@ export default function EditMenu({
               />
               Professional Experience
             </div>
-            <div className="collapse-content">
+            <div className="collapse-content text-black">
               <ProfessionCard
                 experienceList={resumeData.experienceList}
                 onExperienceUpdate={experienceHandler}
@@ -175,7 +175,7 @@ export default function EditMenu({
             } collapse-arrow bg-white m-1`}
           >
             <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-xl font-medium">
+            <div className="collapse-title flex text-black text-xl font-medium">
               <input
                 type="checkbox"
                 checked={resumeData.includeSections.education}
@@ -184,7 +184,7 @@ export default function EditMenu({
               />
               Education
             </div>
-            <div className="collapse-content">
+            <div className="collapse-content text-black">
               <EducationCard
                 educationList={resumeData.educationList}
                 onEducationUpdate={educationHandler}
@@ -230,14 +230,15 @@ export default function EditMenu({
             ))}
         </div>
 
-        <div className="">
-          <label className="label justify-end gap-2 cursor-pointer">
+        {/* Reorder Button */}
+        <div className="flex justify-end">
+          <label className="label gap-2 cursor-point  er">
             <span className="label-text text-white">Reorder</span>
             <input
               type="checkbox"
               onChange={OnReorderToggle}
               checked={uiState.reorderToggle}
-              className="toggle toggle-accent border-white bg-white [--tglbg:black] hover:bg-zinc-200"
+              className="toggle border-white bg-accent [--tglbg:black] hover:bg-accent"
             />
           </label>
         </div>

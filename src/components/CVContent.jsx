@@ -38,48 +38,56 @@ export default function CVContent({
   function renderSection(section) {
     switch (section) {
       case 'education':
-        return resumeData.educationList.map((education, index) => {
-          return (
-            <View key={index}>
-              <View>{renderSectionHeader('Education')}</View>
-              <View style={styles.section}>
-                <View style={styles.sectionSplit}>
-                  <Text style={styles.leftTitle}>
-                    {education.institutionName}
-                  </Text>
-                  <Text style={styles.rightTitle}>{education.date}</Text>
+        return (
+          <View>
+            <View>{renderSectionHeader('Education')}</View>
+            {resumeData.educationList.map((education, index) => (
+              <View key={index}>
+                <View style={styles.section}>
+                  <View style={styles.sectionSplit}>
+                    <Text style={styles.leftTitle}>
+                      {education.institutionName}
+                    </Text>
+                    <Text style={styles.rightTitle}>{education.date}</Text>
+                  </View>
+                  <View style={styles.sectionSplit}>
+                    <Text style={styles.rightTitle}>
+                      {education.courseTitle}
+                    </Text>
+                    <Text style={styles.rightTitleBold}>{education.grade}</Text>
+                  </View>
+                  <Text>{education.description}</Text>
                 </View>
-                <View style={styles.sectionSplit}>
-                  <Text style={styles.rightTitle}>{education.courseTitle}</Text>
-                  <Text style={styles.rightTitleBold}>{education.grade}</Text>
-                </View>
-                <Text>{education.description}</Text>
               </View>
-            </View>
-          );
-        });
-      case 'professionalExperience': {
-        return resumeData.experienceList.map((experience, index) => {
-          return (
-            <View key={index}>
-              <View>{renderSectionHeader('Professional Experience')}</View>
-              <View style={styles.section}>
-                <View style={styles.sectionSplit}>
-                  <Text style={styles.leftTitle}>{experience.companyName}</Text>
-                  <Text style={styles.rightTitle}>{experience.date}</Text>
+            ))}
+          </View>
+        );
+
+      case 'professionalExperience':
+        return (
+          <View>
+            <View>{renderSectionHeader('Professional Experience')}</View>
+            {resumeData.experienceList.map((experience, index) => (
+              <View key={index}>
+                <View style={styles.section}>
+                  <View style={styles.sectionSplit}>
+                    <Text style={styles.leftTitle}>
+                      {experience.companyName}
+                    </Text>
+                    <Text style={styles.rightTitle}>{experience.date}</Text>
+                  </View>
+                  <View style={styles.sectionSplit}>
+                    <Text style={styles.rightTitle}>{experience.jobTitle}</Text>
+                    <Text style={styles.rightTitleBold}>
+                      {experience.skills.join(', ')}
+                    </Text>
+                  </View>
+                  <Text>{experience.description}</Text>
                 </View>
-                <View style={styles.sectionSplit}>
-                  <Text style={styles.rightTitle}>{experience.jobTitle}</Text>
-                  <Text style={styles.rightTitleBold}>
-                    {experience.skills.join(', ')}
-                  </Text>
-                </View>
-                <Text>{experience.description}</Text>
               </View>
-            </View>
-          );
-        });
-      }
+            ))}
+          </View>
+        );
 
       default:
         return null;
@@ -116,8 +124,8 @@ export default function CVContent({
           </Text>
         </View>
         <View>
-          {sectionsToRender.map((section) => {
-            return renderSection(section);
+          {sectionsToRender.map((section, index) => {
+            return <View key={index}>{renderSection(section)}</View>;
           })}
         </View>
       </Page>
