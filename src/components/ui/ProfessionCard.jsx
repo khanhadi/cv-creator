@@ -110,7 +110,6 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
         values={experienceList}
         onReorder={(newOrder) => {
           onExperienceUpdate(newOrder);
-          console.log(newOrder);
         }}
       >
         {experienceList.map((experienceItem, index) => (

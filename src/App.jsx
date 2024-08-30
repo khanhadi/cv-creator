@@ -12,6 +12,7 @@ function App() {
   const [sectionsOrder, setSectionsOrder] = useState([
     'education',
     'professionalExperience',
+    'test',
   ]);
 
   const previewContainerRef = useRef(null);
@@ -33,6 +34,7 @@ function App() {
     experienceHandler: handleExperienceUpdate,
     educationHandler: handleEducationUpdate,
     sectionOrderHandler: handleSectionsOrder,
+    customSectionHandler: handleCustomSection,
   };
 
   function handleResumeData(event) {
@@ -72,6 +74,13 @@ function App() {
     setSectionsOrder(order);
   }
 
+  function handleCustomSection(updatedCustomSectionData) {
+    setResumeData({
+      ...resumeData,
+      customSectionData: updatedCustomSectionData,
+    });
+  }
+
   function toggleViewMode() {
     setViewMode(viewMode === 'edit' ? 'preview' : 'edit');
   }
@@ -98,7 +107,7 @@ function App() {
         ref={previewContainerRef}
         className={`p-10 w-full bg-base-100 lg:w-6/12 flex justify-center items-center ${
           viewMode === 'preview' ? 'flex' : 'hidden'
-        } lg:flex`}
+        } lg:flex overflow-y-scroll`}
         style={{
           transform: `scale(${scale})`,
         }}

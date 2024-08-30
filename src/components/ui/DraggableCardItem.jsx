@@ -6,7 +6,7 @@ export function DraggableCardItem({ item, reorderToggle, children }) {
 
   return (
     <Reorder.Item
-      key={item.companyName}
+      key={item}
       value={item}
       layout
       dragListener={false}

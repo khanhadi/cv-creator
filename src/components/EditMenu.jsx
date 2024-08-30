@@ -6,6 +6,8 @@ import CVContent from './CVContent';
 import SocialInput from './ui/SocialInput';
 import ProfessionCard from './ui/ProfessionCard';
 import EducationCard from './ui/EducationCard';
+import AddCustomSection from './ui/AddCustomSection';
+import CustomSectionCard from './ui/CustomSectionCard';
 
 export default function EditMenu({
   resumeData,
@@ -21,6 +23,7 @@ export default function EditMenu({
     experienceHandler,
     educationHandler,
     sectionOrderHandler,
+    customSectionHandler,
   } = handlers;
 
   const document = useMemo(
@@ -72,6 +75,43 @@ export default function EditMenu({
     };
 
     inclusionHandler(updatedInclusionObject);
+  };
+
+  const onCustomSectionDataUpdate = (updatedData) => {
+    const { title, items } = updatedData;
+
+    let sectionExists = false;
+    const updatedCustomSectionData = resumeData.customSectionData.map(
+      (section) => {
+        if (section.title === title) {
+          sectionExists = true;
+          return { ...section, items };
+        }
+        return section;
+      }
+    );
+
+    if (!sectionExists) {
+      updatedCustomSectionData.push({ title, items });
+    }
+
+    customSectionHandler(updatedCustomSectionData);
+  };
+
+  const getCustomSectionData = (customSectionData, sectionTitle) => {
+    const existingSection = customSectionData.find(
+      (section) => section.title === sectionTitle
+    );
+
+    if (existingSection) {
+      return existingSection;
+    } else {
+      const newSection = {
+        title: sectionTitle,
+        items: [],
+      };
+      return newSection;
+    }
   };
 
   function renderSection(sectionName) {
@@ -192,8 +232,45 @@ export default function EditMenu({
             </div>
           </div>
         );
-      default:
+      default: {
+        // Handle custom sections
+        const customSection = sectionsOrder.find(
+          (section) => section === sectionName
+        );
+
+        if (customSection) {
+          const sectionData = getCustomSectionData(
+            resumeData.customSectionData,
+            customSection
+          );
+          return (
+            <div
+              className={`collapse ${
+                reorderToggle ? 'rounded-tl-none' : ''
+              } collapse-arrow bg-white m-1`}
+            >
+              <input type="radio" name="my-accordion-2" />
+              <div className="collapse-title flex text-black text-xl font-medium">
+                <input
+                  type="checkbox"
+                  checked={resumeData.includeSections[sectionName]}
+                  onChange={() => OnIncludeCheckboxChange(sectionName)}
+                  className="checkbox z-10 checkbox-accent mr-2"
+                />
+                {customSection}
+              </div>
+              <div className="collapse-content text-black">
+                <CustomSectionCard
+                  sectionTitle={customSection}
+                  sectionItemsList={sectionData.items}
+                  onSectionUpdate={onCustomSectionDataUpdate}
+                />
+              </div>
+            </div>
+          );
+        }
         return null;
+      }
     }
   }
 
@@ -232,7 +309,7 @@ export default function EditMenu({
 
         {/* Reorder Button */}
         <div className="flex justify-end">
-          <label className="label gap-2 cursor-point  er">
+          <label className="label gap-2 cursor-point">
             <span className="label-text text-white">Reorder</span>
             <input
               type="checkbox"
@@ -260,6 +337,16 @@ export default function EditMenu({
             />
           ))}
         </Reorder.Group>
+
+        <div className={`card p-4 w-full bg-white m-1`}>
+          <AddCustomSection
+            sectionsOrder={sectionsOrder}
+            inclusionObject={resumeData.includeSections}
+            handleSectionOrder={sectionOrderHandler}
+            handleInclusion={inclusionHandler}
+            handleSectionData={onCustomSectionDataUpdate}
+          ></AddCustomSection>
+        </div>
       </div>
     </div>
   );

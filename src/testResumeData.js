@@ -6,6 +6,7 @@ export const testResumeData = {
   includeSections: {
     education: true,
     professionalExperience: true,
+    test: true,
   },
   educationList: [
     {
@@ -28,6 +29,12 @@ export const testResumeData = {
       skills: ['Java', 'SwiftUI'],
       description:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis quibusdam libero ducimus eveniet porro alias nam totam\nea id unde a iusto aperiam officia necessitatibus quos illum ullam corrupti. Omnis.',
+    },
+  ],
+  customSectionData: [
+    {
+      title: 'test',
+      items: [{ heading: 'testHeading', subHeading: 'testSubHeading' }],
     },
   ],
 };

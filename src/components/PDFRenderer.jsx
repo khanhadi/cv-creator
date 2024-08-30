@@ -9,6 +9,13 @@ export default function PDFRenderer({
   selectedSocial,
   sectionsOrder,
 }) {
+  const getCustomSectionData = (customSectionData, sectionTitle) => {
+    const existingSection = customSectionData.find(
+      (section) => section.title === sectionTitle
+    );
+    return existingSection;
+  };
+
   function renderSection(sectionName) {
     switch (sectionName) {
       case 'education':
@@ -76,6 +83,47 @@ export default function PDFRenderer({
             </div>
           </div>
         );
+
+      default: {
+        // Handle custom sections
+        const customSection = sectionsOrder.find(
+          (section) => section === sectionName
+        );
+        if (customSection) {
+          const sectionData = getCustomSectionData(
+            resumeData.customSectionData,
+            customSection
+          );
+          return (
+            <div className="self-start mt-3 w-full">
+              <p className="text-2xl">{customSection}</p>
+              <hr className="w-full border-black"></hr>
+              <div className="self-start">
+                {sectionData?.items.map((item, index) => (
+                  <div key={index}>
+                    <div className="flex justify-between">
+                      <p className="font-semibold text-sm">{item.heading}</p>
+                      <p className="text-rose-950 text-sm">
+                        {''} • <span className="font-semibold">{''}</span>
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-rose-950 text-sm leading-3">
+                        {item.subHeading}
+                      </p>
+                      <p className="text-sm text-rose-950 italic">
+                        {/* {experience.skills.join(', ')} */}
+                      </p>
+                    </div>
+                    <BulletPointText text={''}></BulletPointText>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+        return null;
+      }
     }
   }
 
@@ -104,7 +152,11 @@ export default function PDFRenderer({
 
       {sectionsOrder.map((section, index) => {
         if (resumeData.includeSections[section]) {
-          return <div key={index}>{renderSection(section)}</div>;
+          return (
+            <div className="w-full" key={index}>
+              {renderSection(section)}
+            </div>
+          );
         }
         return null;
       })}
