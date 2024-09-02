@@ -1,8 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
+import { DraggableCardItem } from '../DraggableCardItem';
 import { Reorder } from 'framer-motion';
-import addIcon from '../../assets/icons/add.svg';
-import pencilIcon from '../../assets/icons/pencil.svg';
-import { DraggableCardItem } from './DraggableCardItem';
+import { Pencil, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function CustomSectionCard({
@@ -13,6 +12,9 @@ export default function CustomSectionCard({
   const defaultFormData = {
     heading: '',
     subHeading: '',
+    description: '',
+    date: '',
+    additionalInfo: '',
   };
   const [editIndex, setEditIndex] = useState(null);
   const [reorderToggle, setReorderToggle] = useState(false);
@@ -93,23 +95,18 @@ export default function CustomSectionCard({
 
   const renderSectionItem = (item, index) => {
     return (
-      <div
-        className={`card bg-base-200 w-full shadow-sm mt-3 ${
-          reorderToggle ? 'rounded-tl-none' : ''
-        }`}
-      >
-        <div className="p-3">
-          <div className="h-8 flex items-center gap-1">
-            <p className="font-semibold">{item.heading}</p>
-            <p>&#8226;</p>
-            <p className="font-light text-sm">{item.subHeading}</p>
-            <button
-              onClick={() => handleEditClick(index)}
-              className="btn btn-square btn-accent btn-sm ml-auto"
-            >
-              <img draggable="false" src={pencilIcon} alt="Edit" />
-            </button>
-          </div>
+      <div className="p-3">
+        <div className="h-8 flex items-center gap-1">
+          <p className="font-semibold">{item.heading}</p>
+          <p>&#8226;</p>
+          <p className="font-light text-sm">{item.subHeading}</p>
+          <button
+            onClick={() => handleEditClick(index)}
+            className="btn btn-square btn-accent btn-sm ml-auto"
+          >
+            {/* <img draggable="false" src={pencilIcon} alt="Edit" /> */}
+            <Pencil></Pencil>
+          </button>
         </div>
       </div>
     );
@@ -135,8 +132,12 @@ export default function CustomSectionCard({
             item={item}
             reorderToggle={reorderToggle}
           >
-            {editIndex === index ? (
-              <div className="card bg-base-200 w-full shadow-sm mt-3">
+            <div
+              className={`card bg-base-200 w-full shadow-sm mt-3 ${
+                reorderToggle ? 'rounded-tl-none' : ''
+              }`}
+            >
+              {editIndex === index ? (
                 <div className="p-3">
                   <p className="font-semibold">Edit Item</p>
                   <div className="flex flex-row gap-2">
@@ -167,6 +168,46 @@ export default function CustomSectionCard({
                       />
                     </label>
                   </div>
+                  <label className="form-control">
+                    <div className="label">
+                      <span className="label-text">Description</span>
+                    </div>
+                    <textarea
+                      name="description"
+                      className="textarea textarea-bordered h-24"
+                      placeholder="..."
+                      value={formData.description}
+                      onChange={handleInputChange}
+                    ></textarea>
+                  </label>
+                  <div className="flex flex-row gap-2">
+                    <label className="form-control flex-grow w-full">
+                      <div className="label">
+                        <span className="label-text">Date</span>
+                      </div>
+                      <input
+                        name="date"
+                        value={formData.date}
+                        onChange={handleInputChange}
+                        type="text"
+                        placeholder="Type here"
+                        className="input input-bordered w-full"
+                      />
+                    </label>
+                    <label className="form-control flex-grow w-full">
+                      <div className="label">
+                        <span className="label-text">Additonal Info</span>
+                      </div>
+                      <input
+                        name="location"
+                        value={formData.additionalInfo}
+                        onChange={handleInputChange}
+                        type="text"
+                        placeholder="Type here"
+                        className="input input-bordered w-full"
+                      />
+                    </label>
+                  </div>
                   <div className="flex w-full justify-end gap-2 mt-2">
                     <button
                       onClick={handleDeleteClick}
@@ -188,10 +229,10 @@ export default function CustomSectionCard({
                     </button>
                   </div>
                 </div>
-              </div>
-            ) : (
-              renderSectionItem(item, index)
-            )}
+              ) : (
+                renderSectionItem(item, index)
+              )}
+            </div>
           </DraggableCardItem>
         ))}
       </Reorder.Group>
@@ -251,7 +292,7 @@ export default function CustomSectionCard({
                 onClick={handleAddClick}
                 className="btn btn-square btn-accent btn-sm"
               >
-                <img draggable="false" src={addIcon} alt="Add" />
+                <Plus></Plus>
               </button>
             </div>
           </div>

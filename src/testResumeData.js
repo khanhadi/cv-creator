@@ -6,6 +6,7 @@ export const testResumeData = {
   includeSections: {
     education: true,
     professionalExperience: true,
+    projects: true,
     test: true,
   },
   educationList: [
@@ -31,10 +32,27 @@ export const testResumeData = {
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis quibusdam libero ducimus eveniet porro alias nam totam\nea id unde a iusto aperiam officia necessitatibus quos illum ullam corrupti. Omnis.',
     },
   ],
+  projectsList: [
+    {
+      include: true,
+      projectName: 'Sketchpad',
+      subHeading: 'Painting and Sketching Web App',
+      description: 'Lorem ipsum dolor sit amet, consectetur elit.',
+      date: 'Feb. 2023',
+    },
+  ],
   customSectionData: [
     {
       title: 'test',
-      items: [{ heading: 'testHeading', subHeading: 'testSubHeading' }],
+      items: [
+        {
+          heading: 'Heading',
+          subHeading: 'Sub Heading',
+          description: 'this is a sample description.',
+          date: 'Jun. 2024',
+          additionalInfo: 'C#, Unity3D, Texture Modelling',
+        },
+      ],
     },
   ],
 };

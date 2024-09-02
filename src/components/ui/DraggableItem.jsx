@@ -1,5 +1,5 @@
 import { Reorder, useDragControls } from 'framer-motion';
-import ReorderIcon from '../../assets/icons/reorder.svg';
+import { ArrowDownUp } from 'lucide-react';
 
 export default function DraggableItem({
   item,
@@ -26,13 +26,13 @@ export default function DraggableItem({
       <div className={`flex items-start`}>
         {isReorderingEnabled && (
           <div className={`${isReorderingEnabled ? 'cursor-grab' : ''}`}>
-            <img
+            <ArrowDownUp
               className={`touch-none relative z-10 p-1 left-2 top-1 bg-white rounded-lg rounded-r-none`}
-              src={ReorderIcon}
+              size={28}
               onPointerDown={handlePointerDown}
               draggable={false}
               alt="Reorder"
-            />
+            ></ArrowDownUp>
           </div>
         )}
         <div className="flex-1">{renderSection(item)}</div>

@@ -1,13 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Reorder } from 'framer-motion';
 import { usePDF } from '@react-pdf/renderer';
+import { Trash2 } from 'lucide-react';
 import DraggableItem from './ui/DraggableItem';
 import CVContent from './CVContent';
 import SocialInput from './ui/SocialInput';
-import ProfessionCard from './ui/ProfessionCard';
-import EducationCard from './ui/EducationCard';
+import EducationCard from './ui/cards/EducationCard';
+import ProfessionCard from './ui/cards/ProfessionCard';
+import ProjectsCard from './ui/cards/ProjectsCard';
 import AddCustomSection from './ui/AddCustomSection';
-import CustomSectionCard from './ui/CustomSectionCard';
+import CustomSectionCard from './ui/cards/CustomSectionCard';
+import Modal from './ui/Modal';
 
 export default function EditMenu({
   resumeData,
@@ -22,6 +25,7 @@ export default function EditMenu({
     socialHandler,
     experienceHandler,
     educationHandler,
+    projectsHandler,
     sectionOrderHandler,
     customSectionHandler,
   } = handlers;
@@ -43,7 +47,14 @@ export default function EditMenu({
     doneEditing: false,
     isGenerateButtonEnabled: true,
   });
+  const [modalState, setModalState] = useState({
+    deleteSection: {
+      isOpen: false,
+      sectionName: null,
+    },
+  });
 
+  ////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     setUiState((prevState) => ({
       ...prevState,
@@ -76,7 +87,7 @@ export default function EditMenu({
 
     inclusionHandler(updatedInclusionObject);
   };
-
+  ////////////////////////////////////////////////////////////////////////////
   const onCustomSectionDataUpdate = (updatedData) => {
     const { title, items } = updatedData;
 
@@ -97,7 +108,6 @@ export default function EditMenu({
 
     customSectionHandler(updatedCustomSectionData);
   };
-
   const getCustomSectionData = (customSectionData, sectionTitle) => {
     const existingSection = customSectionData.find(
       (section) => section.title === sectionTitle
@@ -113,6 +123,41 @@ export default function EditMenu({
       return newSection;
     }
   };
+  const openDeleteModal = (sectionName) => {
+    setModalState((prevState) => ({
+      ...prevState,
+      deleteSection: { isOpen: true, sectionName },
+    }));
+  };
+  const closeDeleteModal = () => {
+    setModalState((prevState) => ({
+      ...prevState,
+      deleteSection: { isOpen: false, sectionName: null },
+    }));
+  };
+  const handleDeleteConfirm = () => {
+    const { sectionName } = modalState.deleteSection;
+    if (sectionName) {
+      handleDeleteCustomSection(sectionName);
+      closeDeleteModal();
+    }
+  };
+  const handleDeleteCustomSection = (sectionName) => {
+    const updatedSectionsOrder = sectionsOrder.filter(
+      (section) => section !== sectionName
+    );
+    sectionOrderHandler(updatedSectionsOrder);
+
+    const updatedIncludeSections = { ...resumeData.includeSections };
+    delete updatedIncludeSections[sectionName];
+    inclusionHandler(updatedIncludeSections);
+
+    const updatedCustomSectionData = resumeData.customSectionData.filter(
+      (section) => section.title !== sectionName
+    );
+    customSectionHandler(updatedCustomSectionData);
+  };
+  ////////////////////////////////////////////////////////////////////////////
 
   function renderSection(sectionName) {
     const { reorderToggle } = uiState;
@@ -232,6 +277,31 @@ export default function EditMenu({
             </div>
           </div>
         );
+      case 'projects':
+        return (
+          <div
+            className={`collapse ${
+              reorderToggle ? 'rounded-tl-none' : ''
+            } collapse-arrow bg-white m-1`}
+          >
+            <input type="radio" name="my-accordion-2" />
+            <div className="collapse-title flex text-black text-xl font-medium">
+              <input
+                type="checkbox"
+                checked={resumeData.includeSections.projects}
+                onChange={() => OnIncludeCheckboxChange('projects')}
+                className="checkbox z-10 checkbox-accent mr-2"
+              />
+              Projects
+            </div>
+            <div className="collapse-content text-black">
+              <ProjectsCard
+                projectsList={resumeData.projectsList}
+                onProjectsUpdate={projectsHandler}
+              />
+            </div>
+          </div>
+        );
       default: {
         // Handle custom sections
         const customSection = sectionsOrder.find(
@@ -258,6 +328,12 @@ export default function EditMenu({
                   className="checkbox z-10 checkbox-accent mr-2"
                 />
                 {customSection}
+                <button
+                  onClick={() => openDeleteModal(sectionName)}
+                  className="btn btn-error btn-sm ml-auto z-10"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
               <div className="collapse-content text-black">
                 <CustomSectionCard
@@ -273,7 +349,7 @@ export default function EditMenu({
       }
     }
   }
-
+  ////////////////////////////////////////////////////////////////////////////
   return (
     <div className="p-3 flex justify-center">
       <div className="w-11/12">
@@ -348,6 +424,32 @@ export default function EditMenu({
           ></AddCustomSection>
         </div>
       </div>
+
+      <Modal
+        isOpen={modalState.deleteSection.isOpen}
+        onClose={closeDeleteModal}
+        title="Confirm Deletion"
+        size="max-w-md"
+      >
+        <p>
+          Are you sure you want to delete the{' '}
+          <span className="font-semibold">
+            {modalState.deleteSection.sectionName}
+          </span>{' '}
+          section? This action cannot be undone.
+        </p>
+        <div className="modal-action">
+          <button className="btn btn-sm btn-accent" onClick={closeDeleteModal}>
+            Cancel
+          </button>
+          <button
+            className="btn btn-sm btn-error"
+            onClick={handleDeleteConfirm}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

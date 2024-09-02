@@ -3,6 +3,7 @@ import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
 import BulletPointText from './ui/BulletPointText';
+import { Link } from 'lucide-react';
 
 export default function PDFRenderer({
   resumeData,
@@ -83,7 +84,45 @@ export default function PDFRenderer({
             </div>
           </div>
         );
-
+      case 'projects':
+        return (
+          <div className="self-start mt-3">
+            <p className="text-2xl">Projects</p>
+            <hr className="w-full border-black"></hr>
+            <div className="self-start">
+              {resumeData.projectsList.map((project, index) => (
+                <div key={index} className="mb-2">
+                  <div className="flex justify-between items-baseline">
+                    <p className="font-semibold text-sm flex items-center">
+                      {project.link ? (
+                        <>
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline mr-1"
+                          >
+                            {project.projectName}
+                          </a>
+                          <Link size={12} className="text-rose-950" />
+                        </>
+                      ) : (
+                        project.projectName
+                      )}
+                    </p>
+                    <p className="text-rose-950 text-sm">{project.date}</p>
+                  </div>
+                  {project.subHeading && (
+                    <p className="text-rose-950 text-sm italic leading-tight mb-1">
+                      {project.subHeading}
+                    </p>
+                  )}
+                  <BulletPointText text={project.description}></BulletPointText>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
       default: {
         // Handle custom sections
         const customSection = sectionsOrder.find(
@@ -103,19 +142,17 @@ export default function PDFRenderer({
                   <div key={index}>
                     <div className="flex justify-between">
                       <p className="font-semibold text-sm">{item.heading}</p>
-                      <p className="text-rose-950 text-sm">
-                        {''} • <span className="font-semibold">{''}</span>
-                      </p>
+                      <p className="text-rose-950 text-sm">{item.date}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-rose-950 text-sm leading-3">
                         {item.subHeading}
                       </p>
                       <p className="text-sm text-rose-950 italic">
-                        {/* {experience.skills.join(', ')} */}
+                        {item.additionalInfo}
                       </p>
                     </div>
-                    <BulletPointText text={''}></BulletPointText>
+                    <BulletPointText text={item.description}></BulletPointText>
                   </div>
                 ))}
               </div>
