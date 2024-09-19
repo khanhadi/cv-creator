@@ -119,7 +119,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
               {editIndex === index ? (
                 <div className="p-3">
                   <p className="font-semibold">Edit Education</p>
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <label className="form-control flex-grow w-full">
                       <div className="label">
                         <span className="label-text">Institution</span>
@@ -159,7 +159,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                       onChange={handleInputChange}
                     ></textarea>
                   </label>
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <label className="form-control flex-grow w-full">
                       <div className="label">
                         <span className="label-text">Date</span>
@@ -187,7 +187,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                       />
                     </label>
                   </div>
-                  <div className="flex w-full justify-end gap-2 mt-2">
+                  <div className="flex w-full justify-end gap-2 mt-4">
                     <button
                       onClick={handleDeleteClick}
                       className="btn btn-error btn-sm mr-auto"
@@ -209,9 +209,9 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                   </div>
                 </div>
               ) : (
-                <div className="p-3">
-                  <div className="h-8 flex items-center gap-1">
-                    <p className="font-semibold">
+                <div className="p-3 max-w-full">
+                  <div className="h-8 flex items-center gap-2">
+                    <p className="font-semibold text-sm">
                       {educationItem.institutionName}
                     </p>
                     <p>&#8226;</p>
@@ -236,7 +236,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
         {editIndex === localEducationList.length ? (
           <div className="p-3">
             <p className="font-semibold">Add Education</p>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
                   <span className="label-text">Institution</span>
@@ -276,7 +276,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                 onChange={handleInputChange}
               ></textarea>
             </label>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
                   <span className="label-text">Date</span>
@@ -304,7 +304,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                 />
               </label>
             </div>
-            <div className="flex w-full justify-end gap-2 mt-2">
+            <div className="flex w-full justify-end gap-2 mt-4">
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"

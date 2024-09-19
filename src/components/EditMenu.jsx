@@ -171,8 +171,8 @@ export default function EditMenu({
               Personal Information
             </div>
             <div className="collapse-content">
-              <div className="flex flex-row gap-2">
-                <label className="form-control w-full max-w-xs">
+              <div className="flex flex-col sm:flex-row gap-2 ">
+                <label className="form-control w-full sm:w-1/2">
                   <div className="label">
                     <span className="label-text">Name</span>
                   </div>
@@ -182,10 +182,10 @@ export default function EditMenu({
                     onChange={resumeDataHandler}
                     type="text"
                     placeholder="Type here"
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full"
                   />
                 </label>
-                <label className="form-control w-full max-w-xs">
+                <label className="form-control w-full sm:w-1/2">
                   <div className="label">
                     <span className="label-text">Mobile No.</span>
                   </div>
@@ -195,12 +195,12 @@ export default function EditMenu({
                     onChange={resumeDataHandler}
                     type="text"
                     placeholder="Type here"
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full"
                   />
                 </label>
               </div>
-              <div className="flex flex-row gap-2 mt-3">
-                <label className="form-control w-full max-w-xs flex">
+              <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                <label className="form-control w-full sm:w-1/2 flex">
                   <div className="label">
                     <span className="label-text">Email</span>
                   </div>
@@ -210,15 +210,17 @@ export default function EditMenu({
                     onChange={resumeDataHandler}
                     type="text"
                     placeholder="Type here"
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full"
                   />
                 </label>
-                <SocialInput
-                  socialLink={resumeData.socialLink}
-                  resumeDataHandler={resumeDataHandler}
-                  socialHandler={socialHandler}
-                  selectedSocial={selectedSocial}
-                />
+                <div className="w-full sm:w-1/2">
+                  <SocialInput
+                    socialLink={resumeData.socialLink}
+                    resumeDataHandler={resumeDataHandler}
+                    socialHandler={socialHandler}
+                    selectedSocial={selectedSocial}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -330,7 +332,7 @@ export default function EditMenu({
                 {customSection}
                 <button
                   onClick={() => openDeleteModal(sectionName)}
-                  className="btn btn-error btn-sm ml-auto z-10"
+                  className="btn btn-error btn-sm h-7 min-h-7 ml-auto z-10"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -354,7 +356,9 @@ export default function EditMenu({
     <div className="p-3 flex justify-center">
       <div className="w-11/12">
         <div className="flex text-white justify-around m-3 mb-5">
-          <h1 className="text-white m-1">cvCreator.io</h1>
+          <h1 className="text-white font-light text-2xl m-1">
+            cv<span className="text-accent font-extrabold">creator</span>
+          </h1>
 
           {/* Generate Button */}
           <button

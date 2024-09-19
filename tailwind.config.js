@@ -11,6 +11,9 @@ export default {
       boxShadow: {
         '2xl': 'rgba(149, 157, 165, 0.2) 0px 8px 24px;',
       },
+      colors: {
+        accent: '#02D3C0',
+      },
     },
   },
   plugins: [daisyui],

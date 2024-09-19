@@ -139,7 +139,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
               {editIndex === index ? (
                 <div className="p-3">
                   <p className="font-semibold">Edit Experience</p>
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <label className="form-control flex-grow w-full">
                       <div className="label">
                         <span className="label-text">Company</span>
@@ -179,7 +179,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                       onChange={handleInputChange}
                     ></textarea>
                   </label>
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <label className="form-control flex-grow w-full">
                       <div className="label">
                         <span className="label-text">Date</span>
@@ -216,7 +216,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                       inputHandler={handleInputChange}
                     ></SkillsInput>
                   </div>
-                  <div className="flex w-full justify-end gap-2 mt-2">
+                  <div className="flex w-full justify-end gap-2 mt-4">
                     <button
                       onClick={handleDeleteClick}
                       className="btn btn-error btn-sm mr-auto"
@@ -249,7 +249,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
         {editIndex === localExperienceList.length ? (
           <div className="p-3">
             <p className="font-semibold">Add Experience</p>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
                   <span className="label-text">Company</span>
@@ -289,7 +289,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                 onChange={handleInputChange}
               ></textarea>
             </label>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
                   <span className="label-text">Date</span>
@@ -326,7 +326,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                 inputHandler={handleInputChange}
               ></SkillsInput>
             </div>
-            <div className="flex w-full justify-end gap-2 mt-2">
+            <div className="flex w-full justify-end gap-2 mt-4">
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"

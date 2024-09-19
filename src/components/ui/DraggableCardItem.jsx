@@ -11,7 +11,7 @@ export function DraggableCardItem({ item, reorderToggle, children }) {
       layout
       dragListener={false}
       dragControls={dragControls}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
     >
       <div className="flex items-start">
         {reorderToggle && (

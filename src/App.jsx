@@ -95,7 +95,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen h-screen flex antialiased">
+    <div className="min-h-screen h-screen flex font-normal antialiased">
       {/* Edit Menu */}
       <div
         className={`w-full lg:w-6/12 bg-black overflow-y-scroll h-full ${
@@ -130,7 +130,7 @@ function App() {
         </div>
       </div>
       <button
-        className="lg:hidden fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded"
+        className="lg:hidden fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded z-40"
         onClick={toggleViewMode}
       >
         {viewMode === 'edit' ? 'Show Preview' : 'Show Edit Menu'}

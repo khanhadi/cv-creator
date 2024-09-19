@@ -9,7 +9,7 @@ export default function SocialInput({
       <div className="label">
         <span className="label-text">Social Media</span>
       </div>
-      <div className="join w-full max-w-xs">
+      <div className="join w-full">
         <button
           className={`btn  ${
             selectedSocial == 'linkedin' ? 'btn-active' : ''

@@ -140,7 +140,7 @@ export default function CustomSectionCard({
               {editIndex === index ? (
                 <div className="p-3">
                   <p className="font-semibold">Edit Item</p>
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <label className="form-control flex-grow w-full">
                       <div className="label">
                         <span className="label-text">Heading</span>
@@ -180,7 +180,7 @@ export default function CustomSectionCard({
                       onChange={handleInputChange}
                     ></textarea>
                   </label>
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <label className="form-control flex-grow w-full">
                       <div className="label">
                         <span className="label-text">Date</span>
@@ -196,7 +196,7 @@ export default function CustomSectionCard({
                     </label>
                     <label className="form-control flex-grow w-full">
                       <div className="label">
-                        <span className="label-text">Additonal Info</span>
+                        <span className="label-text">Additional Info</span>
                       </div>
                       <input
                         name="location"
@@ -208,7 +208,7 @@ export default function CustomSectionCard({
                       />
                     </label>
                   </div>
-                  <div className="flex w-full justify-end gap-2 mt-2">
+                  <div className="flex w-full justify-end gap-2 mt-4">
                     <button
                       onClick={handleDeleteClick}
                       className="btn btn-error btn-sm mr-auto"
@@ -241,7 +241,7 @@ export default function CustomSectionCard({
         {editIndex === sectionItemsList.length ? (
           <div className="p-3">
             <p className="font-semibold">Add Item</p>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <label className="form-control flex-grow w-full">
                 <div className="label">
                   <span className="label-text">Heading</span>
@@ -269,7 +269,47 @@ export default function CustomSectionCard({
                 />
               </label>
             </div>
-            <div className="flex w-full justify-end gap-2 mt-2">
+            <label className="form-control">
+              <div className="label">
+                <span className="label-text">Description</span>
+              </div>
+              <textarea
+                name="description"
+                className="textarea textarea-bordered h-24"
+                placeholder="..."
+                value={formData.description}
+                onChange={handleInputChange}
+              ></textarea>
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <label className="form-control flex-grow w-full">
+                <div className="label">
+                  <span className="label-text">Date</span>
+                </div>
+                <input
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full"
+                />
+              </label>
+              <label className="form-control flex-grow w-full">
+                <div className="label">
+                  <span className="label-text">Additional Info</span>
+                </div>
+                <input
+                  name="location"
+                  value={formData.additionalInfo}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full"
+                />
+              </label>
+            </div>
+            <div className="flex w-full justify-end gap-2 mt-4">
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"
