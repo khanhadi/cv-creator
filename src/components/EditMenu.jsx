@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Reorder } from 'framer-motion';
 import { usePDF } from '@react-pdf/renderer';
 import { Trash2 } from 'lucide-react';
+import { useToast } from '../utils/Toast';
 import DraggableItem from './ui/DraggableItem';
 import CVContent from './CVContent';
 import SocialInput from './ui/SocialInput';
@@ -11,6 +12,7 @@ import ProjectsCard from './ui/cards/ProjectsCard';
 import AddCustomSection from './ui/AddCustomSection';
 import CustomSectionCard from './ui/cards/CustomSectionCard';
 import Modal from './ui/Modal';
+import validateResumeData from '../utils/validateResumeData';
 
 export default function EditMenu({
   resumeData,
@@ -41,11 +43,19 @@ export default function EditMenu({
     [resumeData, selectedSocial, sectionsOrder]
   );
 
+  const sendToast = useToast();
+
+  const [exportUrl, setExportUrl] = useState(null);
+  const exportLinkRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const isProcessingExport = useRef(false);
+
   const [instance, update] = usePDF({ document });
   const [uiState, setUiState] = useState({
     reorderToggle: false,
     doneEditing: false,
     isGenerateButtonEnabled: true,
+    loadedFile: '',
   });
   const [modalState, setModalState] = useState({
     deleteSection: {
@@ -158,6 +168,88 @@ export default function EditMenu({
     customSectionHandler(updatedCustomSectionData);
   };
   ////////////////////////////////////////////////////////////////////////////
+
+  useEffect(() => {
+    if (exportUrl && exportLinkRef.current && !isProcessingExport.current) {
+      isProcessingExport.current = true;
+      exportLinkRef.current.click();
+      URL.revokeObjectURL(exportUrl);
+
+      // Use setTimeout to defer the state update
+      setTimeout(() => {
+        setExportUrl(null);
+        isProcessingExport.current = false;
+      }, 0);
+    }
+  }, [exportUrl, sendToast]);
+
+  const handleExport = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isProcessingExport.current) return;
+      const dataStr = JSON.stringify(resumeData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      sendToast('Resume data exported successfully!', 'success');
+      const url = URL.createObjectURL(blob);
+      setExportUrl(url);
+    },
+    [resumeData, sendToast]
+  );
+
+  const handleImportClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImport = useCallback(
+    (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        sendToast('No file selected', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          if (validateResumeData(importedData)) {
+            handlers.resumeDataHandler(importedData, true);
+            sendToast('Resume data imported successfully!', 'success');
+            setUiState((prevState) => ({
+              ...prevState,
+              loadedFile: file.name,
+            }));
+          } else {
+            sendToast(
+              'Invalid resume data format. Please check your file or export again.',
+              'error'
+            );
+          }
+        } catch (error) {
+          console.error('Error importing resume data:', error);
+          sendToast(
+            'Error importing resume data. Please check the file format.',
+            'error'
+          );
+        }
+      };
+
+      reader.onerror = (error) => {
+        console.error('FileReader error:', error);
+        sendToast('Error reading file. Please try again.', 'error');
+      };
+
+      reader.readAsText(file);
+
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    },
+    [handlers, sendToast]
+  );
 
   function renderSection(sectionName) {
     const { reorderToggle } = uiState;
@@ -354,17 +446,16 @@ export default function EditMenu({
   ////////////////////////////////////////////////////////////////////////////
   return (
     <div className="p-3 flex justify-center">
-      <div className="w-11/12">
-        <div className="flex text-white justify-around m-3 mb-5">
-          <h1 className="text-white font-light text-2xl m-1">
+      <div className="w-11/12 py-4">
+        <div className="flex gap-2 mb-2 p-1 items-center-center">
+          <h1 className="text-white font-light text-2xl">
             cv<span className="text-accent font-extrabold">creator</span>
           </h1>
-
           {/* Generate Button */}
           <button
             onClick={OnGeneratePDF}
             disabled={!uiState.isGenerateButtonEnabled}
-            className={`btn btn-accent btn-sm ${
+            className={`btn btn-accent btn-sm ml-auto ${
               !uiState.isGenerateButtonEnabled ? 'hidden' : ''
             }`}
           >
@@ -376,20 +467,52 @@ export default function EditMenu({
             (instance.loading ? (
               <span className="loading loading-spinner text-accent"></span>
             ) : (
-              <div className="flex">
-                <button className="btn btn-accent btn-sm">
-                  <a href={instance.url} download="CV.pdf">
-                    Download
-                  </a>
-                  <i className="icon icon-16 icon-download"></i>
-                </button>
-              </div>
+              <button className="btn btn-accent btn-sm ml-auto">
+                <a href={instance.url} download="CV.pdf">
+                  Download
+                </a>
+                <i className="icon icon-16 icon-download"></i>
+              </button>
             ))}
         </div>
 
-        {/* Reorder Button */}
-        <div className="flex justify-end">
-          <label className="label gap-2 cursor-point">
+        <div className="flex">
+          <div className="flex justify-center items-center">
+            <div className="flex flex-col  px-1 py-2">
+              <span className="text-white">{`Resume Data: ${uiState.loadedFile}`}</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleExport}
+                  className="btn btn-sm btn-warning"
+                >
+                  Export
+                </button>
+                <a
+                  ref={exportLinkRef}
+                  href={exportUrl}
+                  download={
+                    resumeData.fullName.split(' ')[0] + `_resume_data.json`
+                  }
+                  style={{ display: 'none' }}
+                />
+                <button
+                  onClick={handleImportClick}
+                  className="btn btn-sm btn-warning"
+                >
+                  Import
+                </button>
+              </div>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="file-input file-input-sm hidden"
+            />
+          </div>
+          {/* Reorder Button */}
+          <label className="label gap-2 ml-auto cursor-point self-end">
             <span className="label-text text-white">Reorder</span>
             <input
               type="checkbox"

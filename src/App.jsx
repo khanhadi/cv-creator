@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { testResumeData } from './testResumeData';
+import { ToastProvider } from './utils/Toast';
 import useResizeObserver from '@react-hook/resize-observer';
 import PDFRenderer from './components/PDFRenderer';
 import EditMenu from './components/EditMenu';
@@ -39,12 +40,22 @@ function App() {
     customSectionHandler: handleCustomSection,
   };
 
-  function handleResumeData(event) {
-    const { name, value } = event.target;
-    setResumeData({
-      ...resumeData,
-      [name]: value,
-    });
+  function handleResumeData(eventOrData, clear = false) {
+    if (clear) {
+      setResumeData({});
+    }
+
+    if (eventOrData && eventOrData.target) {
+      const { name, value } = eventOrData.target;
+      setResumeData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    } else if (typeof eventOrData === 'object') {
+      setResumeData(eventOrData);
+    } else {
+      console.error('Invalid argument type for handleResumeData');
+    }
   }
 
   function handleInclusion(updatedInclusionObject) {
@@ -95,47 +106,48 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen h-screen flex font-normal antialiased">
-      {/* Edit Menu */}
-      <div
-        className={`w-full lg:w-6/12 bg-black overflow-y-scroll h-full ${
-          viewMode === 'edit' ? 'block' : 'hidden'
-        } lg:block`}
-      >
-        <EditMenu
-          resumeData={resumeData}
-          selectedSocial={socialButton}
-          sectionsOrder={sectionsOrder}
-          scale={scale}
-          handlers={handlers}
-        ></EditMenu>
-      </div>
-
-      {/* CV Preview */}
-      <div
-        ref={previewContainerRef}
-        className={`p-10 w-full bg-base-100 lg:w-6/12 flex justify-center items-center ${
-          viewMode === 'preview' ? 'flex' : 'hidden'
-        } lg:flex`}
-        style={{
-          transform: `scale(${scale})`,
-        }}
-      >
-        <div className="shadow-2xl bg-white text-black border-slate-200 border-2">
-          <PDFRenderer
+    <ToastProvider>
+      <div className="min-h-screen h-screen flex font-normal antialiased">
+        {/* Edit Menu */}
+        <div
+          className={`w-full lg:w-6/12 bg-black overflow-y-scroll h-full ${
+            viewMode === 'edit' ? 'block' : 'hidden'
+          } lg:block`}
+        >
+          <EditMenu
             resumeData={resumeData}
             selectedSocial={socialButton}
             sectionsOrder={sectionsOrder}
-          ></PDFRenderer>
+            scale={scale}
+            handlers={handlers}
+          ></EditMenu>
         </div>
+        {/* CV Preview */}
+        <div
+          ref={previewContainerRef}
+          className={`p-10 w-full bg-base-100 lg:w-6/12 flex justify-center items-center ${
+            viewMode === 'preview' ? 'flex' : 'hidden'
+          } lg:flex`}
+          style={{
+            transform: `scale(${scale})`,
+          }}
+        >
+          <div className="shadow-2xl bg-white text-black border-slate-200 border-2">
+            <PDFRenderer
+              resumeData={resumeData}
+              selectedSocial={socialButton}
+              sectionsOrder={sectionsOrder}
+            ></PDFRenderer>
+          </div>
+        </div>
+        <button
+          className="lg:hidden fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded z-40"
+          onClick={toggleViewMode}
+        >
+          {viewMode === 'edit' ? 'Show Preview' : 'Show Edit Menu'}
+        </button>
       </div>
-      <button
-        className="lg:hidden fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded z-40"
-        onClick={toggleViewMode}
-      >
-        {viewMode === 'edit' ? 'Show Preview' : 'Show Edit Menu'}
-      </button>
-    </div>
+    </ToastProvider>
   );
 }
 

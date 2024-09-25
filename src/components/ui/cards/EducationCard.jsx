@@ -211,7 +211,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
               ) : (
                 <div className="p-3 max-w-full">
                   <div className="h-8 flex items-center gap-2">
-                    <p className="font-semibold text-sm">
+                    <p className="font-semibold">
                       {educationItem.institutionName}
                     </p>
                     <p>&#8226;</p>

@@ -33,7 +33,6 @@ export default function AddCustomSection({
           [sectionTitle]: true,
         });
         setSectionTitle('');
-        console.log(sectionsOrder);
       }
     } else {
       setError('Section title cannot be empty.');
