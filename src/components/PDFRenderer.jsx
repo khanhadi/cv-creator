@@ -2,7 +2,7 @@ import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
-import BulletPointText from './ui/BulletPointText';
+import FormatText from '../utils/FormatText';
 import { Link } from 'lucide-react';
 
 export default function PDFRenderer({
@@ -41,9 +41,7 @@ export default function PDFRenderer({
                       {education.grade}
                     </p>
                   </div>
-                  <BulletPointText
-                    text={education.description}
-                  ></BulletPointText>
+                  <FormatText text={education.description}></FormatText>
                 </div>
               ))}
             </div>
@@ -76,9 +74,7 @@ export default function PDFRenderer({
                       {experience.skills.join(', ')}
                     </p>
                   </div>
-                  <BulletPointText
-                    text={experience.description}
-                  ></BulletPointText>
+                  <FormatText text={experience.description}></FormatText>
                 </div>
               ))}
             </div>
@@ -117,7 +113,7 @@ export default function PDFRenderer({
                       {project.subHeading}
                     </p>
                   )}
-                  <BulletPointText text={project.description}></BulletPointText>
+                  <FormatText text={project.description}></FormatText>
                 </div>
               ))}
             </div>
@@ -152,7 +148,7 @@ export default function PDFRenderer({
                         {item.additionalInfo}
                       </p>
                     </div>
-                    <BulletPointText text={item.description}></BulletPointText>
+                    <FormatText text={item.description}></FormatText>
                   </div>
                 ))}
               </div>

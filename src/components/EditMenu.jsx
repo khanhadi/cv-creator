@@ -461,7 +461,6 @@ export default function EditMenu({
           >
             Generate PDF
           </button>
-
           {/* Download Button */}
           {uiState.doneEditing &&
             (instance.loading ? (
@@ -475,7 +474,6 @@ export default function EditMenu({
               </button>
             ))}
         </div>
-
         <div className="flex">
           <div className="flex justify-center items-center">
             <div className="flex flex-col  px-1 py-2">
@@ -511,6 +509,7 @@ export default function EditMenu({
               className="file-input file-input-sm hidden"
             />
           </div>
+
           {/* Reorder Button */}
           <label className="label gap-2 ml-auto cursor-point self-end">
             <span className="label-text text-white">Reorder</span>
@@ -522,7 +521,6 @@ export default function EditMenu({
             />
           </label>
         </div>
-
         {/* Sections */}
         {renderSection('personalInformation')}
         <Reorder.Group
@@ -541,6 +539,7 @@ export default function EditMenu({
           ))}
         </Reorder.Group>
 
+        {/* Add Custom Section */}
         <div className={`card p-4 w-full bg-white m-1`}>
           <AddCustomSection
             sectionsOrder={sectionsOrder}

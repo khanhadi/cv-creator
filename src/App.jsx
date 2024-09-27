@@ -14,7 +14,6 @@ function App() {
     'education',
     'professionalExperience',
     'projects',
-    'test',
   ]);
 
   const previewContainerRef = useRef(null);
@@ -53,6 +52,7 @@ function App() {
       }));
     } else if (typeof eventOrData === 'object') {
       setResumeData(eventOrData);
+      setSectionsOrder(Object.keys(eventOrData.includeSections));
     } else {
       console.error('Invalid argument type for handleResumeData');
     }

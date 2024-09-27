@@ -12,6 +12,7 @@ import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
+import CVFormatText from '../utils/CVFormatText';
 
 Font.register({
   family: 'Proxima Nova',
@@ -50,13 +51,9 @@ export default function CVContent({
                     </Text>
                     <Text style={styles.rightTitle}>{education.date}</Text>
                   </View>
-                  <View style={styles.sectionSplit}>
-                    <Text style={styles.rightTitle}>
-                      {education.courseTitle}
-                    </Text>
-                    <Text style={styles.rightTitleBold}>{education.grade}</Text>
-                  </View>
-                  <Text>{education.description}</Text>
+                  <Text style={styles.rightTitle}>{education.courseTitle}</Text>
+                  <Text style={styles.rightTitleBold}>{education.grade}</Text>
+                  <CVFormatText text={education.description}></CVFormatText>
                 </View>
               </View>
             ))}
@@ -82,6 +79,7 @@ export default function CVContent({
                       {experience.skills.join(', ')}
                     </Text>
                   </View>
+                  <Text>test</Text>
                   <Text>{experience.description}</Text>
                 </View>
               </View>
