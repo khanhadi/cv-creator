@@ -167,13 +167,13 @@ export default function EditMenu({
     switch (sectionName) {
       case 'personalInformation':
         return (
-          <div className="collapse collapse-arrow bg-white m-1">
+          <div className="collapse collapse-arrow m-1 bg-white">
             <input type="radio" name="my-accordion-2" defaultChecked />
-            <div className="collapse-title text-xl text-black font-medium">
+            <div className="collapse-title text-xl font-medium text-black">
               Personal Information
             </div>
             <div className="collapse-content">
-              <div className="flex flex-col sm:flex-row gap-2 ">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <label className="form-control w-full sm:w-1/2">
                   <div className="label">
                     <span className="label-text">Name</span>
@@ -201,8 +201,8 @@ export default function EditMenu({
                   />
                 </label>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2 mt-2">
-                <label className="form-control w-full sm:w-1/2 flex">
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                <label className="form-control flex w-full sm:w-1/2">
                   <div className="label">
                     <span className="label-text">Email</span>
                   </div>
@@ -233,17 +233,17 @@ export default function EditMenu({
           <div
             className={`collapse ${
               reorderToggle ? 'rounded-tl-none' : ''
-            } collapse-arrow bg-white m-1`}
+            } collapse-arrow m-1 bg-white`}
           >
             <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-xl text-black font-medium">
+            <div className="collapse-title flex text-xl font-medium text-black">
               <input
                 type="checkbox"
                 checked={resumeData.includeSections.professionalExperience}
                 onChange={() =>
                   OnIncludeCheckboxChange('professionalExperience')
                 }
-                className="checkbox z-10 checkbox-accent mr-2"
+                className="checkbox-accent checkbox z-10 mr-2"
               />
               Professional Experience
             </div>
@@ -261,15 +261,15 @@ export default function EditMenu({
           <div
             className={`collapse ${
               reorderToggle ? 'rounded-tl-none' : ''
-            } collapse-arrow bg-white m-1`}
+            } collapse-arrow m-1 bg-white`}
           >
             <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-black text-xl font-medium">
+            <div className="collapse-title flex text-xl font-medium text-black">
               <input
                 type="checkbox"
                 checked={resumeData.includeSections.education}
                 onChange={() => OnIncludeCheckboxChange('education')}
-                className="checkbox z-10 checkbox-accent mr-2"
+                className="checkbox-accent checkbox z-10 mr-2"
               />
               Education
             </div>
@@ -286,15 +286,15 @@ export default function EditMenu({
           <div
             className={`collapse ${
               reorderToggle ? 'rounded-tl-none' : ''
-            } collapse-arrow bg-white m-1`}
+            } collapse-arrow m-1 bg-white`}
           >
             <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-black text-xl font-medium">
+            <div className="collapse-title flex text-xl font-medium text-black">
               <input
                 type="checkbox"
                 checked={resumeData.includeSections.projects}
                 onChange={() => OnIncludeCheckboxChange('projects')}
-                className="checkbox z-10 checkbox-accent mr-2"
+                className="checkbox-accent checkbox z-10 mr-2"
               />
               Projects
             </div>
@@ -321,20 +321,20 @@ export default function EditMenu({
             <div
               className={`collapse ${
                 reorderToggle ? 'rounded-tl-none' : ''
-              } collapse-arrow bg-white m-1`}
+              } collapse-arrow m-1 bg-white`}
             >
               <input type="radio" name="my-accordion-2" />
-              <div className="collapse-title flex text-black text-xl font-medium">
+              <div className="collapse-title flex text-xl font-medium text-black">
                 <input
                   type="checkbox"
                   checked={resumeData.includeSections[sectionName]}
                   onChange={() => OnIncludeCheckboxChange(sectionName)}
-                  className="checkbox z-10 checkbox-accent mr-2"
+                  className="checkbox-accent checkbox z-10 mr-2"
                 />
                 {customSection}
                 <button
                   onClick={() => openDeleteModal(sectionName)}
-                  className="btn btn-error btn-sm h-7 min-h-7 ml-auto z-10"
+                  className="btn btn-error btn-sm z-10 ml-auto h-7 min-h-7"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -355,11 +355,11 @@ export default function EditMenu({
   }
   ////////////////////////////////////////////////////////////////////////////
   return (
-    <div className="p-3 flex justify-center">
-      <div className="w-11/12 py-4 mb-20">
-        <div className="flex gap-2 mb-2 p-1 items-center-center">
-          <h1 className="text-white font-light text-2xl">
-            cv<span className="text-accent font-extrabold">creator</span>
+    <div className="flex justify-center p-3">
+      <div className="mb-20 w-11/12 py-4">
+        <div className="items-center-center mb-2 flex gap-2 p-1">
+          <h1 className="text-2xl font-light text-white">
+            cv<span className="font-extrabold text-accent">creator</span>
           </h1>
           {/* Generate Button */}
           <button
@@ -394,7 +394,7 @@ export default function EditMenu({
           ></ResumeDataTools>
 
           {/* Reorder Button */}
-          <label className="label gap-2 ml-auto cursor-point self-end">
+          <label className="cursor-point label ml-auto gap-2 self-end">
             <span className="label-text text-white">Reorder</span>
             <input
               type="checkbox"
@@ -423,7 +423,7 @@ export default function EditMenu({
         </Reorder.Group>
 
         {/* Add Custom Section */}
-        <div className={`card p-4 w-full bg-white m-1`}>
+        <div className={`card m-1 w-full bg-white p-4`}>
           <AddCustomSection
             sectionsOrder={sectionsOrder}
             inclusionObject={resumeData.includeSections}
@@ -448,11 +448,11 @@ export default function EditMenu({
           section? This action cannot be undone.
         </p>
         <div className="modal-action">
-          <button className="btn btn-sm btn-accent" onClick={closeDeleteModal}>
+          <button className="btn btn-accent btn-sm" onClick={closeDeleteModal}>
             Cancel
           </button>
           <button
-            className="btn btn-sm btn-error"
+            className="btn btn-error btn-sm"
             onClick={handleDeleteConfirm}
           >
             Delete

@@ -27,7 +27,7 @@ export default function DraggableItem({
         {isReorderingEnabled && (
           <div className={`${isReorderingEnabled ? 'cursor-grab' : ''}`}>
             <ArrowDownUp
-              className={`touch-none relative z-10 p-1 left-2 top-1 bg-white rounded-lg rounded-r-none`}
+              className={`relative left-2 top-1 z-10 touch-none rounded-lg rounded-r-none bg-white p-1`}
               size={28}
               onPointerDown={handlePointerDown}
               draggable={false}

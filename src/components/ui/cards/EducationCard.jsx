@@ -94,7 +94,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
   return (
     <>
       <div className="flex justify-end">
-        <label className="label gap-2 cursor-pointer">
+        <label className="label cursor-pointer gap-2">
           <span className="label-text">Reorder</span>
           <input
             type="checkbox"
@@ -112,15 +112,15 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
             reorderToggle={reorderToggle}
           >
             <div
-              className={`card bg-base-200 w-full shadow-sm mt-3 ${
+              className={`card mt-3 w-full bg-base-200 shadow-sm ${
                 reorderToggle ? 'rounded-tl-none' : ''
               }`}
             >
               {editIndex === index ? (
                 <div className="p-3">
                   <p className="font-semibold">Edit Education</p>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <label className="form-control flex-grow w-full">
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Institution</span>
                       </div>
@@ -133,7 +133,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                         className="input input-bordered w-full"
                       />
                     </label>
-                    <label className="form-control flex-grow w-full">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Course Title</span>
                       </div>
@@ -159,8 +159,8 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                       onChange={handleInputChange}
                     ></textarea>
                   </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <label className="form-control flex-grow w-full">
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Date</span>
                       </div>
@@ -173,7 +173,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                         className="input input-bordered w-full"
                       />
                     </label>
-                    <label className="form-control flex-grow w-full">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Grade</span>
                       </div>
@@ -187,7 +187,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                       />
                     </label>
                   </div>
-                  <div className="flex w-full justify-end gap-2 mt-4">
+                  <div className="mt-4 flex w-full justify-end gap-2">
                     <button
                       onClick={handleDeleteClick}
                       className="btn btn-error btn-sm mr-auto"
@@ -209,13 +209,13 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                   </div>
                 </div>
               ) : (
-                <div className="p-3 max-w-full">
-                  <div className="h-8 flex items-center gap-2">
+                <div className="max-w-full p-3">
+                  <div className="flex h-8 items-center gap-2">
                     <p className="font-semibold">
                       {educationItem.institutionName}
                     </p>
                     <p>&#8226;</p>
-                    <p className="font-light text-sm">
+                    <p className="text-sm font-light">
                       {educationItem.courseTitle}
                     </p>
                     <button
@@ -232,12 +232,12 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
         ))}
       </Reorder.Group>
 
-      <div className="card bg-base-200 w-full shadow-sm mt-3">
+      <div className="card mt-3 w-full bg-base-200 shadow-sm">
         {editIndex === localEducationList.length ? (
           <div className="p-3">
             <p className="font-semibold">Add Education</p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <label className="form-control flex-grow w-full">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Institution</span>
                 </div>
@@ -250,7 +250,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                   className="input input-bordered w-full"
                 />
               </label>
-              <label className="form-control flex-grow w-full">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Course Title</span>
                 </div>
@@ -276,8 +276,8 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                 onChange={handleInputChange}
               ></textarea>
             </label>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <label className="form-control flex-grow w-full">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Date</span>
                 </div>
@@ -290,7 +290,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                   className="input input-bordered w-full"
                 />
               </label>
-              <label className="form-control flex-grow w-full">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Grade</span>
                 </div>
@@ -304,7 +304,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                 />
               </label>
             </div>
-            <div className="flex w-full justify-end gap-2 mt-4">
+            <div className="mt-4 flex w-full justify-end gap-2">
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"
@@ -321,7 +321,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
           </div>
         ) : (
           <div className="p-3">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <p>Add Education</p>
               <button
                 onClick={handleAddClick}

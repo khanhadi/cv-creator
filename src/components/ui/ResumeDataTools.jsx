@@ -164,11 +164,11 @@ export default function ResumeDataTools({
   };
 
   return (
-    <div className="flex justify-center items-center">
-      <div className="flex-col px-1 py-2 flex">
+    <div className="flex items-center justify-center">
+      <div className="flex flex-col px-1 py-2">
         <span className="text-white">{`Resume Data: ${uiState.loadedFile}`}</span>
         <div className="flex gap-2">
-          <button onClick={handleExport} className="btn btn-sm btn-warning">
+          <button onClick={handleExport} className="btn btn-warning btn-sm">
             Export
           </button>
           <a
@@ -177,10 +177,10 @@ export default function ResumeDataTools({
             download={resumeData.fullName.split(' ')[0] + `_resume_data.json`}
             style={{ display: 'none' }}
           />
-          <button onClick={openImportModal} className="btn btn-sm btn-warning">
+          <button onClick={openImportModal} className="btn btn-warning btn-sm">
             Import
           </button>
-          <button onClick={openResetModal} className="btn btn-sm btn-warning">
+          <button onClick={openResetModal} className="btn btn-warning btn-sm">
             Reset
           </button>
         </div>
@@ -193,7 +193,7 @@ export default function ResumeDataTools({
         size="max-w-md"
       >
         <div
-          className={`flex flex-col p-4 items-center justify-center w-full h-64 border-2 border-dashed rounded-lg ${
+          className={`flex h-64 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 ${
             dragActive
               ? 'border-accent bg-accent bg-opacity-10'
               : 'border-gray-300'
@@ -203,7 +203,7 @@ export default function ResumeDataTools({
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          <Upload size={48} className="text-gray-400 mb-4" />
+          <Upload size={48} className="mb-4 text-gray-400" />
           <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
             <span className="font-semibold">Click to upload</span> or drag and
             drop
@@ -220,7 +220,7 @@ export default function ResumeDataTools({
           />
           <button
             onClick={() => fileInputRef.current.click()}
-            className="btn btn-sm btn-accent mt-4"
+            className="btn btn-accent btn-sm mt-4"
           >
             Select File
           </button>
@@ -238,10 +238,10 @@ export default function ResumeDataTools({
           all resume data? This action cannot be undone.
         </p>
         <div className="modal-action">
-          <button className="btn btn-sm btn-accent" onClick={closeResetModal}>
+          <button className="btn btn-accent btn-sm" onClick={closeResetModal}>
             Cancel
           </button>
-          <button className="btn btn-sm btn-error" onClick={handleResetConfirm}>
+          <button className="btn btn-error btn-sm" onClick={handleResetConfirm}>
             Reset
           </button>
         </div>

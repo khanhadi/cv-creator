@@ -93,7 +93,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
   return (
     <>
       <div className="flex justify-end">
-        <label className="label gap-2 cursor-pointer">
+        <label className="label cursor-pointer gap-2">
           <span className="label-text">Reorder</span>
           <input
             type="checkbox"
@@ -111,15 +111,15 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
             reorderToggle={reorderToggle}
           >
             <div
-              className={`card bg-base-200 w-full shadow-sm mt-3 ${
+              className={`card mt-3 w-full bg-base-200 shadow-sm ${
                 reorderToggle ? 'rounded-tl-none' : ''
               }`}
             >
               {editIndex === index ? (
                 <div className="p-3">
                   <p className="font-semibold">Edit Project</p>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <label className="form-control flex-grow w-full">
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Project Name</span>
                       </div>
@@ -132,7 +132,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                         className="input input-bordered w-full"
                       />
                     </label>
-                    <label className="form-control flex-grow w-full">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Sub Heading</span>
                       </div>
@@ -158,8 +158,8 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                       onChange={handleInputChange}
                     ></textarea>
                   </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <label className="form-control flex-grow w-full">
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Project Link</span>
                       </div>
@@ -172,7 +172,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                         className="input input-bordered w-full"
                       />
                     </label>
-                    <label className="form-control flex-grow w-full">
+                    <label className="form-control w-full flex-grow">
                       <div className="label">
                         <span className="label-text">Date</span>
                       </div>
@@ -186,7 +186,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                       />
                     </label>
                   </div>
-                  <div className="flex w-full justify-end gap-2 mt-4">
+                  <div className="mt-4 flex w-full justify-end gap-2">
                     <button
                       onClick={handleDeleteClick}
                       className="btn btn-error btn-sm mr-auto"
@@ -209,10 +209,10 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                 </div>
               ) : (
                 <div className="p-3">
-                  <div className="h-8 flex items-center gap-1">
+                  <div className="flex h-8 items-center gap-1">
                     <p className="font-semibold">{projectItem.projectName}</p>
                     <p>&#8226;</p>
-                    <p className="font-light text-sm">
+                    <p className="text-sm font-light">
                       {projectItem.subHeading}
                     </p>
                     <button
@@ -229,12 +229,12 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
         ))}
       </Reorder.Group>
 
-      <div className="card bg-base-200 w-full shadow-sm mt-3">
+      <div className="card mt-3 w-full bg-base-200 shadow-sm">
         {editIndex === localProjectsList.length ? (
           <div className="p-3">
             <p className="font-semibold">Add Project</p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <label className="form-control flex-grow w-full">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Project Name</span>
                 </div>
@@ -247,7 +247,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                   className="input input-bordered w-full"
                 />
               </label>
-              <label className="form-control flex-grow w-full">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Sub Heading</span>
                 </div>
@@ -273,8 +273,8 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                 onChange={handleInputChange}
               ></textarea>
             </label>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <label className="form-control flex-grow w-full">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Project Link</span>
                 </div>
@@ -287,7 +287,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                   className="input input-bordered w-full"
                 />
               </label>
-              <label className="form-control flex-grow w-full">
+              <label className="form-control w-full flex-grow">
                 <div className="label">
                   <span className="label-text">Date</span>
                 </div>
@@ -301,7 +301,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                 />
               </label>
             </div>
-            <div className="flex w-full justify-end gap-2 mt-4">
+            <div className="mt-4 flex w-full justify-end gap-2">
               <button
                 onClick={handleCancelClick}
                 className="btn btn-secondary btn-sm"
@@ -318,7 +318,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
           </div>
         ) : (
           <div className="p-3">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <p>Add Project</p>
               <button
                 onClick={handleAddClick}

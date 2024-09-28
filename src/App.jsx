@@ -124,10 +124,10 @@ function App() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen h-screen flex font-normal antialiased">
+      <div className="flex h-screen min-h-screen font-normal antialiased">
         {/* Edit Menu */}
         <div
-          className={`w-full lg:w-6/12 bg-black overflow-y-scroll h-full ${
+          className={`h-full w-full overflow-y-scroll bg-black lg:w-6/12 ${
             viewMode === 'edit' ? 'block' : 'hidden'
           } lg:block`}
         >
@@ -142,14 +142,14 @@ function App() {
         {/* CV Preview */}
         <div
           ref={previewContainerRef}
-          className={`p-10 w-full bg-base-100 lg:w-6/12 flex justify-center items-center ${
+          className={`flex w-full items-center justify-center bg-base-100 p-10 lg:w-6/12 ${
             viewMode === 'preview' ? 'flex' : 'hidden'
           } lg:flex`}
           style={{
             transform: `scale(${scale})`,
           }}
         >
-          <div className="shadow-2xl bg-white text-black border-slate-200 border-2">
+          <div className="border-2 border-slate-200 bg-white text-black shadow-2xl">
             <PDFRenderer
               resumeData={resumeData}
               selectedSocial={socialButton}
@@ -158,7 +158,7 @@ function App() {
           </div>
         </div>
         <button
-          className="lg:hidden font-semibold fixed bottom-6 right-6 btn btn-md text-lg rounded-lg btn-accent z-40"
+          className="btn btn-accent btn-md fixed bottom-6 right-6 z-40 rounded-lg text-lg font-semibold lg:hidden"
           onClick={toggleViewMode}
         >
           {viewMode === 'edit' ? (

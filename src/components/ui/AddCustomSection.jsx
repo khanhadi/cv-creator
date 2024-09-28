@@ -41,7 +41,7 @@ export default function AddCustomSection({
 
   return (
     <>
-      <div className="w-full flex text-xl text-black font-medium mb-2">
+      <div className="mb-2 flex w-full text-xl font-medium text-black">
         <span>Add Custom Section</span>
       </div>
       <div className="flex gap-2">
@@ -50,13 +50,13 @@ export default function AddCustomSection({
           value={sectionTitle}
           onChange={handleInputChange}
           placeholder="Section Title"
-          className="input input-bordered input-accent w-full input-sm"
+          className="input input-sm input-bordered input-accent w-full"
         />
         <button onClick={handleAddBtn} className="btn btn-accent btn-sm">
           Add
         </button>
       </div>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="mt-2 text-red-500">{error}</p>}
     </>
   );
 }

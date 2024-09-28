@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'hadi-personal';
-  src: url('./hadi-personal.woff2') format('woff2'),
+  src:
+    url('./hadi-personal.woff2') format('woff2'),
     url('./hadi-personal.woff') format('woff');
 }
 

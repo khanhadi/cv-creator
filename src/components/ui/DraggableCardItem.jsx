@@ -17,7 +17,7 @@ export function DraggableCardItem({ item, reorderToggle, children }) {
         {reorderToggle && (
           <div className="cursor-grab">
             <ArrowDownUp
-              className={`touch-none select-none relative z-10 p-1 top-3 bg-base-200 rounded-lg rounded-r-none`}
+              className={`relative top-3 z-10 touch-none select-none rounded-lg rounded-r-none bg-base-200 p-1`}
               size={28}
               onPointerDown={(e) => dragControls.start(e)}
               draggable={false}
