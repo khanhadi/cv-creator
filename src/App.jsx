@@ -1,20 +1,35 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { testResumeData } from './testResumeData';
 import { ToastProvider } from './utils/Toast';
 import useResizeObserver from '@react-hook/resize-observer';
 import PDFRenderer from './components/PDFRenderer';
 import EditMenu from './components/EditMenu';
+import { Eye, Edit2 } from 'lucide-react';
 
 function App() {
   const [scale, setScale] = useState(1);
   const [viewMode, setViewMode] = useState('edit');
-  const [resumeData, setResumeData] = useState(testResumeData);
   const [socialButton, setSocialButton] = useState('linkedin');
-  const [sectionsOrder, setSectionsOrder] = useState([
-    'education',
-    'professionalExperience',
-    'projects',
-  ]);
+
+  const [resumeData, setResumeData] = useState(() => {
+    const savedData = localStorage.getItem('resumeData');
+    return savedData ? JSON.parse(savedData) : testResumeData;
+  });
+
+  const [sectionsOrder, setSectionsOrder] = useState(() => {
+    const savedOrder = localStorage.getItem('sectionsOrder');
+    return savedOrder
+      ? JSON.parse(savedOrder)
+      : ['education', 'professionalExperience', 'projects'];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('resumeData', JSON.stringify(resumeData));
+  }, [resumeData]);
+
+  useEffect(() => {
+    localStorage.setItem('sectionsOrder', JSON.stringify(sectionsOrder));
+  }, [sectionsOrder]);
 
   const previewContainerRef = useRef(null);
 
@@ -39,10 +54,14 @@ function App() {
     customSectionHandler: handleCustomSection,
   };
 
-  function handleResumeData(eventOrData, clear = false) {
-    if (clear) {
-      setResumeData({});
+  function handleResumeData(eventOrData, clear = false, reset = false) {
+    if (reset) {
+      setResumeData(testResumeData);
+      setSectionsOrder(['education', 'professionalExperience', 'projects']);
+      return;
     }
+
+    if (clear) setResumeData({});
 
     if (eventOrData && eventOrData.target) {
       const { name, value } = eventOrData.target;
@@ -53,8 +72,6 @@ function App() {
     } else if (typeof eventOrData === 'object') {
       setResumeData(eventOrData);
       setSectionsOrder(Object.keys(eventOrData.includeSections));
-    } else {
-      console.error('Invalid argument type for handleResumeData');
     }
   }
 
@@ -141,10 +158,20 @@ function App() {
           </div>
         </div>
         <button
-          className="lg:hidden fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded z-40"
+          className="lg:hidden font-semibold fixed bottom-6 right-6 btn btn-md text-lg rounded-lg btn-accent z-40"
           onClick={toggleViewMode}
         >
-          {viewMode === 'edit' ? 'Show Preview' : 'Show Edit Menu'}
+          {viewMode === 'edit' ? (
+            <>
+              <Eye size={18} />
+              <span>Preview</span>
+            </>
+          ) : (
+            <>
+              <Edit2 size={18} />
+              <span>Edit</span>
+            </>
+          )}
         </button>
       </div>
     </ToastProvider>

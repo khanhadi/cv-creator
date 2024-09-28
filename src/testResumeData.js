@@ -39,6 +39,7 @@ export const testResumeData = {
       subHeading: 'Painting and Sketching Web App',
       description: 'Lorem ipsum dolor sit amet, consectetur elit.',
       date: 'Feb. 2023',
+      link: 'https://khanhadi.github.io/sketchpad/',
     },
   ],
   customSectionData: [

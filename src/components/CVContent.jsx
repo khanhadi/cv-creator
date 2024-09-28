@@ -12,6 +12,7 @@ import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
+import linkIcon from '../assets/icons/cv-icons/link.png';
 import CVFormatText from '../utils/CVFormatText';
 
 Font.register({
@@ -36,8 +37,15 @@ export default function CVContent({
     (section) => resumeData.includeSections[section]
   );
 
-  function renderSection(section) {
-    switch (section) {
+  const getCustomSectionData = (customSectionData, sectionTitle) => {
+    const existingSection = customSectionData.find(
+      (section) => section.title === sectionTitle
+    );
+    return existingSection;
+  };
+
+  function renderSection(sectionName) {
+    switch (sectionName) {
       case 'education':
         return (
           <View>
@@ -51,8 +59,12 @@ export default function CVContent({
                     </Text>
                     <Text style={styles.rightTitle}>{education.date}</Text>
                   </View>
-                  <Text style={styles.rightTitle}>{education.courseTitle}</Text>
-                  <Text style={styles.rightTitleBold}>{education.grade}</Text>
+                  <View style={styles.sectionSplit}>
+                    <Text style={styles.rightTitle}>
+                      {education.courseTitle}
+                    </Text>
+                    <Text style={styles.rightTitleBold}>{education.grade}</Text>
+                  </View>
                   <CVFormatText text={education.description}></CVFormatText>
                 </View>
               </View>
@@ -79,16 +91,85 @@ export default function CVContent({
                       {experience.skills.join(', ')}
                     </Text>
                   </View>
-                  <Text>test</Text>
-                  <Text>{experience.description}</Text>
+                  <CVFormatText text={experience.description}></CVFormatText>
                 </View>
               </View>
             ))}
           </View>
         );
 
-      default:
-        return null;
+      case 'projects':
+        return (
+          <View>
+            <View>{renderSectionHeader('Projects')}</View>
+            {resumeData.projectsList.map((project, index) => (
+              <View key={index}>
+                <View style={styles.section}>
+                  <View style={styles.sectionSplit}>
+                    <View style={styles.flex}>
+                      <Text style={styles.leftTitle}>
+                        {project.link !== '' ? (
+                          <Link style={styles.link} src={project.link}>
+                            {project.projectName}
+                          </Link>
+                        ) : (
+                          project.projectName
+                        )}
+                      </Text>
+                      {project.link !== '' ? (
+                        <Image src={linkIcon} style={styles.linkIcon}></Image>
+                      ) : null}
+                    </View>
+                    <Text style={styles.rightTitle}>{project.date}</Text>
+                  </View>
+                  <View style={styles.sectionSplit}>
+                    <Text style={styles.rightTitle}>{project.subHeading}</Text>
+                    {/* <Text style={styles.rightTitleBold}>
+                      {project.skills.join(', ')}
+                    </Text> */}
+                  </View>
+                  <CVFormatText text={project.description}></CVFormatText>
+                </View>
+              </View>
+            ))}
+          </View>
+        );
+
+      default: {
+        // Handle custom sections
+        const customSection = sectionsToRender.find(
+          (section) => section === sectionName
+        );
+
+        if (customSection) {
+          const sectionData = getCustomSectionData(
+            resumeData.customSectionData,
+            customSection
+          );
+          return (
+            <View>
+              <View>{renderSectionHeader(customSection)}</View>
+              {sectionData?.items.map((item, index) => (
+                <View key={index}>
+                  <View style={styles.section}>
+                    <View style={styles.sectionSplit}>
+                      <Text style={styles.leftTitle}>{item.heading}</Text>
+                      <Text style={styles.rightTitle}>{item.date}</Text>
+                    </View>
+                    <View style={styles.sectionSplit}>
+                      <Text style={styles.rightTitle}>{item.subHeading}</Text>
+                      <Text style={styles.rightTitleBold}>
+                        {item.additionalInfo}
+                      </Text>
+                    </View>
+                    <CVFormatText text={item.description}></CVFormatText>
+                  </View>
+                </View>
+              ))}
+            </View>
+          );
+        }
+      }
     }
   }
 
@@ -168,13 +249,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   hr: {
-    borderBottomWidth: 1,
+    borderBottomWidth: '0.5',
     borderBottomColor: '#000000',
   },
   section: {
     width: '100%',
     alignSelf: 'flex-start',
     fontSize: 12,
+    marginTop: 2,
   },
   sectionSplit: {
     width: '100%',
@@ -192,7 +274,21 @@ const styles = StyleSheet.create({
     fontWeight: 'semibold',
     color: '#4c0519',
   },
+  link: {
+    color: '#000000',
+  },
+  linkIcon: {
+    color: '#4c0519',
+    width: 9,
+    height: 9,
+    marginLeft: 3,
+  },
   flexStart: {
     alignSelf: 'flex-start',
+  },
+  flex: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
