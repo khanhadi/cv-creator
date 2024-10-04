@@ -5,7 +5,7 @@ export default function FormatText({ text }) {
     <>
       {lines
         ? lines.map((line, index) => (
-            <p key={index} className="text-sm">
+            <p key={index} className="break-words text-[16px]">
               {line}
             </p>
           ))

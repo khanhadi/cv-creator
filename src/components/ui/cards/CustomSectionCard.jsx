@@ -199,7 +199,7 @@ export default function CustomSectionCard({
                         <span className="label-text">Additional Info</span>
                       </div>
                       <input
-                        name="location"
+                        name="additionalInfo"
                         value={formData.additionalInfo}
                         onChange={handleInputChange}
                         type="text"
@@ -300,7 +300,7 @@ export default function CustomSectionCard({
                   <span className="label-text">Additional Info</span>
                 </div>
                 <input
-                  name="location"
+                  name="additionalInfo"
                   value={formData.additionalInfo}
                   onChange={handleInputChange}
                   type="text"

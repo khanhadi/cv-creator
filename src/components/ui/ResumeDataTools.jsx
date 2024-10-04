@@ -81,6 +81,7 @@ export default function ResumeDataTools({
       reader.onload = (e) => {
         try {
           const importedData = JSON.parse(e.target.result);
+          console.log(validateResumeData(importedData));
           if (validateResumeData(importedData)) {
             handlers.resumeDataHandler(importedData, true);
             sendToast('Resume data imported successfully!', 'success');

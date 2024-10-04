@@ -4,23 +4,39 @@ import { ToastProvider } from './utils/Toast';
 import useResizeObserver from '@react-hook/resize-observer';
 import PDFRenderer from './components/PDFRenderer';
 import EditMenu from './components/EditMenu';
-import { Eye, Edit2 } from 'lucide-react';
+import WelcomeModal from './components/ui/WelcomeModal';
+import { Eye, Edit2, HelpCircle } from 'lucide-react';
 
 function App() {
   const [scale, setScale] = useState(1);
   const [viewMode, setViewMode] = useState('edit');
   const [socialButton, setSocialButton] = useState('linkedin');
 
+  const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
+    return localStorage.getItem('welcomeModalShown') !== 'true';
+  });
+
+  useEffect(() => {
+    if (showWelcomeModal) {
+      localStorage.setItem('welcomeModalShown', 'true');
+    }
+  }, [showWelcomeModal]);
+
   const [resumeData, setResumeData] = useState(() => {
     const savedData = localStorage.getItem('resumeData');
     return savedData ? JSON.parse(savedData) : testResumeData;
   });
 
+  const defaultSectionsOrder = [
+    'education',
+    'professionalExperience',
+    'projects',
+    'Skills',
+  ];
+
   const [sectionsOrder, setSectionsOrder] = useState(() => {
     const savedOrder = localStorage.getItem('sectionsOrder');
-    return savedOrder
-      ? JSON.parse(savedOrder)
-      : ['education', 'professionalExperience', 'projects'];
+    return savedOrder ? JSON.parse(savedOrder) : defaultSectionsOrder;
   });
 
   useEffect(() => {
@@ -33,14 +49,14 @@ function App() {
 
   const previewContainerRef = useRef(null);
 
-  const DOC_WIDTH_MM = 168;
+  const DOC_WIDTH_MM = 210;
   const MM_TO_PIXEL = 3.7795275591;
 
   useResizeObserver(previewContainerRef, (entry) => {
     const { width } = entry.contentRect;
     const docWidth = DOC_WIDTH_MM * MM_TO_PIXEL;
-    const newScale = width / docWidth - 0.01;
-    setScale(newScale <= 1 ? newScale : 1);
+    const newScale = width / docWidth - 0.1;
+    setScale(newScale <= 0.85 ? newScale : 0.8);
   });
 
   const handlers = {
@@ -52,16 +68,20 @@ function App() {
     projectsHandler: handleProjectsUpdate,
     sectionOrderHandler: handleSectionsOrder,
     customSectionHandler: handleCustomSection,
+    deleteCustomSectionHandler: handleDeleteCustomSection,
   };
 
   function handleResumeData(eventOrData, clear = false, reset = false) {
     if (reset) {
       setResumeData(testResumeData);
-      setSectionsOrder(['education', 'professionalExperience', 'projects']);
+      setSectionsOrder(defaultSectionsOrder);
       return;
     }
 
-    if (clear) setResumeData({});
+    if (clear) {
+      setSectionsOrder([]);
+      setResumeData({});
+    }
 
     if (eventOrData && eventOrData.target) {
       const { name, value } = eventOrData.target;
@@ -76,24 +96,24 @@ function App() {
   }
 
   function handleInclusion(updatedInclusionObject) {
-    setResumeData({
-      ...resumeData,
+    setResumeData((prevData) => ({
+      ...prevData,
       includeSections: updatedInclusionObject,
-    });
+    }));
   }
 
   function handleEducationUpdate(updatedEducationList) {
-    setResumeData({
-      ...resumeData,
+    setResumeData((prevData) => ({
+      ...prevData,
       educationList: updatedEducationList,
-    });
+    }));
   }
 
   function handleExperienceUpdate(updatedExperienceList) {
-    setResumeData({
-      ...resumeData,
+    setResumeData((prevData) => ({
+      ...prevData,
       experienceList: updatedExperienceList,
-    });
+    }));
   }
 
   function handleSelectSocial(button) {
@@ -105,22 +125,51 @@ function App() {
   }
 
   function handleProjectsUpdate(updatedProjectsList) {
-    setResumeData({
-      ...resumeData,
+    setResumeData((prevData) => ({
+      ...prevData,
       projectsList: updatedProjectsList,
-    });
+    }));
   }
 
   function handleCustomSection(updatedCustomSectionData) {
-    setResumeData({
-      ...resumeData,
+    setResumeData((prevData) => ({
+      ...prevData,
       customSectionData: updatedCustomSectionData,
+    }));
+  }
+
+  function handleDeleteCustomSection(sectionName) {
+    setSectionsOrder((prevOrder) =>
+      prevOrder.filter((section) => section !== sectionName)
+    );
+
+    setResumeData((prevData) => {
+      const updatedIncludeSections = { ...prevData.includeSections };
+      delete updatedIncludeSections[sectionName];
+
+      const updatedCustomSectionData = prevData.customSectionData.filter(
+        (section) => section.title !== sectionName
+      );
+
+      return {
+        ...prevData,
+        includeSections: updatedIncludeSections,
+        customSectionData: updatedCustomSectionData,
+      };
     });
   }
 
   function toggleViewMode() {
     setViewMode(viewMode === 'edit' ? 'preview' : 'edit');
   }
+
+  const handleCloseWelcomeModal = () => {
+    setShowWelcomeModal(false);
+  };
+
+  const handleOpenWelcomeModal = () => {
+    setShowWelcomeModal(true);
+  };
 
   return (
     <ToastProvider>
@@ -142,7 +191,7 @@ function App() {
         {/* CV Preview */}
         <div
           ref={previewContainerRef}
-          className={`flex w-full items-center justify-center bg-base-100 p-10 lg:w-6/12 ${
+          className={`flex w-full items-center justify-center bg-base-100 lg:w-6/12 ${
             viewMode === 'preview' ? 'flex' : 'hidden'
           } lg:flex`}
           style={{
@@ -173,7 +222,17 @@ function App() {
             </>
           )}
         </button>
+        <button
+          className="btn btn-circle btn-ghost fixed right-4 top-4 z-50"
+          onClick={handleOpenWelcomeModal}
+        >
+          <HelpCircle size={24} />
+        </button>
       </div>
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={handleCloseWelcomeModal}
+      />
     </ToastProvider>
   );
 }

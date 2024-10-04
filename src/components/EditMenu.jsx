@@ -29,6 +29,7 @@ export default function EditMenu({
     projectsHandler,
     sectionOrderHandler,
     customSectionHandler,
+    deleteCustomSectionHandler,
   } = handlers;
 
   const document = useMemo(
@@ -56,7 +57,6 @@ export default function EditMenu({
     },
   });
 
-  ////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     setUiState((prevState) => ({
       ...prevState,
@@ -89,7 +89,7 @@ export default function EditMenu({
 
     inclusionHandler(updatedInclusionObject);
   };
-  ////////////////////////////////////////////////////////////////////////////
+
   const onCustomSectionDataUpdate = (updatedData) => {
     const { title, items } = updatedData;
 
@@ -110,6 +110,7 @@ export default function EditMenu({
 
     customSectionHandler(updatedCustomSectionData);
   };
+
   const getCustomSectionData = (customSectionData, sectionTitle) => {
     const existingSection = customSectionData.find(
       (section) => section.title === sectionTitle
@@ -125,41 +126,28 @@ export default function EditMenu({
       return newSection;
     }
   };
+
   const openDeleteModal = (sectionName) => {
     setModalState((prevState) => ({
       ...prevState,
       deleteSection: { isOpen: true, sectionName },
     }));
   };
+
   const closeDeleteModal = () => {
     setModalState((prevState) => ({
       ...prevState,
       deleteSection: { isOpen: false, sectionName: null },
     }));
   };
+
   const handleDeleteConfirm = () => {
     const { sectionName } = modalState.deleteSection;
     if (sectionName) {
-      handleDeleteCustomSection(sectionName);
+      deleteCustomSectionHandler(sectionName); // Use the new handler from App.jsx
       closeDeleteModal();
     }
   };
-  const handleDeleteCustomSection = (sectionName) => {
-    const updatedSectionsOrder = sectionsOrder.filter(
-      (section) => section !== sectionName
-    );
-    sectionOrderHandler(updatedSectionsOrder);
-
-    const updatedIncludeSections = { ...resumeData.includeSections };
-    delete updatedIncludeSections[sectionName];
-    inclusionHandler(updatedIncludeSections);
-
-    const updatedCustomSectionData = resumeData.customSectionData.filter(
-      (section) => section.title !== sectionName
-    );
-    customSectionHandler(updatedCustomSectionData);
-  };
-  ////////////////////////////////////////////////////////////////////////////
 
   function renderSection(sectionName) {
     const { reorderToggle } = uiState;
@@ -281,6 +269,7 @@ export default function EditMenu({
             </div>
           </div>
         );
+
       case 'projects':
         return (
           <div
@@ -306,6 +295,7 @@ export default function EditMenu({
             </div>
           </div>
         );
+
       default: {
         // Handle custom sections
         const customSection = sectionsOrder.find(
@@ -332,6 +322,7 @@ export default function EditMenu({
                   className="checkbox-accent checkbox z-10 mr-2"
                 />
                 {customSection}
+                {/* Delete custom section button */}
                 <button
                   onClick={() => openDeleteModal(sectionName)}
                   className="btn btn-error btn-sm z-10 ml-auto h-7 min-h-7"
@@ -353,7 +344,7 @@ export default function EditMenu({
       }
     }
   }
-  ////////////////////////////////////////////////////////////////////////////
+
   return (
     <div className="flex justify-center p-3">
       <div className="mb-20 w-11/12 py-4">
@@ -376,12 +367,12 @@ export default function EditMenu({
             (instance.loading ? (
               <span className="loading loading-spinner text-accent"></span>
             ) : (
-              <button className="btn btn-accent btn-sm ml-auto">
-                <a href={instance.url} download="CV.pdf">
+              <a href={instance.url} className="ml-auto" download="CV.pdf">
+                <button className="btn btn-accent btn-sm">
                   Download
-                </a>
-                <i className="icon icon-16 icon-download"></i>
-              </button>
+                  <i className="icon icon-16 icon-download"></i>
+                </button>
+              </a>
             ))}
         </div>
         <div className="flex">
@@ -437,7 +428,7 @@ export default function EditMenu({
       <Modal
         isOpen={modalState.deleteSection.isOpen}
         onClose={closeDeleteModal}
-        title="Confirm Deletion"
+        title="Confirm Delete"
         size="max-w-md"
       >
         <p>

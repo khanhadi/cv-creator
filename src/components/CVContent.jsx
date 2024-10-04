@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 30,
     paddingHorizontal: 30,
-    fontSize: '16',
+    fontSize: '15',
     fontFamily: 'Proxima Nova',
   },
   fullName: {
@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 12,
+    fontSize: 15,
   },
   hrContainer: {
     width: '100%',
