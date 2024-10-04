@@ -56,7 +56,7 @@ function App() {
     const { width } = entry.contentRect;
     const docWidth = DOC_WIDTH_MM * MM_TO_PIXEL;
     const newScale = width / docWidth - 0.1;
-    setScale(newScale <= 0.85 ? newScale : 0.8);
+    setScale(newScale <= 0.8 ? newScale : 0.8);
   });
 
   const handlers = {
