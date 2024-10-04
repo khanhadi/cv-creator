@@ -49,14 +49,26 @@ function App() {
 
   const previewContainerRef = useRef(null);
 
-  const DOC_WIDTH_MM = 210;
+  const DOC_WIDTH_MM = 210; // A4 width in mm
+  const DOC_HEIGHT_MM = 297; // A4 height in mm
   const MM_TO_PIXEL = 3.7795275591;
 
   useResizeObserver(previewContainerRef, (entry) => {
-    const { width } = entry.contentRect;
+    const { width, height } = entry.contentRect;
     const docWidth = DOC_WIDTH_MM * MM_TO_PIXEL;
-    const newScale = width / docWidth - 0.1;
-    setScale(newScale <= 0.8 ? newScale : 0.8);
+    const docHeight = DOC_HEIGHT_MM * MM_TO_PIXEL;
+
+    // Calculate scale based on width
+    const scaleByWidth = width / docWidth;
+
+    // Calculate scale based on height
+    const scaleByHeight = height / docHeight;
+
+    // Use the smaller scale to ensure it fits in both dimensions
+    const newScale = Math.min(scaleByWidth, scaleByHeight) - 0.1;
+
+    // Limit the scale between 0.2 and 0.8
+    setScale(Math.max(0.2, Math.min(newScale, 0.8)));
   });
 
   const handlers = {
