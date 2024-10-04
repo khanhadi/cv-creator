@@ -1,6 +1,7 @@
 import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
+import githubIcon from '../assets/icons/cv-icons/github.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
 import FormatText from '../utils/FormatText';
 import { Link } from 'lucide-react';
@@ -15,6 +16,20 @@ export default function PDFRenderer({
       (section) => section.title === sectionTitle
     );
     return existingSection;
+  };
+
+  const getSocialIcon = (selectedSocial) => {
+    console.log(selectedSocial);
+    switch (selectedSocial) {
+      case 'linkedin':
+        return linkedinIcon;
+      case 'github':
+        return githubIcon;
+      case 'twitter':
+        return xIcon;
+      default:
+        return linkedinIcon; // Default to LinkedIn if no valid option is selected
+    }
   };
 
   function renderSection(sectionName) {
@@ -181,7 +196,7 @@ export default function PDFRenderer({
         <div className="flex">
           <img
             className="mr-[3px] h-4 w-4 self-center"
-            src={selectedSocial == 'linkedin' ? linkedinIcon : xIcon}
+            src={getSocialIcon(selectedSocial)}
           />
           <p className="text-rose-950 underline">{resumeData.socialLink}</p>
         </div>

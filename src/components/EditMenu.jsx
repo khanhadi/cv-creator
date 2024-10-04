@@ -349,9 +349,19 @@ export default function EditMenu({
     <div className="flex justify-center p-3">
       <div className="mb-20 w-11/12 py-4">
         <div className="items-center-center mb-2 flex gap-2 p-1">
-          <h1 className="text-2xl font-light text-white">
-            cv<span className="font-extrabold text-accent">creator</span>
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-light text-white">
+              cv<span className="font-extrabold text-accent">creator</span>
+            </h1>
+            <h1 className="flex gap-1 text-sm font-light text-white">
+              by{' '}
+              <a href="" target="_blank" rel="noopener noreferrer">
+                <span className="hover:text-accent-focus flex font-extrabold text-accent">
+                  khanhadi
+                </span>
+              </a>
+            </h1>
+          </div>
           {/* Generate Button */}
           <button
             onClick={OnGeneratePDF}

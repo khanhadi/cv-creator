@@ -1,3 +1,5 @@
+import githubIcon from '../../assets/icons/cv-icons/github.png';
+
 export default function SocialInput({
   socialLink,
   resumeDataHandler,
@@ -17,6 +19,14 @@ export default function SocialInput({
           onClick={() => socialHandler('linkedin')}
         >
           <i className="icon icon-linkedin"></i>
+        </button>
+        <button
+          className={`btn ${
+            selectedSocial == 'github' ? 'btn-active' : ''
+          } join-item`}
+          onClick={() => socialHandler('github')}
+        >
+          <img src={githubIcon} width={18} />
         </button>
         <button
           className={`btn ${

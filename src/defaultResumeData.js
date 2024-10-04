@@ -1,4 +1,4 @@
-export const testResumeData = {
+export const defaultResumeData = {
   fullName: 'Emily Chen',
   mobileNo: '+44 7912 345678',
   email: 'emily.chen@email.com',
@@ -13,7 +13,7 @@ export const testResumeData = {
     {
       institutionName: 'University of Manchester',
       courseTitle: 'M.Sc. in Advanced Computer Science',
-      date: 'Sep. 2023 - Jun. 2024',
+      date: 'Expected Gradution: Jun. 2024',
       grade: 'Distinction (Expected)',
       description:
         'Specialization in Artificial Intelligence and Machine Learning. Thesis: "Explainable AI in Healthcare Decision Support Systems"',

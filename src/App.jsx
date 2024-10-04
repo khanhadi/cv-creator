@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { testResumeData } from './testResumeData';
+import { defaultResumeData } from './defaultResumeData';
 import { ToastProvider } from './utils/Toast';
 import useResizeObserver from '@react-hook/resize-observer';
 import PDFRenderer from './components/PDFRenderer';
@@ -24,7 +24,7 @@ function App() {
 
   const [resumeData, setResumeData] = useState(() => {
     const savedData = localStorage.getItem('resumeData');
-    return savedData ? JSON.parse(savedData) : testResumeData;
+    return savedData ? JSON.parse(savedData) : defaultResumeData;
   });
 
   const defaultSectionsOrder = [
@@ -85,7 +85,7 @@ function App() {
 
   function handleResumeData(eventOrData, clear = false, reset = false) {
     if (reset) {
-      setResumeData(testResumeData);
+      setResumeData(defaultResumeData);
       setSectionsOrder(defaultSectionsOrder);
       return;
     }
@@ -235,10 +235,10 @@ function App() {
           )}
         </button>
         <button
-          className="btn btn-circle btn-ghost fixed right-4 top-4 z-50"
+          className="btn btn-circle btn-ghost fixed bottom-4 left-4 z-50"
           onClick={handleOpenWelcomeModal}
         >
-          <HelpCircle size={24} />
+          <HelpCircle color="white" size={24} />
         </button>
       </div>
       <WelcomeModal

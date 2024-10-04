@@ -11,6 +11,7 @@ import {
 import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
+import githubIcon from '../assets/icons/cv-icons/github.png';
 import xIcon from '../assets/icons/cv-icons/x.png';
 import linkIcon from '../assets/icons/cv-icons/link.png';
 import CVFormatText from '../utils/CVFormatText';
@@ -42,6 +43,19 @@ export default function CVContent({
       (section) => section.title === sectionTitle
     );
     return existingSection;
+  };
+
+  const getSocialIcon = (selectedSocial) => {
+    switch (selectedSocial) {
+      case 'linkedin':
+        return linkedinIcon;
+      case 'github':
+        return githubIcon;
+      case 'twitter':
+        return xIcon;
+      default:
+        return linkedinIcon; // Default to LinkedIn if no valid option is selected
+    }
   };
 
   function renderSection(sectionName) {
@@ -194,7 +208,7 @@ export default function CVContent({
           <Image src={phoneIcon} style={styles.icon}></Image>
           <Text style={styles.contactItem}>{resumeData.mobileNo}</Text>
           <Image
-            src={selectedSocial == 'linkedin' ? linkedinIcon : xIcon}
+            src={getSocialIcon(selectedSocial)}
             style={styles.icon}
           ></Image>
           <Text style={styles.contactItem}>
@@ -233,10 +247,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   contactItem: {
+    color: '#4c0519',
     marginRight: '8px',
     textDecoration: 'underline',
   },
   icon: {
+    color: 'black',
     alignSelf: 'flex-end',
     marginRight: 3,
     width: 13,
