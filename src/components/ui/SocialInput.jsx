@@ -13,7 +13,7 @@ export default function SocialInput({
       </div>
       <div className="join w-full">
         <button
-          className={`btn ${
+          className={`btn w-6 ${
             selectedSocial == 'linkedin' ? 'btn-active' : ''
           } join-item`}
           onClick={() => socialHandler('linkedin')}
@@ -21,15 +21,15 @@ export default function SocialInput({
           <i className="icon icon-linkedin"></i>
         </button>
         <button
-          className={`btn ${
+          className={`btn w-[34px] px-0 ${
             selectedSocial == 'github' ? 'btn-active' : ''
           } join-item`}
           onClick={() => socialHandler('github')}
         >
-          <img src={githubIcon} width={18} />
+          <img width={16} src={githubIcon} />
         </button>
         <button
-          className={`btn ${
+          className={`btn w-6 ${
             selectedSocial == 'x' ? 'btn-active' : ''
           } join-item`}
           onClick={() => socialHandler('x')}

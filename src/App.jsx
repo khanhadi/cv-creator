@@ -4,23 +4,12 @@ import { ToastProvider } from './utils/Toast';
 import useResizeObserver from '@react-hook/resize-observer';
 import PDFRenderer from './components/PDFRenderer';
 import EditMenu from './components/EditMenu';
-import WelcomeModal from './components/ui/WelcomeModal';
-import { Eye, Edit2, HelpCircle } from 'lucide-react';
+import { Eye, Edit2 } from 'lucide-react';
 
 function App() {
   const [scale, setScale] = useState(1);
   const [viewMode, setViewMode] = useState('edit');
   const [socialButton, setSocialButton] = useState('linkedin');
-
-  const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
-    return localStorage.getItem('welcomeModalShown') !== 'true';
-  });
-
-  useEffect(() => {
-    if (showWelcomeModal) {
-      localStorage.setItem('welcomeModalShown', 'true');
-    }
-  }, [showWelcomeModal]);
 
   const [resumeData, setResumeData] = useState(() => {
     const savedData = localStorage.getItem('resumeData');
@@ -175,14 +164,6 @@ function App() {
     setViewMode(viewMode === 'edit' ? 'preview' : 'edit');
   }
 
-  const handleCloseWelcomeModal = () => {
-    setShowWelcomeModal(false);
-  };
-
-  const handleOpenWelcomeModal = () => {
-    setShowWelcomeModal(true);
-  };
-
   return (
     <ToastProvider>
       <div className="flex h-screen min-h-screen font-normal antialiased">
@@ -234,17 +215,7 @@ function App() {
             </>
           )}
         </button>
-        <button
-          className="btn btn-circle btn-ghost fixed bottom-4 left-4 z-50"
-          onClick={handleOpenWelcomeModal}
-        >
-          <HelpCircle color="white" size={24} />
-        </button>
       </div>
-      <WelcomeModal
-        isOpen={showWelcomeModal}
-        onClose={handleCloseWelcomeModal}
-      />
     </ToastProvider>
   );
 }

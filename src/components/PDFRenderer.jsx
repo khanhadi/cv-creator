@@ -19,7 +19,6 @@ export default function PDFRenderer({
   };
 
   const getSocialIcon = (selectedSocial) => {
-    console.log(selectedSocial);
     switch (selectedSocial) {
       case 'linkedin':
         return linkedinIcon;
