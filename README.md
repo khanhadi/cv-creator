@@ -33,4 +33,4 @@ CV Creator is a React-based web application that allows users to create and cust
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-Project Link: [https://github.com/your-username/cv-creator](https://cvcreator.khanhadi.com)
+Project Link: [CV Creator](https://cvcreator.khanhadi.com)
