@@ -355,7 +355,11 @@ export default function EditMenu({
             </h1>
             <h1 className="flex gap-1 text-sm font-light text-white">
               by{' '}
-              <a href="" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://khanhadi.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <span className="hover:text-accent-focus flex font-extrabold text-accent">
                   khanhadi
                 </span>
