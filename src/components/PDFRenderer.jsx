@@ -179,7 +179,7 @@ export default function PDFRenderer({
   }
 
   return (
-    <div className="m-10 flex h-[297mm] w-[210mm] flex-col items-center">
+    <div className="m-10 flex h-[297mm] w-[210mm] flex-col items-center overflow-hidden">
       <span className="text-[40px]">
         <p>{resumeData.fullName}</p>
       </span>
