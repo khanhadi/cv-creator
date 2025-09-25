@@ -5,7 +5,7 @@ export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}', './index.html'],
   theme: {
     fontFamily: {
-      sans: ['Proxima Nova', 'Arial', 'sans-serif'],
+      sans: ['Open Sauce Pro', 'Arial', 'sans-serif'],
     },
     extend: {
       boxShadow: {

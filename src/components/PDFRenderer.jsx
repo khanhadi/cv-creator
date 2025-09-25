@@ -42,18 +42,18 @@ export default function PDFRenderer({
               {resumeData.educationList.map((education, index) => (
                 <div key={index}>
                   <div className="flex justify-between">
-                    <p className="text-[16px] font-semibold">
+                    <p className="text-[14px] font-semibold">
                       {education.institutionName}
                     </p>
-                    <p className="text-[16px] text-rose-950">
+                    <p className="text-[14px] text-rose-950">
                       {education.date}
                     </p>
                   </div>
                   <div className="flex justify-between">
-                    <p className="text-[16px] leading-3 text-rose-950">
+                    <p className="text-[14px] leading-3 text-rose-950">
                       {education.courseTitle}
                     </p>
-                    <p className="text-[16px] font-bold italic text-rose-950">
+                    <p className="text-[14px] font-bold italic text-rose-950">
                       {education.grade}
                     </p>
                   </div>
@@ -72,10 +72,10 @@ export default function PDFRenderer({
               {resumeData.experienceList.map((experience, index) => (
                 <div key={index}>
                   <div className="flex justify-between">
-                    <p className="text-[16px] font-semibold">
+                    <p className="text-[14px] font-semibold">
                       {experience.companyName}
                     </p>
-                    <p className="text-[16px] text-rose-950">
+                    <p className="text-[14px] text-rose-950">
                       {experience.date} •{' '}
                       <span className="font-semibold">
                         {experience.location}
@@ -83,10 +83,10 @@ export default function PDFRenderer({
                     </p>
                   </div>
                   <div className="flex justify-between">
-                    <p className="text-[16px] leading-3 text-rose-950">
+                    <p className="text-[14px] leading-3 text-rose-950">
                       {experience.jobTitle}
                     </p>
-                    <p className="text-[16px] italic text-rose-950">
+                    <p className="text-[14px] italic text-rose-950">
                       {experience.skills.join(', ')}
                     </p>
                   </div>
@@ -105,7 +105,7 @@ export default function PDFRenderer({
               {resumeData.projectsList.map((project, index) => (
                 <div key={index} className="mb-2">
                   <div className="flex items-baseline justify-between">
-                    <p className="flex items-center text-[16px] font-semibold">
+                    <p className="flex items-center text-[14px] font-semibold">
                       {project.link ? (
                         <>
                           <a
@@ -122,10 +122,10 @@ export default function PDFRenderer({
                         project.projectName
                       )}
                     </p>
-                    <p className="text-[16px] text-rose-950">{project.date}</p>
+                    <p className="text-[14px] text-rose-950">{project.date}</p>
                   </div>
                   {project.subHeading && (
-                    <p className="mb-1 text-[16px] italic leading-tight text-rose-950">
+                    <p className="mb-1 text-[14px] italic leading-tight text-rose-950">
                       {project.subHeading}
                     </p>
                   )}
@@ -153,16 +153,16 @@ export default function PDFRenderer({
                 {sectionData?.items.map((item, index) => (
                   <div key={index}>
                     <div className="flex justify-between">
-                      <p className="text-[16px] font-semibold">
+                      <p className="text-[14px] font-semibold">
                         {item.heading}
                       </p>
-                      <p className="text-[16px] text-rose-950">{item.date}</p>
+                      <p className="text-[14px] text-rose-950">{item.date}</p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-[16px] leading-3 text-rose-950">
+                      <p className="text-[14px] leading-3 text-rose-950">
                         {item.subHeading}
                       </p>
-                      <p className="text-[16px] italic text-rose-950">
+                      <p className="text-[14px] italic text-rose-950">
                         {item.additionalInfo}
                       </p>
                     </div>
@@ -183,7 +183,7 @@ export default function PDFRenderer({
       <span className="text-[40px]">
         <p>{resumeData.fullName}</p>
       </span>
-      <div className="flex gap-2 text-[16px]">
+      <div className="flex gap-2 text-[14px]">
         <div className="flex">
           <img className="mr-[3px] h-4 w-4 self-center" src={emailIcon} />
           <p className="text-rose-950 underline">{resumeData.email}</p>

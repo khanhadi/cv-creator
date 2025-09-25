@@ -17,13 +17,13 @@ import linkIcon from '../assets/icons/cv-icons/link.png';
 import CVFormatText from '../utils/CVFormatText';
 
 Font.register({
-  family: 'Proxima Nova',
+  family: 'Open Sauce One',
   fonts: [
     {
-      src: 'https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Regular.woff',
+      src: 'https://fonts.cdnfonts.com/s/88496/OpenSauceOne-Regular.woff',
     },
     {
-      src: 'https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Semibold.woff',
+      src: 'https://fonts.cdnfonts.com/s/88496/OpenSauceOne-SemiBold.woff',
       fontWeight: 'semibold',
     },
   ],
@@ -97,11 +97,16 @@ export default function CVContent({
                     <Text style={styles.leftTitle}>
                       {experience.companyName}
                     </Text>
-                    <Text style={styles.rightTitle}>{experience.date}</Text>
+                    <Text style={styles.rightTitle}>
+                      {experience.date} •{' '}
+                      <Text style={styles.rightTitleBold}>
+                        {experience.location}
+                      </Text>
+                    </Text>
                   </View>
                   <View style={styles.sectionSplit}>
                     <Text style={styles.rightTitle}>{experience.jobTitle}</Text>
-                    <Text style={styles.rightTitleBold}>
+                    <Text style={styles.rightTitle}>
                       {experience.skills.join(', ')}
                     </Text>
                   </View>
@@ -235,8 +240,8 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 30,
     paddingHorizontal: 30,
-    fontSize: '15',
-    fontFamily: 'Proxima Nova',
+    fontSize: '13',
+    fontFamily: 'Open Sauce One',
   },
   fullName: {
     fontSize: '30',
@@ -260,7 +265,7 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 12,
-    fontSize: 15,
+    fontSize: 13,
   },
   hrContainer: {
     width: '100%',
@@ -272,7 +277,7 @@ const styles = StyleSheet.create({
   section: {
     width: '100%',
     alignSelf: 'flex-start',
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 2,
   },
   sectionSplit: {
