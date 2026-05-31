@@ -1,21 +1,21 @@
+// @ts-nocheck
 import { useState, useCallback, useEffect } from 'react';
 import { DraggableCardItem } from '../DraggableCardItem';
 import { Reorder } from 'framer-motion';
 import { Pencil, Plus } from 'lucide-react';
+import SkillsInput from '../SkillsInput';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function CustomSectionCard({
-  sectionTitle,
-  sectionItemsList,
-  onSectionUpdate,
-}) {
+export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   const defaultFormData = {
-    heading: '',
-    subHeading: '',
+    companyName: '',
+    jobTitle: '',
     description: '',
     date: '',
-    additionalInfo: '',
+    location: '',
+    skills: [],
   };
+
   const [editIndex, setEditIndex] = useState(null);
   const [reorderToggle, setReorderToggle] = useState(false);
   const [formData, setFormData] = useState(defaultFormData);
@@ -27,13 +27,13 @@ export default function CustomSectionCard({
     return item;
   };
 
-  const [localSectionItemsList, setLocalSectionItemsList] = useState(
-    sectionItemsList.map(ensureItemHasId)
+  const [localExperienceList, setLocalExperienceList] = useState(
+    experienceList.map(ensureItemHasId)
   );
 
   useEffect(() => {
-    setLocalSectionItemsList(sectionItemsList.map(ensureItemHasId));
-  }, [sectionItemsList]);
+    setLocalExperienceList(experienceList.map(ensureItemHasId));
+  }, [experienceList]);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -41,15 +41,15 @@ export default function CustomSectionCard({
   }, []);
 
   const handleSaveClick = () => {
-    const updatedSectionItemsList =
-      editIndex !== null && editIndex < localSectionItemsList.length
-        ? localSectionItemsList.map((item, index) =>
+    const updatedExperienceList =
+      editIndex !== null && editIndex < localExperienceList.length
+        ? localExperienceList.map((item, index) =>
             index === editIndex ? { ...formData, id: item.id } : item
           )
-        : [...localSectionItemsList, { ...formData, id: uuidv4() }];
+        : [...localExperienceList, { ...formData, id: uuidv4() }];
 
-    setLocalSectionItemsList(updatedSectionItemsList);
-    onSectionUpdate({ title: sectionTitle, items: updatedSectionItemsList });
+    setLocalExperienceList(updatedExperienceList);
+    onExperienceUpdate(updatedExperienceList);
 
     setTimeout(() => {
       setEditIndex(null);
@@ -65,19 +65,20 @@ export default function CustomSectionCard({
   const handleEditClick = (index) => {
     setReorderToggle(false);
     setEditIndex(index);
-    setFormData(sectionItemsList[index]);
+    setFormData(localExperienceList[index]);
   };
 
   const handleAddClick = () => {
-    setEditIndex(sectionItemsList.length);
+    setEditIndex(localExperienceList.length);
     setFormData({ ...defaultFormData, id: uuidv4() });
   };
 
   const handleDeleteClick = () => {
-    const updatedSectionItemsList = sectionItemsList;
-    updatedSectionItemsList.splice(editIndex, 1);
-    setLocalSectionItemsList(updatedSectionItemsList);
-    onSectionUpdate({ title: sectionTitle, items: updatedSectionItemsList });
+    const updatedExperienceList = localExperienceList.filter(
+      (_, index) => index !== editIndex
+    );
+    setLocalExperienceList(updatedExperienceList);
+    onExperienceUpdate(updatedExperienceList);
     setTimeout(() => {
       setEditIndex(null);
       setFormData(defaultFormData);
@@ -89,22 +90,21 @@ export default function CustomSectionCard({
   };
 
   const handleReorder = (newOrder) => {
-    setLocalSectionItemsList(newOrder);
-    onSectionUpdate({ title: sectionTitle, items: newOrder });
+    setLocalExperienceList(newOrder);
+    onExperienceUpdate(newOrder);
   };
 
-  const renderSectionItem = (item, index) => {
+  const renderJobItem = (experienceItem, index) => {
     return (
       <div className="p-3">
         <div className="flex h-8 items-center gap-1">
-          <p className="font-semibold">{item.heading}</p>
+          <p className="font-semibold">{experienceItem.companyName}</p>
           <p>&#8226;</p>
-          <p className="text-sm font-light">{item.subHeading}</p>
+          <p className="text-sm font-light">{experienceItem.jobTitle}</p>
           <button
             onClick={() => handleEditClick(index)}
             className="btn btn-square btn-accent btn-sm ml-auto"
           >
-            {/* <img draggable="false" src={pencilIcon} alt="Edit" /> */}
             <Pencil></Pencil>
           </button>
         </div>
@@ -125,11 +125,11 @@ export default function CustomSectionCard({
           />
         </label>
       </div>
-      <Reorder.Group values={localSectionItemsList} onReorder={handleReorder}>
-        {localSectionItemsList.map((item, index) => (
+      <Reorder.Group values={localExperienceList} onReorder={handleReorder}>
+        {localExperienceList.map((experienceItem, index) => (
           <DraggableCardItem
-            key={item.id}
-            item={item}
+            key={experienceItem.id}
+            item={experienceItem}
             reorderToggle={reorderToggle}
           >
             <div
@@ -139,15 +139,15 @@ export default function CustomSectionCard({
             >
               {editIndex === index ? (
                 <div className="p-3">
-                  <p className="font-semibold">Edit Item</p>
+                  <p className="font-semibold">Edit Experience</p>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Heading</span>
+                        <span className="label-text">Company</span>
                       </div>
                       <input
-                        name="heading"
-                        value={formData.heading}
+                        name="companyName"
+                        value={formData.companyName}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -156,11 +156,11 @@ export default function CustomSectionCard({
                     </label>
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Sub Heading</span>
+                        <span className="label-text">Job Title</span>
                       </div>
                       <input
-                        name="subHeading"
-                        value={formData.subHeading}
+                        name="jobTitle"
+                        value={formData.jobTitle}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -196,17 +196,26 @@ export default function CustomSectionCard({
                     </label>
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Additional Info</span>
+                        <span className="label-text">Location</span>
                       </div>
                       <input
-                        name="additionalInfo"
-                        value={formData.additionalInfo}
+                        name="location"
+                        value={formData.location}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
                         className="input input-bordered w-full"
                       />
                     </label>
+                  </div>
+                  <div>
+                    <div className="label">
+                      <span className="label-text">Skills</span>
+                    </div>
+                    <SkillsInput
+                      initialSkills={formData.skills}
+                      inputHandler={handleInputChange}
+                    ></SkillsInput>
                   </div>
                   <div className="mt-4 flex w-full justify-end gap-2">
                     <button
@@ -230,7 +239,7 @@ export default function CustomSectionCard({
                   </div>
                 </div>
               ) : (
-                renderSectionItem(item, index)
+                renderJobItem(experienceItem, index)
               )}
             </div>
           </DraggableCardItem>
@@ -238,17 +247,17 @@ export default function CustomSectionCard({
       </Reorder.Group>
 
       <div className="card mt-3 w-full bg-base-200 shadow-sm">
-        {editIndex === sectionItemsList.length ? (
+        {editIndex === localExperienceList.length ? (
           <div className="p-3">
-            <p className="font-semibold">Add Item</p>
+            <p className="font-semibold">Add Experience</p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Heading</span>
+                  <span className="label-text">Company</span>
                 </div>
                 <input
-                  name="heading"
-                  value={formData.heading}
+                  name="companyName"
+                  value={formData.companyName}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -257,11 +266,11 @@ export default function CustomSectionCard({
               </label>
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Sub Heading</span>
+                  <span className="label-text">Job Title</span>
                 </div>
                 <input
-                  name="subHeading"
-                  value={formData.subHeading}
+                  name="jobTitle"
+                  value={formData.jobTitle}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -297,17 +306,26 @@ export default function CustomSectionCard({
               </label>
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Additional Info</span>
+                  <span className="label-text">Location</span>
                 </div>
                 <input
-                  name="additionalInfo"
-                  value={formData.additionalInfo}
+                  name="location"
+                  value={formData.location}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
                   className="input input-bordered w-full"
                 />
               </label>
+            </div>
+            <div>
+              <div className="label">
+                <span className="label-text">Skills</span>
+              </div>
+              <SkillsInput
+                initialSkills={formData.skills}
+                inputHandler={handleInputChange}
+              ></SkillsInput>
             </div>
             <div className="mt-4 flex w-full justify-end gap-2">
               <button
@@ -327,7 +345,7 @@ export default function CustomSectionCard({
         ) : (
           <div className="p-3">
             <div className="flex items-center justify-between">
-              <p>Add Item</p>
+              <p>Add Experience</p>
               <button
                 onClick={handleAddClick}
                 className="btn btn-square btn-accent btn-sm"

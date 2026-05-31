@@ -1,3 +1,4 @@
+// @ts-nocheck
 import githubIcon from '../../assets/icons/cv-icons/github.png';
 
 export default function SocialInput({

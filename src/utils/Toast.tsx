@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createContext, useContext, useState } from 'react';
 
 // Toast component

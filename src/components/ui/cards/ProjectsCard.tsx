@@ -1,18 +1,16 @@
+// @ts-nocheck
 import { useState, useCallback, useEffect } from 'react';
 import { DraggableCardItem } from '../DraggableCardItem';
 import { Reorder } from 'framer-motion';
 import { Pencil, Plus } from 'lucide-react';
-import SkillsInput from '../SkillsInput';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
+export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
   const defaultFormData = {
-    companyName: '',
-    jobTitle: '',
+    projectName: '',
     description: '',
     date: '',
-    location: '',
-    skills: [],
+    link: '',
   };
 
   const [editIndex, setEditIndex] = useState(null);
@@ -26,13 +24,13 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
     return item;
   };
 
-  const [localExperienceList, setLocalExperienceList] = useState(
-    experienceList.map(ensureItemHasId)
+  const [localProjectsList, setLocalProjectsList] = useState(
+    projectsList.map(ensureItemHasId)
   );
 
   useEffect(() => {
-    setLocalExperienceList(experienceList.map(ensureItemHasId));
-  }, [experienceList]);
+    setLocalProjectsList(projectsList.map(ensureItemHasId));
+  }, [projectsList]);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -40,15 +38,15 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   }, []);
 
   const handleSaveClick = () => {
-    const updatedExperienceList =
-      editIndex !== null && editIndex < localExperienceList.length
-        ? localExperienceList.map((item, index) =>
+    const updatedProjectsList =
+      editIndex !== null && editIndex < localProjectsList.length
+        ? localProjectsList.map((item, index) =>
             index === editIndex ? { ...formData, id: item.id } : item
           )
-        : [...localExperienceList, { ...formData, id: uuidv4() }];
+        : [...localProjectsList, { ...formData, id: uuidv4() }];
 
-    setLocalExperienceList(updatedExperienceList);
-    onExperienceUpdate(updatedExperienceList);
+    setLocalProjectsList(updatedProjectsList);
+    onProjectsUpdate(updatedProjectsList);
 
     setTimeout(() => {
       setEditIndex(null);
@@ -64,20 +62,20 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   const handleEditClick = (index) => {
     setReorderToggle(false);
     setEditIndex(index);
-    setFormData(localExperienceList[index]);
+    setFormData(localProjectsList[index]);
   };
 
   const handleAddClick = () => {
-    setEditIndex(localExperienceList.length);
+    setEditIndex(localProjectsList.length);
     setFormData({ ...defaultFormData, id: uuidv4() });
   };
 
   const handleDeleteClick = () => {
-    const updatedExperienceList = localExperienceList.filter(
+    const updatedProjectsList = localProjectsList.filter(
       (_, index) => index !== editIndex
     );
-    setLocalExperienceList(updatedExperienceList);
-    onExperienceUpdate(updatedExperienceList);
+    setLocalProjectsList(updatedProjectsList);
+    onProjectsUpdate(updatedProjectsList);
     setTimeout(() => {
       setEditIndex(null);
       setFormData(defaultFormData);
@@ -89,26 +87,8 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
   };
 
   const handleReorder = (newOrder) => {
-    setLocalExperienceList(newOrder);
-    onExperienceUpdate(newOrder);
-  };
-
-  const renderJobItem = (experienceItem, index) => {
-    return (
-      <div className="p-3">
-        <div className="flex h-8 items-center gap-1">
-          <p className="font-semibold">{experienceItem.companyName}</p>
-          <p>&#8226;</p>
-          <p className="text-sm font-light">{experienceItem.jobTitle}</p>
-          <button
-            onClick={() => handleEditClick(index)}
-            className="btn btn-square btn-accent btn-sm ml-auto"
-          >
-            <Pencil></Pencil>
-          </button>
-        </div>
-      </div>
-    );
+    setLocalProjectsList(newOrder);
+    onProjectsUpdate(newOrder);
   };
 
   return (
@@ -124,11 +104,11 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
           />
         </label>
       </div>
-      <Reorder.Group values={localExperienceList} onReorder={handleReorder}>
-        {localExperienceList.map((experienceItem, index) => (
+      <Reorder.Group values={localProjectsList} onReorder={handleReorder}>
+        {localProjectsList.map((projectItem, index) => (
           <DraggableCardItem
-            key={experienceItem.id}
-            item={experienceItem}
+            key={projectItem.id}
+            item={projectItem}
             reorderToggle={reorderToggle}
           >
             <div
@@ -138,15 +118,15 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
             >
               {editIndex === index ? (
                 <div className="p-3">
-                  <p className="font-semibold">Edit Experience</p>
+                  <p className="font-semibold">Edit Project</p>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Company</span>
+                        <span className="label-text">Project Name</span>
                       </div>
                       <input
-                        name="companyName"
-                        value={formData.companyName}
+                        name="projectName"
+                        value={formData.projectName}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -155,11 +135,11 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                     </label>
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Job Title</span>
+                        <span className="label-text">Sub Heading</span>
                       </div>
                       <input
-                        name="jobTitle"
-                        value={formData.jobTitle}
+                        name="subHeading"
+                        value={formData.subHeading}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -182,6 +162,19 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <label className="form-control w-full flex-grow">
                       <div className="label">
+                        <span className="label-text">Project Link</span>
+                      </div>
+                      <input
+                        name="link"
+                        value={formData.link}
+                        onChange={handleInputChange}
+                        type="text"
+                        placeholder="https://..."
+                        className="input input-bordered w-full"
+                      />
+                    </label>
+                    <label className="form-control w-full flex-grow">
+                      <div className="label">
                         <span className="label-text">Date</span>
                       </div>
                       <input
@@ -193,28 +186,6 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                         className="input input-bordered w-full"
                       />
                     </label>
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Location</span>
-                      </div>
-                      <input
-                        name="location"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <div className="label">
-                      <span className="label-text">Skills</span>
-                    </div>
-                    <SkillsInput
-                      initialSkills={formData.skills}
-                      inputHandler={handleInputChange}
-                    ></SkillsInput>
                   </div>
                   <div className="mt-4 flex w-full justify-end gap-2">
                     <button
@@ -238,7 +209,21 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                   </div>
                 </div>
               ) : (
-                renderJobItem(experienceItem, index)
+                <div className="p-3">
+                  <div className="flex h-8 items-center gap-1">
+                    <p className="font-semibold">{projectItem.projectName}</p>
+                    <p>&#8226;</p>
+                    <p className="text-sm font-light">
+                      {projectItem.subHeading}
+                    </p>
+                    <button
+                      onClick={() => handleEditClick(index)}
+                      className="btn btn-square btn-accent btn-sm ml-auto"
+                    >
+                      <Pencil></Pencil>
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           </DraggableCardItem>
@@ -246,17 +231,17 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
       </Reorder.Group>
 
       <div className="card mt-3 w-full bg-base-200 shadow-sm">
-        {editIndex === localExperienceList.length ? (
+        {editIndex === localProjectsList.length ? (
           <div className="p-3">
-            <p className="font-semibold">Add Experience</p>
+            <p className="font-semibold">Add Project</p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Company</span>
+                  <span className="label-text">Project Name</span>
                 </div>
                 <input
-                  name="companyName"
-                  value={formData.companyName}
+                  name="projectName"
+                  value={formData.projectName}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -265,11 +250,11 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
               </label>
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Job Title</span>
+                  <span className="label-text">Sub Heading</span>
                 </div>
                 <input
-                  name="jobTitle"
-                  value={formData.jobTitle}
+                  name="subHeading"
+                  value={formData.subHeading}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -292,6 +277,19 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
             <div className="flex flex-col gap-2 sm:flex-row">
               <label className="form-control w-full flex-grow">
                 <div className="label">
+                  <span className="label-text">Project Link</span>
+                </div>
+                <input
+                  name="link"
+                  value={formData.link}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="https://..."
+                  className="input input-bordered w-full"
+                />
+              </label>
+              <label className="form-control w-full flex-grow">
+                <div className="label">
                   <span className="label-text">Date</span>
                 </div>
                 <input
@@ -303,28 +301,6 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
                   className="input input-bordered w-full"
                 />
               </label>
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Location</span>
-                </div>
-                <input
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-            </div>
-            <div>
-              <div className="label">
-                <span className="label-text">Skills</span>
-              </div>
-              <SkillsInput
-                initialSkills={formData.skills}
-                inputHandler={handleInputChange}
-              ></SkillsInput>
             </div>
             <div className="mt-4 flex w-full justify-end gap-2">
               <button
@@ -344,7 +320,7 @@ export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
         ) : (
           <div className="p-3">
             <div className="flex items-center justify-between">
-              <p>Add Experience</p>
+              <p>Add Project</p>
               <button
                 onClick={handleAddClick}
                 className="btn btn-square btn-accent btn-sm"

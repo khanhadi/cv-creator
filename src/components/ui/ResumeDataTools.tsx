@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '../../utils/Toast';
 import validateResumeData from '../../utils/validateResumeData';

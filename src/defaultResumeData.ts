@@ -1,4 +1,54 @@
-export const defaultResumeData = {
+export interface Education {
+  institutionName: string
+  courseTitle: string
+  date: string
+  grade: string
+  description: string
+}
+
+export interface Experience {
+  companyName: string
+  jobTitle: string
+  date: string
+  location: string
+  skills: string[]
+  description: string
+}
+
+export interface Project {
+  projectName: string
+  subHeading: string
+  description: string
+  date: string
+  link: string
+}
+
+export interface CustomSectionItem {
+  heading: string
+  subHeading: string
+  description: string
+  date: string
+  additionalInfo: string
+}
+
+export interface CustomSection {
+  title: string
+  items: CustomSectionItem[]
+}
+
+export interface ResumeData {
+  fullName: string
+  mobileNo: string
+  email: string
+  socialLink: string
+  includeSections: Record<string, boolean>
+  educationList: Education[]
+  experienceList: Experience[]
+  projectsList: Project[]
+  customSectionData: CustomSection[]
+}
+
+export const defaultResumeData: ResumeData = {
   fullName: 'Emily Chen',
   mobileNo: '+44 7912 345678',
   email: 'emily.chen@email.com',
@@ -97,4 +147,4 @@ export const defaultResumeData = {
       ],
     },
   ],
-};
+}

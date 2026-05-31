@@ -1,18 +1,22 @@
+// @ts-nocheck
 import { useState, useCallback, useEffect } from 'react';
 import { DraggableCardItem } from '../DraggableCardItem';
 import { Reorder } from 'framer-motion';
 import { Pencil, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function EducationCard({ educationList, onEducationUpdate }) {
+export default function CustomSectionCard({
+  sectionTitle,
+  sectionItemsList,
+  onSectionUpdate,
+}) {
   const defaultFormData = {
-    institutionName: '',
-    courseTitle: '',
+    heading: '',
+    subHeading: '',
     description: '',
     date: '',
-    grade: '',
+    additionalInfo: '',
   };
-
   const [editIndex, setEditIndex] = useState(null);
   const [reorderToggle, setReorderToggle] = useState(false);
   const [formData, setFormData] = useState(defaultFormData);
@@ -24,13 +28,13 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
     return item;
   };
 
-  const [localEducationList, setLocalEducationList] = useState(
-    educationList.map(ensureItemHasId)
+  const [localSectionItemsList, setLocalSectionItemsList] = useState(
+    sectionItemsList.map(ensureItemHasId)
   );
 
   useEffect(() => {
-    setLocalEducationList(educationList.map(ensureItemHasId));
-  }, [educationList]);
+    setLocalSectionItemsList(sectionItemsList.map(ensureItemHasId));
+  }, [sectionItemsList]);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -38,15 +42,15 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
   }, []);
 
   const handleSaveClick = () => {
-    const updatedEducationList =
-      editIndex !== null && editIndex < localEducationList.length
-        ? localEducationList.map((item, index) =>
+    const updatedSectionItemsList =
+      editIndex !== null && editIndex < localSectionItemsList.length
+        ? localSectionItemsList.map((item, index) =>
             index === editIndex ? { ...formData, id: item.id } : item
           )
-        : [...localEducationList, { ...formData, id: uuidv4() }];
+        : [...localSectionItemsList, { ...formData, id: uuidv4() }];
 
-    setLocalEducationList(updatedEducationList);
-    onEducationUpdate(updatedEducationList);
+    setLocalSectionItemsList(updatedSectionItemsList);
+    onSectionUpdate({ title: sectionTitle, items: updatedSectionItemsList });
 
     setTimeout(() => {
       setEditIndex(null);
@@ -62,20 +66,19 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
   const handleEditClick = (index) => {
     setReorderToggle(false);
     setEditIndex(index);
-    setFormData(localEducationList[index]);
+    setFormData(sectionItemsList[index]);
   };
 
   const handleAddClick = () => {
-    setEditIndex(localEducationList.length);
+    setEditIndex(sectionItemsList.length);
     setFormData({ ...defaultFormData, id: uuidv4() });
   };
 
   const handleDeleteClick = () => {
-    const updatedEducationList = localEducationList.filter(
-      (_, index) => index !== editIndex
-    );
-    setLocalEducationList(updatedEducationList);
-    onEducationUpdate(updatedEducationList);
+    const updatedSectionItemsList = sectionItemsList;
+    updatedSectionItemsList.splice(editIndex, 1);
+    setLocalSectionItemsList(updatedSectionItemsList);
+    onSectionUpdate({ title: sectionTitle, items: updatedSectionItemsList });
     setTimeout(() => {
       setEditIndex(null);
       setFormData(defaultFormData);
@@ -87,8 +90,27 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
   };
 
   const handleReorder = (newOrder) => {
-    setLocalEducationList(newOrder);
-    onEducationUpdate(newOrder);
+    setLocalSectionItemsList(newOrder);
+    onSectionUpdate({ title: sectionTitle, items: newOrder });
+  };
+
+  const renderSectionItem = (item, index) => {
+    return (
+      <div className="p-3">
+        <div className="flex h-8 items-center gap-1">
+          <p className="font-semibold">{item.heading}</p>
+          <p>&#8226;</p>
+          <p className="text-sm font-light">{item.subHeading}</p>
+          <button
+            onClick={() => handleEditClick(index)}
+            className="btn btn-square btn-accent btn-sm ml-auto"
+          >
+            {/* <img draggable="false" src={pencilIcon} alt="Edit" /> */}
+            <Pencil></Pencil>
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -104,11 +126,11 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
           />
         </label>
       </div>
-      <Reorder.Group values={localEducationList} onReorder={handleReorder}>
-        {localEducationList.map((educationItem, index) => (
+      <Reorder.Group values={localSectionItemsList} onReorder={handleReorder}>
+        {localSectionItemsList.map((item, index) => (
           <DraggableCardItem
-            key={educationItem.id}
-            item={educationItem}
+            key={item.id}
+            item={item}
             reorderToggle={reorderToggle}
           >
             <div
@@ -118,15 +140,15 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
             >
               {editIndex === index ? (
                 <div className="p-3">
-                  <p className="font-semibold">Edit Education</p>
+                  <p className="font-semibold">Edit Item</p>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Institution</span>
+                        <span className="label-text">Heading</span>
                       </div>
                       <input
-                        name="institutionName"
-                        value={formData.institutionName}
+                        name="heading"
+                        value={formData.heading}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -135,11 +157,11 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                     </label>
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Course Title</span>
+                        <span className="label-text">Sub Heading</span>
                       </div>
                       <input
-                        name="courseTitle"
-                        value={formData.courseTitle}
+                        name="subHeading"
+                        value={formData.subHeading}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -175,11 +197,11 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                     </label>
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Grade</span>
+                        <span className="label-text">Additional Info</span>
                       </div>
                       <input
-                        name="grade"
-                        value={formData.grade}
+                        name="additionalInfo"
+                        value={formData.additionalInfo}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -209,23 +231,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
                   </div>
                 </div>
               ) : (
-                <div className="max-w-full p-3">
-                  <div className="flex h-8 items-center gap-2">
-                    <p className="font-semibold">
-                      {educationItem.institutionName}
-                    </p>
-                    <p>&#8226;</p>
-                    <p className="text-sm font-light">
-                      {educationItem.courseTitle}
-                    </p>
-                    <button
-                      onClick={() => handleEditClick(index)}
-                      className="btn btn-square btn-accent btn-sm ml-auto"
-                    >
-                      <Pencil></Pencil>
-                    </button>
-                  </div>
-                </div>
+                renderSectionItem(item, index)
               )}
             </div>
           </DraggableCardItem>
@@ -233,17 +239,17 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
       </Reorder.Group>
 
       <div className="card mt-3 w-full bg-base-200 shadow-sm">
-        {editIndex === localEducationList.length ? (
+        {editIndex === sectionItemsList.length ? (
           <div className="p-3">
-            <p className="font-semibold">Add Education</p>
+            <p className="font-semibold">Add Item</p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Institution</span>
+                  <span className="label-text">Heading</span>
                 </div>
                 <input
-                  name="institutionName"
-                  value={formData.institutionName}
+                  name="heading"
+                  value={formData.heading}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -252,11 +258,11 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
               </label>
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Course Title</span>
+                  <span className="label-text">Sub Heading</span>
                 </div>
                 <input
-                  name="courseTitle"
-                  value={formData.courseTitle}
+                  name="subHeading"
+                  value={formData.subHeading}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -292,11 +298,11 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
               </label>
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Grade</span>
+                  <span className="label-text">Additional Info</span>
                 </div>
                 <input
-                  name="grade"
-                  value={formData.grade}
+                  name="additionalInfo"
+                  value={formData.additionalInfo}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -322,7 +328,7 @@ export default function EducationCard({ educationList, onEducationUpdate }) {
         ) : (
           <div className="p-3">
             <div className="flex items-center justify-between">
-              <p>Add Education</p>
+              <p>Add Item</p>
               <button
                 onClick={handleAddClick}
                 className="btn btn-square btn-accent btn-sm"

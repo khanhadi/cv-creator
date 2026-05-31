@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default function validateResumeData(data) {
   // Check top-level required fields
   const requiredFields = ['fullName', 'mobileNo', 'email', 'socialLink'];

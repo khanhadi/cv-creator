@@ -1,15 +1,17 @@
+// @ts-nocheck
 import { useState, useCallback, useEffect } from 'react';
 import { DraggableCardItem } from '../DraggableCardItem';
 import { Reorder } from 'framer-motion';
 import { Pencil, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
+export default function EducationCard({ educationList, onEducationUpdate }) {
   const defaultFormData = {
-    projectName: '',
+    institutionName: '',
+    courseTitle: '',
     description: '',
     date: '',
-    link: '',
+    grade: '',
   };
 
   const [editIndex, setEditIndex] = useState(null);
@@ -23,13 +25,13 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
     return item;
   };
 
-  const [localProjectsList, setLocalProjectsList] = useState(
-    projectsList.map(ensureItemHasId)
+  const [localEducationList, setLocalEducationList] = useState(
+    educationList.map(ensureItemHasId)
   );
 
   useEffect(() => {
-    setLocalProjectsList(projectsList.map(ensureItemHasId));
-  }, [projectsList]);
+    setLocalEducationList(educationList.map(ensureItemHasId));
+  }, [educationList]);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -37,15 +39,15 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
   }, []);
 
   const handleSaveClick = () => {
-    const updatedProjectsList =
-      editIndex !== null && editIndex < localProjectsList.length
-        ? localProjectsList.map((item, index) =>
+    const updatedEducationList =
+      editIndex !== null && editIndex < localEducationList.length
+        ? localEducationList.map((item, index) =>
             index === editIndex ? { ...formData, id: item.id } : item
           )
-        : [...localProjectsList, { ...formData, id: uuidv4() }];
+        : [...localEducationList, { ...formData, id: uuidv4() }];
 
-    setLocalProjectsList(updatedProjectsList);
-    onProjectsUpdate(updatedProjectsList);
+    setLocalEducationList(updatedEducationList);
+    onEducationUpdate(updatedEducationList);
 
     setTimeout(() => {
       setEditIndex(null);
@@ -61,20 +63,20 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
   const handleEditClick = (index) => {
     setReorderToggle(false);
     setEditIndex(index);
-    setFormData(localProjectsList[index]);
+    setFormData(localEducationList[index]);
   };
 
   const handleAddClick = () => {
-    setEditIndex(localProjectsList.length);
+    setEditIndex(localEducationList.length);
     setFormData({ ...defaultFormData, id: uuidv4() });
   };
 
   const handleDeleteClick = () => {
-    const updatedProjectsList = localProjectsList.filter(
+    const updatedEducationList = localEducationList.filter(
       (_, index) => index !== editIndex
     );
-    setLocalProjectsList(updatedProjectsList);
-    onProjectsUpdate(updatedProjectsList);
+    setLocalEducationList(updatedEducationList);
+    onEducationUpdate(updatedEducationList);
     setTimeout(() => {
       setEditIndex(null);
       setFormData(defaultFormData);
@@ -86,8 +88,8 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
   };
 
   const handleReorder = (newOrder) => {
-    setLocalProjectsList(newOrder);
-    onProjectsUpdate(newOrder);
+    setLocalEducationList(newOrder);
+    onEducationUpdate(newOrder);
   };
 
   return (
@@ -103,11 +105,11 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
           />
         </label>
       </div>
-      <Reorder.Group values={localProjectsList} onReorder={handleReorder}>
-        {localProjectsList.map((projectItem, index) => (
+      <Reorder.Group values={localEducationList} onReorder={handleReorder}>
+        {localEducationList.map((educationItem, index) => (
           <DraggableCardItem
-            key={projectItem.id}
-            item={projectItem}
+            key={educationItem.id}
+            item={educationItem}
             reorderToggle={reorderToggle}
           >
             <div
@@ -117,15 +119,15 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
             >
               {editIndex === index ? (
                 <div className="p-3">
-                  <p className="font-semibold">Edit Project</p>
+                  <p className="font-semibold">Edit Education</p>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Project Name</span>
+                        <span className="label-text">Institution</span>
                       </div>
                       <input
-                        name="projectName"
-                        value={formData.projectName}
+                        name="institutionName"
+                        value={formData.institutionName}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -134,11 +136,11 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                     </label>
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Sub Heading</span>
+                        <span className="label-text">Course Title</span>
                       </div>
                       <input
-                        name="subHeading"
-                        value={formData.subHeading}
+                        name="courseTitle"
+                        value={formData.courseTitle}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -161,24 +163,24 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <label className="form-control w-full flex-grow">
                       <div className="label">
-                        <span className="label-text">Project Link</span>
-                      </div>
-                      <input
-                        name="link"
-                        value={formData.link}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="https://..."
-                        className="input input-bordered w-full"
-                      />
-                    </label>
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
                         <span className="label-text">Date</span>
                       </div>
                       <input
                         name="date"
                         value={formData.date}
+                        onChange={handleInputChange}
+                        type="text"
+                        placeholder="Type here"
+                        className="input input-bordered w-full"
+                      />
+                    </label>
+                    <label className="form-control w-full flex-grow">
+                      <div className="label">
+                        <span className="label-text">Grade</span>
+                      </div>
+                      <input
+                        name="grade"
+                        value={formData.grade}
                         onChange={handleInputChange}
                         type="text"
                         placeholder="Type here"
@@ -208,12 +210,14 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
                   </div>
                 </div>
               ) : (
-                <div className="p-3">
-                  <div className="flex h-8 items-center gap-1">
-                    <p className="font-semibold">{projectItem.projectName}</p>
+                <div className="max-w-full p-3">
+                  <div className="flex h-8 items-center gap-2">
+                    <p className="font-semibold">
+                      {educationItem.institutionName}
+                    </p>
                     <p>&#8226;</p>
                     <p className="text-sm font-light">
-                      {projectItem.subHeading}
+                      {educationItem.courseTitle}
                     </p>
                     <button
                       onClick={() => handleEditClick(index)}
@@ -230,17 +234,17 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
       </Reorder.Group>
 
       <div className="card mt-3 w-full bg-base-200 shadow-sm">
-        {editIndex === localProjectsList.length ? (
+        {editIndex === localEducationList.length ? (
           <div className="p-3">
-            <p className="font-semibold">Add Project</p>
+            <p className="font-semibold">Add Education</p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Project Name</span>
+                  <span className="label-text">Institution</span>
                 </div>
                 <input
-                  name="projectName"
-                  value={formData.projectName}
+                  name="institutionName"
+                  value={formData.institutionName}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -249,11 +253,11 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
               </label>
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Sub Heading</span>
+                  <span className="label-text">Course Title</span>
                 </div>
                 <input
-                  name="subHeading"
-                  value={formData.subHeading}
+                  name="courseTitle"
+                  value={formData.courseTitle}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -276,24 +280,24 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
             <div className="flex flex-col gap-2 sm:flex-row">
               <label className="form-control w-full flex-grow">
                 <div className="label">
-                  <span className="label-text">Project Link</span>
-                </div>
-                <input
-                  name="link"
-                  value={formData.link}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="https://..."
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control w-full flex-grow">
-                <div className="label">
                   <span className="label-text">Date</span>
                 </div>
                 <input
                   name="date"
                   value={formData.date}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full"
+                />
+              </label>
+              <label className="form-control w-full flex-grow">
+                <div className="label">
+                  <span className="label-text">Grade</span>
+                </div>
+                <input
+                  name="grade"
+                  value={formData.grade}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="Type here"
@@ -319,7 +323,7 @@ export default function ProjectsCard({ projectsList, onProjectsUpdate }) {
         ) : (
           <div className="p-3">
             <div className="flex items-center justify-between">
-              <p>Add Project</p>
+              <p>Add Education</p>
               <button
                 onClick={handleAddClick}
                 className="btn btn-square btn-accent btn-sm"

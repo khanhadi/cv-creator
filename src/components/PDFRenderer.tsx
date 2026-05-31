@@ -1,3 +1,4 @@
+// @ts-nocheck
 import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';

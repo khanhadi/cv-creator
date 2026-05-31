@@ -1,13 +1,16 @@
-export default function FormatText({ text }) {
+// @ts-nocheck
+import { Text } from '@react-pdf/renderer';
+
+export default function CVFormatText({ text, style }) {
   // Split the text by newline characters
   const lines = !text ? text : text.split('\n');
   return (
     <>
       {lines
         ? lines.map((line, index) => (
-            <p key={index} className="break-words text-[14px]">
+            <Text style={style} key={index} className="text-sm">
               {line}
-            </p>
+            </Text>
           ))
         : null}
     </>
