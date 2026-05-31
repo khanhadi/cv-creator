@@ -1,26 +1,127 @@
-// @ts-nocheck
-import { useState, useEffect, useMemo } from 'react';
-import { Reorder } from 'framer-motion';
-import { usePDF } from '@react-pdf/renderer';
-import { Trash2 } from 'lucide-react';
-import ResumeDataTools from './ui/ResumeDataTools';
-import DraggableItem from './ui/DraggableItem';
-import CVContent from './CVContent';
-import SocialInput from './ui/SocialInput';
-import EducationCard from './ui/cards/EducationCard';
-import ProfessionCard from './ui/cards/ProfessionCard';
-import ProjectsCard from './ui/cards/ProjectsCard';
-import AddCustomSection from './ui/AddCustomSection';
-import CustomSectionCard from './ui/cards/CustomSectionCard';
-import Modal from './ui/Modal';
+import { useState } from 'react'
+import { Reorder } from 'framer-motion'
+import { ChevronDown, Loader2, Trash2 } from 'lucide-react'
+import { cn } from '../lib/utils'
+import { Button } from './ui/button'
+import { Switch } from './ui/switch'
+import { Checkbox } from './ui/checkbox'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog'
+import ResumeDataTools from './ui/ResumeDataTools'
+import DraggableItem from './ui/DraggableItem'
+import SocialInput from './ui/SocialInput'
+import EducationCard from './ui/cards/EducationCard'
+import ProfessionCard from './ui/cards/ProfessionCard'
+import ProjectsCard from './ui/cards/ProjectsCard'
+import AddCustomSection from './ui/AddCustomSection'
+import CustomSectionCard from './ui/cards/CustomSectionCard'
+import type { ResumeData } from '../defaultResumeData'
+import type { Handlers } from './App'
+
+interface PDFInstance {
+  loading: boolean
+  url: string | null
+  error: string | null
+}
+
+interface EditMenuProps {
+  resumeData: ResumeData
+  selectedSocial: string
+  sectionsOrder: string[]
+  pdfInstance: PDFInstance
+  handlers: Handlers
+}
+
+interface SectionShellProps {
+  title: string
+  checked?: boolean
+  onCheckedChange?: () => void
+  onDelete?: () => void
+  reorderToggle: boolean
+  defaultOpen?: boolean
+  children: React.ReactNode
+}
+
+interface UiState {
+  reorderToggle: boolean
+  loadedFile: string
+}
+
+function SectionShell({
+  title,
+  checked,
+  onCheckedChange,
+  onDelete,
+  reorderToggle,
+  defaultOpen = false,
+  children,
+}: SectionShellProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  return (
+    <div
+      className={cn(
+        'mt-1 overflow-hidden rounded-lg border border-zinc-200 bg-white',
+        reorderToggle && 'rounded-tl-none',
+      )}
+    >
+      <div className="flex items-center gap-2 px-3 py-3">
+        {onCheckedChange && (
+          <Checkbox
+            checked={checked}
+            onCheckedChange={onCheckedChange}
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0"
+          />
+        )}
+        <button
+          type="button"
+          className="flex-1 text-left text-base font-medium text-zinc-900"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {title}
+        </button>
+        {onDelete && (
+          <Button
+            variant="destructive"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete()
+            }}
+          >
+            <Trash2 size={13} />
+          </Button>
+        )}
+        <ChevronDown
+          size={18}
+          className={cn(
+            'shrink-0 cursor-pointer text-zinc-400 transition-transform',
+            isOpen && 'rotate-180',
+          )}
+          onClick={() => setIsOpen(!isOpen)}
+        />
+      </div>
+      {isOpen && (
+        <div className="border-t border-zinc-100 px-3 pb-3 pt-2">{children}</div>
+      )}
+    </div>
+  )
+}
 
 export default function EditMenu({
   resumeData,
   selectedSocial,
   sectionsOrder,
-  scale,
+  pdfInstance,
   handlers,
-}) {
+}: EditMenuProps) {
   const {
     inclusionHandler,
     resumeDataHandler,
@@ -31,179 +132,100 @@ export default function EditMenu({
     sectionOrderHandler,
     customSectionHandler,
     deleteCustomSectionHandler,
-  } = handlers;
+  } = handlers
 
-  const document = useMemo(
-    () => (
-      <CVContent
-        resumeData={resumeData}
-        selectedSocial={selectedSocial}
-        sectionsOrder={sectionsOrder}
-      />
-    ),
-    [resumeData, selectedSocial, sectionsOrder]
-  );
-
-  const [instance, update] = usePDF({ document });
-  const [uiState, setUiState] = useState({
+  const [uiState, setUiState] = useState<UiState>({
     reorderToggle: false,
-    doneEditing: false,
-    isGenerateButtonEnabled: true,
     loadedFile: '',
-  });
-  const [modalState, setModalState] = useState({
-    deleteSection: {
-      isOpen: false,
-      sectionName: null,
-    },
-  });
+  })
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean
+    sectionName: string | null
+  }>({ isOpen: false, sectionName: null })
 
-  useEffect(() => {
-    setUiState((prevState) => ({
-      ...prevState,
-      isGenerateButtonEnabled: true,
-      doneEditing: false,
-    }));
-  }, [resumeData, sectionsOrder]);
-
-  const OnReorderToggle = (e) => {
-    setUiState((prevState) => ({
-      ...prevState,
-      reorderToggle: e.target.checked,
-    }));
-  };
-
-  const OnGeneratePDF = () => {
-    setUiState((prevState) => ({
-      ...prevState,
-      doneEditing: true,
-      isGenerateButtonEnabled: false,
-    }));
-    update(document);
-  };
-
-  const OnIncludeCheckboxChange = (sectionName) => {
-    const updatedInclusionObject = {
+  const onIncludeChange = (sectionName: string) => {
+    inclusionHandler({
       ...resumeData.includeSections,
       [sectionName]: !resumeData.includeSections[sectionName],
-    };
+    })
+  }
 
-    inclusionHandler(updatedInclusionObject);
-  };
-
-  const onCustomSectionDataUpdate = (updatedData) => {
-    const { title, items } = updatedData;
-
-    let sectionExists = false;
-    const updatedCustomSectionData = resumeData.customSectionData.map(
-      (section) => {
-        if (section.title === title) {
-          sectionExists = true;
-          return { ...section, items };
-        }
-        return section;
+  const onCustomSectionDataUpdate = (updatedData: {
+    title: string
+    items: ResumeData['customSectionData'][number]['items']
+  }) => {
+    const { title, items } = updatedData
+    let sectionExists = false
+    const updated = resumeData.customSectionData.map((section) => {
+      if (section.title === title) {
+        sectionExists = true
+        return { ...section, items }
       }
-    );
+      return section
+    })
+    if (!sectionExists) updated.push({ title, items })
+    customSectionHandler(updated)
+  }
 
-    if (!sectionExists) {
-      updatedCustomSectionData.push({ title, items });
-    }
-
-    customSectionHandler(updatedCustomSectionData);
-  };
-
-  const getCustomSectionData = (customSectionData, sectionTitle) => {
-    const existingSection = customSectionData.find(
-      (section) => section.title === sectionTitle
-    );
-
-    if (existingSection) {
-      return existingSection;
-    } else {
-      const newSection = {
+  const getCustomSectionData = (sectionTitle: string) => {
+    return (
+      resumeData.customSectionData.find((s) => s.title === sectionTitle) ?? {
         title: sectionTitle,
         items: [],
-      };
-      return newSection;
-    }
-  };
+      }
+    )
+  }
 
-  const openDeleteModal = (sectionName) => {
-    setModalState((prevState) => ({
-      ...prevState,
-      deleteSection: { isOpen: true, sectionName },
-    }));
-  };
-
-  const closeDeleteModal = () => {
-    setModalState((prevState) => ({
-      ...prevState,
-      deleteSection: { isOpen: false, sectionName: null },
-    }));
-  };
-
-  const handleDeleteConfirm = () => {
-    const { sectionName } = modalState.deleteSection;
-    if (sectionName) {
-      deleteCustomSectionHandler(sectionName); // Use the new handler from App.jsx
-      closeDeleteModal();
-    }
-  };
-
-  function renderSection(sectionName) {
-    const { reorderToggle } = uiState;
+  function renderSection(sectionName: string) {
+    const { reorderToggle } = uiState
 
     switch (sectionName) {
       case 'personalInformation':
         return (
-          <div className="collapse collapse-arrow m-1 bg-white">
-            <input type="radio" name="my-accordion-2" defaultChecked />
-            <div className="collapse-title text-xl font-medium text-black">
-              Personal Information
-            </div>
-            <div className="collapse-content">
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <label className="form-control w-full sm:w-1/2">
-                  <div className="label">
-                    <span className="label-text">Name</span>
-                  </div>
+          <SectionShell
+            title="Personal Information"
+            defaultOpen
+            reorderToggle={reorderToggle}
+          >
+            <div className="flex flex-col gap-3 pt-1">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex w-full flex-col gap-1 sm:w-1/2">
+                  <label className="text-sm font-medium text-zinc-700">Name</label>
                   <input
                     name="fullName"
                     value={resumeData.fullName}
                     onChange={resumeDataHandler}
                     type="text"
-                    placeholder="Type here"
-                    className="input input-bordered w-full"
+                    placeholder="Full name"
+                    className="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary"
                   />
-                </label>
-                <label className="form-control w-full sm:w-1/2">
-                  <div className="label">
-                    <span className="label-text">Mobile No.</span>
-                  </div>
+                </div>
+                <div className="flex w-full flex-col gap-1 sm:w-1/2">
+                  <label className="text-sm font-medium text-zinc-700">
+                    Mobile No.
+                  </label>
                   <input
                     name="mobileNo"
                     value={resumeData.mobileNo}
                     onChange={resumeDataHandler}
                     type="text"
-                    placeholder="Type here"
-                    className="input input-bordered w-full"
+                    placeholder="+44 7000 000000"
+                    className="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary"
                   />
-                </label>
+                </div>
               </div>
-              <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-                <label className="form-control flex w-full sm:w-1/2">
-                  <div className="label">
-                    <span className="label-text">Email</span>
-                  </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex w-full flex-col gap-1 sm:w-1/2">
+                  <label className="text-sm font-medium text-zinc-700">Email</label>
                   <input
                     name="email"
                     value={resumeData.email}
                     onChange={resumeDataHandler}
                     type="text"
-                    placeholder="Type here"
-                    className="input input-bordered w-full"
+                    placeholder="email@example.com"
+                    className="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary"
                   />
-                </label>
+                </div>
                 <div className="w-full sm:w-1/2">
                   <SocialInput
                     socialLink={resumeData.socialLink}
@@ -214,209 +236,137 @@ export default function EditMenu({
                 </div>
               </div>
             </div>
-          </div>
-        );
+          </SectionShell>
+        )
 
       case 'professionalExperience':
         return (
-          <div
-            className={`collapse ${
-              reorderToggle ? 'rounded-tl-none' : ''
-            } collapse-arrow m-1 bg-white`}
+          <SectionShell
+            title="Professional Experience"
+            checked={resumeData.includeSections.professionalExperience}
+            onCheckedChange={() => onIncludeChange('professionalExperience')}
+            reorderToggle={reorderToggle}
           >
-            <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-xl font-medium text-black">
-              <input
-                type="checkbox"
-                checked={resumeData.includeSections.professionalExperience}
-                onChange={() =>
-                  OnIncludeCheckboxChange('professionalExperience')
-                }
-                className="checkbox-accent checkbox z-10 mr-2"
-              />
-              Professional Experience
-            </div>
-            <div className="collapse-content text-black">
-              <ProfessionCard
-                experienceList={resumeData.experienceList}
-                onExperienceUpdate={experienceHandler}
-              />
-            </div>
-          </div>
-        );
+            <ProfessionCard
+              experienceList={resumeData.experienceList}
+              onExperienceUpdate={experienceHandler}
+            />
+          </SectionShell>
+        )
 
       case 'education':
         return (
-          <div
-            className={`collapse ${
-              reorderToggle ? 'rounded-tl-none' : ''
-            } collapse-arrow m-1 bg-white`}
+          <SectionShell
+            title="Education"
+            checked={resumeData.includeSections.education}
+            onCheckedChange={() => onIncludeChange('education')}
+            reorderToggle={reorderToggle}
           >
-            <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-xl font-medium text-black">
-              <input
-                type="checkbox"
-                checked={resumeData.includeSections.education}
-                onChange={() => OnIncludeCheckboxChange('education')}
-                className="checkbox-accent checkbox z-10 mr-2"
-              />
-              Education
-            </div>
-            <div className="collapse-content text-black">
-              <EducationCard
-                educationList={resumeData.educationList}
-                onEducationUpdate={educationHandler}
-              />
-            </div>
-          </div>
-        );
+            <EducationCard
+              educationList={resumeData.educationList}
+              onEducationUpdate={educationHandler}
+            />
+          </SectionShell>
+        )
 
       case 'projects':
         return (
-          <div
-            className={`collapse ${
-              reorderToggle ? 'rounded-tl-none' : ''
-            } collapse-arrow m-1 bg-white`}
+          <SectionShell
+            title="Projects"
+            checked={resumeData.includeSections.projects}
+            onCheckedChange={() => onIncludeChange('projects')}
+            reorderToggle={reorderToggle}
           >
-            <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title flex text-xl font-medium text-black">
-              <input
-                type="checkbox"
-                checked={resumeData.includeSections.projects}
-                onChange={() => OnIncludeCheckboxChange('projects')}
-                className="checkbox-accent checkbox z-10 mr-2"
-              />
-              Projects
-            </div>
-            <div className="collapse-content text-black">
-              <ProjectsCard
-                projectsList={resumeData.projectsList}
-                onProjectsUpdate={projectsHandler}
-              />
-            </div>
-          </div>
-        );
+            <ProjectsCard
+              projectsList={resumeData.projectsList}
+              onProjectsUpdate={projectsHandler}
+            />
+          </SectionShell>
+        )
 
       default: {
-        // Handle custom sections
-        const customSection = sectionsOrder.find(
-          (section) => section === sectionName
-        );
-
-        if (customSection) {
-          const sectionData = getCustomSectionData(
-            resumeData.customSectionData,
-            customSection
-          );
-          return (
-            <div
-              className={`collapse ${
-                reorderToggle ? 'rounded-tl-none' : ''
-              } collapse-arrow m-1 bg-white`}
-            >
-              <input type="radio" name="my-accordion-2" />
-              <div className="collapse-title flex text-xl font-medium text-black">
-                <input
-                  type="checkbox"
-                  checked={resumeData.includeSections[sectionName]}
-                  onChange={() => OnIncludeCheckboxChange(sectionName)}
-                  className="checkbox-accent checkbox z-10 mr-2"
-                />
-                {customSection}
-                {/* Delete custom section button */}
-                <button
-                  onClick={() => openDeleteModal(sectionName)}
-                  className="btn btn-error btn-sm z-10 ml-auto h-7 min-h-7"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-              <div className="collapse-content text-black">
-                <CustomSectionCard
-                  sectionTitle={customSection}
-                  sectionItemsList={sectionData.items}
-                  onSectionUpdate={onCustomSectionDataUpdate}
-                />
-              </div>
-            </div>
-          );
-        }
-        return null;
+        const customSection = sectionsOrder.find((s) => s === sectionName)
+        if (!customSection) return null
+        const sectionData = getCustomSectionData(customSection)
+        return (
+          <SectionShell
+            title={customSection}
+            checked={resumeData.includeSections[sectionName]}
+            onCheckedChange={() => onIncludeChange(sectionName)}
+            onDelete={() => setDeleteModal({ isOpen: true, sectionName })}
+            reorderToggle={reorderToggle}
+          >
+            <CustomSectionCard
+              sectionTitle={customSection}
+              sectionItemsList={sectionData.items}
+              onSectionUpdate={onCustomSectionDataUpdate}
+            />
+          </SectionShell>
+        )
       }
     }
   }
 
   return (
-    <div className="flex justify-center p-3">
-      <div className="mb-20 w-11/12 py-4">
-        <div className="items-center-center mb-2 flex gap-2 p-1">
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-light text-white">
-              cv<span className="font-extrabold text-accent">creator</span>
+    <div className="mx-auto max-w-2xl px-5 py-5">
+      <div className="mb-24">
+        {/* Header */}
+        <div className="mb-4 flex items-center gap-3 border-b border-zinc-200 pb-4">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight text-zinc-900">
+              cv<span className="text-primary">creator</span>
             </h1>
-            <h1 className="flex gap-1 text-sm font-light text-white">
+            <p className="text-xs text-zinc-400">
               by{' '}
               <a
                 href="https://khanhadi.com"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="font-medium text-primary hover:opacity-80"
               >
-                <span className="hover:text-accent-focus flex font-extrabold text-accent">
-                  khanhadi
-                </span>
+                khanhadi
               </a>
-            </h1>
+            </p>
           </div>
-          {/* Generate Button */}
-          <button
-            onClick={OnGeneratePDF}
-            disabled={!uiState.isGenerateButtonEnabled}
-            className={`btn btn-accent btn-sm ml-auto ${
-              !uiState.isGenerateButtonEnabled ? 'hidden' : ''
-            }`}
-          >
-            Generate PDF
-          </button>
-          {/* Download Button */}
-          {uiState.doneEditing &&
-            (instance.loading ? (
-              <span className="loading loading-spinner text-accent"></span>
-            ) : (
-              <a href={instance.url} className="ml-auto" download="CV.pdf">
-                <button className="btn btn-accent btn-sm">
-                  Download
-                  <i className="icon icon-16 icon-download"></i>
-                </button>
+
+          <div className="ml-auto flex items-center gap-2">
+            {pdfInstance.loading ? (
+              <Loader2 size={16} className="animate-spin text-zinc-400" />
+            ) : pdfInstance.url ? (
+              <a href={pdfInstance.url} download="CV.pdf">
+                <Button size="sm">Download PDF</Button>
               </a>
-            ))}
+            ) : null}
+          </div>
         </div>
-        <div className="flex">
+
+        {/* Toolbar */}
+        <div className="mb-3 flex items-center gap-2">
           <ResumeDataTools
             resumeData={resumeData}
             resumeDataHandler={resumeDataHandler}
             uiState={uiState}
             setUiState={setUiState}
             handlers={handlers}
-          ></ResumeDataTools>
-
-          {/* Reorder Button */}
-          <label className="cursor-point label ml-auto gap-2 self-end">
-            <span className="label-text text-white">Reorder</span>
-            <input
-              type="checkbox"
-              onChange={OnReorderToggle}
+          />
+          <div className="ml-auto flex items-center gap-2">
+            <label className="cursor-pointer text-sm text-zinc-500">Reorder</label>
+            <Switch
               checked={uiState.reorderToggle}
-              className="toggle border-white bg-accent [--tglbg:black] hover:bg-accent"
+              onCheckedChange={(checked) =>
+                setUiState((prev) => ({ ...prev, reorderToggle: checked }))
+              }
             />
-          </label>
+          </div>
         </div>
+
         {/* Sections */}
         {renderSection('personalInformation')}
+
         <Reorder.Group
           axis="y"
           values={sectionsOrder}
           onReorder={sectionOrderHandler}
-          key={scale}
         >
           {sectionsOrder.map((section) => (
             <DraggableItem
@@ -428,43 +378,59 @@ export default function EditMenu({
           ))}
         </Reorder.Group>
 
-        {/* Add Custom Section */}
-        <div className={`card m-1 w-full bg-white p-4`}>
+        {/* Add custom section */}
+        <div className="mt-1 rounded-lg border border-zinc-200 bg-white p-4">
           <AddCustomSection
             sectionsOrder={sectionsOrder}
             inclusionObject={resumeData.includeSections}
             handleSectionOrder={sectionOrderHandler}
             handleInclusion={inclusionHandler}
             handleSectionData={onCustomSectionDataUpdate}
-          ></AddCustomSection>
+          />
         </div>
       </div>
 
-      <Modal
-        isOpen={modalState.deleteSection.isOpen}
-        onClose={closeDeleteModal}
-        title="Confirm Delete"
-        size="max-w-md"
+      {/* Delete section dialog */}
+      <Dialog
+        open={deleteModal.isOpen}
+        onOpenChange={(open) =>
+          !open && setDeleteModal({ isOpen: false, sectionName: null })
+        }
       >
-        <p>
-          Are you sure you want to delete the{' '}
-          <span className="font-semibold">
-            {modalState.deleteSection.sectionName}
-          </span>{' '}
-          section? This action cannot be undone.
-        </p>
-        <div className="modal-action">
-          <button className="btn btn-accent btn-sm" onClick={closeDeleteModal}>
-            Cancel
-          </button>
-          <button
-            className="btn btn-error btn-sm"
-            onClick={handleDeleteConfirm}
-          >
-            Delete
-          </button>
-        </div>
-      </Modal>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete section</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-zinc-600">
+            Are you sure you want to delete{' '}
+            <span className="font-semibold text-zinc-900">
+              {deleteModal.sectionName}
+            </span>
+            ? This cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDeleteModal({ isOpen: false, sectionName: null })}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                if (deleteModal.sectionName) {
+                  deleteCustomSectionHandler(deleteModal.sectionName)
+                }
+                setDeleteModal({ isOpen: false, sectionName: null })
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }

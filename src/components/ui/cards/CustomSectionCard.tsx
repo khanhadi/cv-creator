@@ -1,344 +1,129 @@
 // @ts-nocheck
-import { useState, useCallback, useEffect } from 'react';
-import { DraggableCardItem } from '../DraggableCardItem';
-import { Reorder } from 'framer-motion';
-import { Pencil, Plus } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
+import { useState, useCallback, useEffect } from 'react'
+import { DraggableCardItem } from '../DraggableCardItem'
+import { Reorder } from 'framer-motion'
+import { Pencil, Plus } from 'lucide-react'
+import { v4 as uuidv4 } from 'uuid'
+import { cn } from '../../../lib/utils'
+import { Button } from '../button'
+import { Switch } from '../switch'
 
-export default function CustomSectionCard({
-  sectionTitle,
-  sectionItemsList,
-  onSectionUpdate,
-}) {
-  const defaultFormData = {
-    heading: '',
-    subHeading: '',
-    description: '',
-    date: '',
-    additionalInfo: '',
-  };
-  const [editIndex, setEditIndex] = useState(null);
-  const [reorderToggle, setReorderToggle] = useState(false);
-  const [formData, setFormData] = useState(defaultFormData);
+const inputClass = 'flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary'
+const textareaClass = 'flex min-h-[80px] w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary'
 
-  const ensureItemHasId = (item) => {
-    if (!item.id) {
-      return { ...item, id: uuidv4() };
-    }
-    return item;
-  };
+function Field({ label, children }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-zinc-700">{label}</label>
+      {children}
+    </div>
+  )
+}
 
-  const [localSectionItemsList, setLocalSectionItemsList] = useState(
-    sectionItemsList.map(ensureItemHasId)
-  );
+export default function CustomSectionCard({ sectionTitle, sectionItemsList, onSectionUpdate }) {
+  const defaultFormData = { heading: '', subHeading: '', description: '', date: '', additionalInfo: '' }
+  const [editIndex, setEditIndex] = useState(null)
+  const [reorderToggle, setReorderToggle] = useState(false)
+  const [formData, setFormData] = useState(defaultFormData)
 
-  useEffect(() => {
-    setLocalSectionItemsList(sectionItemsList.map(ensureItemHasId));
-  }, [sectionItemsList]);
+  const ensureId = (item) => item.id ? item : { ...item, id: uuidv4() }
+  const [list, setList] = useState(sectionItemsList.map(ensureId))
+  useEffect(() => { setList(sectionItemsList.map(ensureId)) }, [sectionItemsList])
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
-  }, []);
+  const handleInput = useCallback((e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }, [])
 
-  const handleSaveClick = () => {
-    const updatedSectionItemsList =
-      editIndex !== null && editIndex < localSectionItemsList.length
-        ? localSectionItemsList.map((item, index) =>
-            index === editIndex ? { ...formData, id: item.id } : item
-          )
-        : [...localSectionItemsList, { ...formData, id: uuidv4() }];
+  const save = () => {
+    const updated = editIndex !== null && editIndex < list.length
+      ? list.map((item, i) => i === editIndex ? { ...formData, id: item.id } : item)
+      : [...list, { ...formData, id: uuidv4() }]
+    setList(updated); onSectionUpdate({ title: sectionTitle, items: updated })
+    setTimeout(() => { setEditIndex(null); setFormData(defaultFormData) }, 10)
+  }
 
-    setLocalSectionItemsList(updatedSectionItemsList);
-    onSectionUpdate({ title: sectionTitle, items: updatedSectionItemsList });
+  const cancel = () => { setEditIndex(null); setFormData(defaultFormData) }
 
-    setTimeout(() => {
-      setEditIndex(null);
-      setFormData(defaultFormData);
-    }, 10);
-  };
-
-  const handleCancelClick = () => {
-    setEditIndex(null);
-    setFormData(defaultFormData);
-  };
-
-  const handleEditClick = (index) => {
-    setReorderToggle(false);
-    setEditIndex(index);
-    setFormData(sectionItemsList[index]);
-  };
-
-  const handleAddClick = () => {
-    setEditIndex(sectionItemsList.length);
-    setFormData({ ...defaultFormData, id: uuidv4() });
-  };
-
-  const handleDeleteClick = () => {
-    const updatedSectionItemsList = sectionItemsList;
-    updatedSectionItemsList.splice(editIndex, 1);
-    setLocalSectionItemsList(updatedSectionItemsList);
-    onSectionUpdate({ title: sectionTitle, items: updatedSectionItemsList });
-    setTimeout(() => {
-      setEditIndex(null);
-      setFormData(defaultFormData);
-    }, 10);
-  };
-
-  const OnReorderToggle = (e) => {
-    setReorderToggle(e.target.checked);
-  };
-
-  const handleReorder = (newOrder) => {
-    setLocalSectionItemsList(newOrder);
-    onSectionUpdate({ title: sectionTitle, items: newOrder });
-  };
-
-  const renderSectionItem = (item, index) => {
-    return (
-      <div className="p-3">
-        <div className="flex h-8 items-center gap-1">
-          <p className="font-semibold">{item.heading}</p>
-          <p>&#8226;</p>
-          <p className="text-sm font-light">{item.subHeading}</p>
-          <button
-            onClick={() => handleEditClick(index)}
-            className="btn btn-square btn-accent btn-sm ml-auto"
-          >
-            {/* <img draggable="false" src={pencilIcon} alt="Edit" /> */}
-            <Pencil></Pencil>
-          </button>
-        </div>
-      </div>
-    );
-  };
+  const del = () => {
+    const updated = list.filter((_, i) => i !== editIndex)
+    setList(updated); onSectionUpdate({ title: sectionTitle, items: updated })
+    setTimeout(() => { setEditIndex(null); setFormData(defaultFormData) }, 10)
+  }
 
   return (
     <>
-      <div className="flex justify-end">
-        <label className="label cursor-pointer gap-2">
-          <span className="label-text">Reorder</span>
-          <input
-            type="checkbox"
-            onChange={OnReorderToggle}
-            checked={reorderToggle}
-            className="toggle border-black bg-accent [--tglbg:black] hover:bg-accent"
-          />
-        </label>
+      <div className="flex justify-end py-1">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-zinc-600">Reorder</label>
+          <Switch checked={reorderToggle} onCheckedChange={setReorderToggle} />
+        </div>
       </div>
-      <Reorder.Group values={localSectionItemsList} onReorder={handleReorder}>
-        {localSectionItemsList.map((item, index) => (
-          <DraggableCardItem
-            key={item.id}
-            item={item}
-            reorderToggle={reorderToggle}
-          >
-            <div
-              className={`card mt-3 w-full bg-base-200 shadow-sm ${
-                reorderToggle ? 'rounded-tl-none' : ''
-              }`}
-            >
+
+      <Reorder.Group values={list} onReorder={(newOrder) => { setList(newOrder); onSectionUpdate({ title: sectionTitle, items: newOrder }) }}>
+        {list.map((item, index) => (
+          <DraggableCardItem key={item.id} item={item} reorderToggle={reorderToggle}>
+            <div className={cn('mt-2 rounded-lg bg-zinc-100 shadow-sm', reorderToggle && 'rounded-tl-none')}>
               {editIndex === index ? (
                 <div className="p-3">
-                  <p className="font-semibold">Edit Item</p>
+                  <p className="mb-2 font-semibold text-zinc-900">Edit Item</p>
                   <div className="flex flex-col gap-2 sm:flex-row">
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Heading</span>
-                      </div>
-                      <input
-                        name="heading"
-                        value={formData.heading}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Sub Heading</span>
-                      </div>
-                      <input
-                        name="subHeading"
-                        value={formData.subHeading}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
+                    <Field label="Heading"><input name="heading" value={formData.heading} onChange={handleInput} placeholder="Heading" className={inputClass} /></Field>
+                    <Field label="Sub Heading"><input name="subHeading" value={formData.subHeading} onChange={handleInput} placeholder="Sub heading" className={inputClass} /></Field>
                   </div>
-                  <label className="form-control">
-                    <div className="label">
-                      <span className="label-text">Description</span>
-                    </div>
-                    <textarea
-                      name="description"
-                      className="textarea textarea-bordered h-24"
-                      placeholder="..."
-                      value={formData.description}
-                      onChange={handleInputChange}
-                    ></textarea>
-                  </label>
+                  <Field label="Description"><textarea name="description" value={formData.description} onChange={handleInput} placeholder="..." className={textareaClass} /></Field>
                   <div className="flex flex-col gap-2 sm:flex-row">
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Date</span>
-                      </div>
-                      <input
-                        name="date"
-                        value={formData.date}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Additional Info</span>
-                      </div>
-                      <input
-                        name="additionalInfo"
-                        value={formData.additionalInfo}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
+                    <Field label="Date"><input name="date" value={formData.date} onChange={handleInput} placeholder="Date" className={inputClass} /></Field>
+                    <Field label="Additional Info"><input name="additionalInfo" value={formData.additionalInfo} onChange={handleInput} placeholder="Extra info" className={inputClass} /></Field>
                   </div>
-                  <div className="mt-4 flex w-full justify-end gap-2">
-                    <button
-                      onClick={handleDeleteClick}
-                      className="btn btn-error btn-sm mr-auto"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={handleCancelClick}
-                      className="btn btn-secondary btn-sm"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSaveClick}
-                      className="btn btn-accent btn-sm"
-                    >
-                      Save
-                    </button>
+                  <div className="mt-3 flex justify-end gap-2">
+                    <Button variant="destructive" size="sm" className="mr-auto" onClick={del}>Delete</Button>
+                    <Button variant="outline" size="sm" onClick={cancel}>Cancel</Button>
+                    <Button size="sm" onClick={save}>Save</Button>
                   </div>
                 </div>
               ) : (
-                renderSectionItem(item, index)
+                <div className="flex items-center gap-2 p-3">
+                  <p className="font-semibold text-zinc-900">{item.heading}</p>
+                  <span className="text-zinc-400">·</span>
+                  <p className="text-sm text-zinc-600">{item.subHeading}</p>
+                  <Button size="icon" className="ml-auto size-8 shrink-0" onClick={() => { setReorderToggle(false); setEditIndex(index); setFormData(item) }}>
+                    <Pencil size={14} />
+                  </Button>
+                </div>
               )}
             </div>
           </DraggableCardItem>
         ))}
       </Reorder.Group>
 
-      <div className="card mt-3 w-full bg-base-200 shadow-sm">
-        {editIndex === sectionItemsList.length ? (
+      <div className="mt-2 rounded-lg bg-zinc-100 shadow-sm">
+        {editIndex === list.length ? (
           <div className="p-3">
-            <p className="font-semibold">Add Item</p>
+            <p className="mb-2 font-semibold text-zinc-900">Add Item</p>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Heading</span>
-                </div>
-                <input
-                  name="heading"
-                  value={formData.heading}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Sub Heading</span>
-                </div>
-                <input
-                  name="subHeading"
-                  value={formData.subHeading}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
+              <Field label="Heading"><input name="heading" value={formData.heading} onChange={handleInput} placeholder="Heading" className={inputClass} /></Field>
+              <Field label="Sub Heading"><input name="subHeading" value={formData.subHeading} onChange={handleInput} placeholder="Sub heading" className={inputClass} /></Field>
             </div>
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text">Description</span>
-              </div>
-              <textarea
-                name="description"
-                className="textarea textarea-bordered h-24"
-                placeholder="..."
-                value={formData.description}
-                onChange={handleInputChange}
-              ></textarea>
-            </label>
+            <Field label="Description"><textarea name="description" value={formData.description} onChange={handleInput} placeholder="..." className={textareaClass} /></Field>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Date</span>
-                </div>
-                <input
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Additional Info</span>
-                </div>
-                <input
-                  name="additionalInfo"
-                  value={formData.additionalInfo}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
+              <Field label="Date"><input name="date" value={formData.date} onChange={handleInput} placeholder="Date" className={inputClass} /></Field>
+              <Field label="Additional Info"><input name="additionalInfo" value={formData.additionalInfo} onChange={handleInput} placeholder="Extra info" className={inputClass} /></Field>
             </div>
-            <div className="mt-4 flex w-full justify-end gap-2">
-              <button
-                onClick={handleCancelClick}
-                className="btn btn-secondary btn-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveClick}
-                className="btn btn-accent btn-sm"
-              >
-                Add
-              </button>
+            <div className="mt-3 flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={cancel}>Cancel</Button>
+              <Button size="sm" onClick={save}>Add</Button>
             </div>
           </div>
         ) : (
-          <div className="p-3">
-            <div className="flex items-center justify-between">
-              <p>Add Item</p>
-              <button
-                onClick={handleAddClick}
-                className="btn btn-square btn-accent btn-sm"
-              >
-                <Plus></Plus>
-              </button>
-            </div>
+          <div className="flex items-center justify-between p-3">
+            <p className="text-sm text-zinc-600">Add Item</p>
+            <Button size="icon" className="size-8" onClick={() => { setEditIndex(list.length); setFormData({ ...defaultFormData, id: uuidv4() }) }}>
+              <Plus size={14} />
+            </Button>
           </div>
         )}
       </div>
     </>
-  );
+  )
 }

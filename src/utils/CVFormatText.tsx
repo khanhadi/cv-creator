@@ -1,18 +1,20 @@
-// @ts-nocheck
-import { Text } from '@react-pdf/renderer';
+import { Text } from '@react-pdf/renderer'
+import type { TextProps } from '@react-pdf/renderer'
 
-export default function CVFormatText({ text, style }) {
-  // Split the text by newline characters
-  const lines = !text ? text : text.split('\n');
+interface CVFormatTextProps {
+  text: string
+  style?: TextProps['style']
+}
+
+export default function CVFormatText({ text, style }: CVFormatTextProps) {
+  const lines = text ? text.split('\n') : []
   return (
     <>
-      {lines
-        ? lines.map((line, index) => (
-            <Text style={style} key={index} className="text-sm">
-              {line}
-            </Text>
-          ))
-        : null}
+      {lines.map((line, index) => (
+        <Text key={index} style={style}>
+          {line}
+        </Text>
+      ))}
     </>
-  );
+  )
 }

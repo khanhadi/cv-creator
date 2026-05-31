@@ -1,56 +1,47 @@
 // @ts-nocheck
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react'
+import { Badge } from './badge'
 
 export default function SkillsInput({ initialSkills, inputHandler }) {
-  const [skills, setSkills] = useState(initialSkills);
-  const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef(null);
+  const [skills, setSkills] = useState(initialSkills)
+  const [inputValue, setInputValue] = useState('')
+  const inputRef = useRef(null)
 
   useEffect(() => {
-    inputHandler({ target: { name: 'skills', value: skills } });
-  }, [skills, inputHandler]);
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+    inputHandler({ target: { name: 'skills', value: skills } })
+  }, [skills, inputHandler])
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && inputValue.trim() !== '') {
-      e.preventDefault();
-      setSkills([...skills, inputValue.trim()]);
-      setInputValue('');
+    if (e.key === 'Enter' && inputValue.trim()) {
+      e.preventDefault()
+      setSkills([...skills, inputValue.trim()])
+      setInputValue('')
     }
-  };
-
-  const handleDelete = (index) => {
-    setSkills(skills.filter((_, i) => i !== index));
-  };
+  }
 
   return (
-    <div className="input-bordered mx-auto flex w-full flex-wrap items-center gap-2 rounded-lg border bg-white p-2">
+    <div className="flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border border-zinc-200 bg-white p-2">
       {skills.map((skill, index) => (
-        <div key={index} className="badge badge-warning flex items-center">
+        <Badge key={index} variant="secondary" className="gap-1">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete(index);
-            }}
-            className="mr-2 text-black"
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setSkills(skills.filter((_, i) => i !== index)) }}
+            className="text-zinc-500 hover:text-zinc-900"
           >
             &times;
           </button>
           {skill}
-        </div>
+        </Badge>
       ))}
       <input
         ref={inputRef}
         type="text"
-        placeholder="Type a skill and press &#9166;"
+        placeholder="Add skill, press Enter"
         value={inputValue}
-        onChange={handleInputChange}
+        onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="ml-2 flex-grow border-none outline-none"
+        className="flex-1 text-sm outline-none"
       />
     </div>
-  );
+  )
 }

@@ -1,361 +1,132 @@
 // @ts-nocheck
-import { useState, useCallback, useEffect } from 'react';
-import { DraggableCardItem } from '../DraggableCardItem';
-import { Reorder } from 'framer-motion';
-import { Pencil, Plus } from 'lucide-react';
-import SkillsInput from '../SkillsInput';
-import { v4 as uuidv4 } from 'uuid';
+import { useState, useCallback, useEffect } from 'react'
+import { DraggableCardItem } from '../DraggableCardItem'
+import { Reorder } from 'framer-motion'
+import { Pencil, Plus } from 'lucide-react'
+import SkillsInput from '../SkillsInput'
+import { v4 as uuidv4 } from 'uuid'
+import { cn } from '../../../lib/utils'
+import { Button } from '../button'
+import { Switch } from '../switch'
+
+const inputClass = 'flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary'
+const textareaClass = 'flex min-h-[80px] w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary'
+
+function Field({ label, children }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-zinc-700">{label}</label>
+      {children}
+    </div>
+  )
+}
 
 export default function ProfessionCard({ experienceList, onExperienceUpdate }) {
-  const defaultFormData = {
-    companyName: '',
-    jobTitle: '',
-    description: '',
-    date: '',
-    location: '',
-    skills: [],
-  };
+  const defaultFormData = { companyName: '', jobTitle: '', description: '', date: '', location: '', skills: [] }
+  const [editIndex, setEditIndex] = useState(null)
+  const [reorderToggle, setReorderToggle] = useState(false)
+  const [formData, setFormData] = useState(defaultFormData)
 
-  const [editIndex, setEditIndex] = useState(null);
-  const [reorderToggle, setReorderToggle] = useState(false);
-  const [formData, setFormData] = useState(defaultFormData);
+  const ensureId = (item) => item.id ? item : { ...item, id: uuidv4() }
+  const [list, setList] = useState(experienceList.map(ensureId))
+  useEffect(() => { setList(experienceList.map(ensureId)) }, [experienceList])
 
-  const ensureItemHasId = (item) => {
-    if (!item.id) {
-      return { ...item, id: uuidv4() };
-    }
-    return item;
-  };
+  const handleInput = useCallback((e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }, [])
 
-  const [localExperienceList, setLocalExperienceList] = useState(
-    experienceList.map(ensureItemHasId)
-  );
+  const save = () => {
+    const updated = editIndex !== null && editIndex < list.length
+      ? list.map((item, i) => i === editIndex ? { ...formData, id: item.id } : item)
+      : [...list, { ...formData, id: uuidv4() }]
+    setList(updated); onExperienceUpdate(updated)
+    setTimeout(() => { setEditIndex(null); setFormData(defaultFormData) }, 10)
+  }
 
-  useEffect(() => {
-    setLocalExperienceList(experienceList.map(ensureItemHasId));
-  }, [experienceList]);
+  const cancel = () => { setEditIndex(null); setFormData(defaultFormData) }
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
-  }, []);
-
-  const handleSaveClick = () => {
-    const updatedExperienceList =
-      editIndex !== null && editIndex < localExperienceList.length
-        ? localExperienceList.map((item, index) =>
-            index === editIndex ? { ...formData, id: item.id } : item
-          )
-        : [...localExperienceList, { ...formData, id: uuidv4() }];
-
-    setLocalExperienceList(updatedExperienceList);
-    onExperienceUpdate(updatedExperienceList);
-
-    setTimeout(() => {
-      setEditIndex(null);
-      setFormData(defaultFormData);
-    }, 10);
-  };
-
-  const handleCancelClick = () => {
-    setEditIndex(null);
-    setFormData(defaultFormData);
-  };
-
-  const handleEditClick = (index) => {
-    setReorderToggle(false);
-    setEditIndex(index);
-    setFormData(localExperienceList[index]);
-  };
-
-  const handleAddClick = () => {
-    setEditIndex(localExperienceList.length);
-    setFormData({ ...defaultFormData, id: uuidv4() });
-  };
-
-  const handleDeleteClick = () => {
-    const updatedExperienceList = localExperienceList.filter(
-      (_, index) => index !== editIndex
-    );
-    setLocalExperienceList(updatedExperienceList);
-    onExperienceUpdate(updatedExperienceList);
-    setTimeout(() => {
-      setEditIndex(null);
-      setFormData(defaultFormData);
-    }, 10);
-  };
-
-  const OnReorderToggle = (e) => {
-    setReorderToggle(e.target.checked);
-  };
-
-  const handleReorder = (newOrder) => {
-    setLocalExperienceList(newOrder);
-    onExperienceUpdate(newOrder);
-  };
-
-  const renderJobItem = (experienceItem, index) => {
-    return (
-      <div className="p-3">
-        <div className="flex h-8 items-center gap-1">
-          <p className="font-semibold">{experienceItem.companyName}</p>
-          <p>&#8226;</p>
-          <p className="text-sm font-light">{experienceItem.jobTitle}</p>
-          <button
-            onClick={() => handleEditClick(index)}
-            className="btn btn-square btn-accent btn-sm ml-auto"
-          >
-            <Pencil></Pencil>
-          </button>
-        </div>
-      </div>
-    );
-  };
+  const del = () => {
+    const updated = list.filter((_, i) => i !== editIndex)
+    setList(updated); onExperienceUpdate(updated)
+    setTimeout(() => { setEditIndex(null); setFormData(defaultFormData) }, 10)
+  }
 
   return (
     <>
-      <div className="flex justify-end">
-        <label className="label cursor-pointer gap-2">
-          <span className="label-text">Reorder</span>
-          <input
-            type="checkbox"
-            onChange={OnReorderToggle}
-            checked={reorderToggle}
-            className="toggle border-black bg-accent [--tglbg:black] hover:bg-accent"
-          />
-        </label>
+      <div className="flex justify-end py-1">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-zinc-600">Reorder</label>
+          <Switch checked={reorderToggle} onCheckedChange={setReorderToggle} />
+        </div>
       </div>
-      <Reorder.Group values={localExperienceList} onReorder={handleReorder}>
-        {localExperienceList.map((experienceItem, index) => (
-          <DraggableCardItem
-            key={experienceItem.id}
-            item={experienceItem}
-            reorderToggle={reorderToggle}
-          >
-            <div
-              className={`card mt-3 w-full bg-base-200 shadow-sm ${
-                reorderToggle ? 'rounded-tl-none' : ''
-              }`}
-            >
+
+      <Reorder.Group values={list} onReorder={(newOrder) => { setList(newOrder); onExperienceUpdate(newOrder) }}>
+        {list.map((item, index) => (
+          <DraggableCardItem key={item.id} item={item} reorderToggle={reorderToggle}>
+            <div className={cn('mt-2 rounded-lg bg-zinc-100 shadow-sm', reorderToggle && 'rounded-tl-none')}>
               {editIndex === index ? (
                 <div className="p-3">
-                  <p className="font-semibold">Edit Experience</p>
+                  <p className="mb-2 font-semibold text-zinc-900">Edit Experience</p>
                   <div className="flex flex-col gap-2 sm:flex-row">
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Company</span>
-                      </div>
-                      <input
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Job Title</span>
-                      </div>
-                      <input
-                        name="jobTitle"
-                        value={formData.jobTitle}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
+                    <Field label="Company"><input name="companyName" value={formData.companyName} onChange={handleInput} placeholder="Company name" className={inputClass} /></Field>
+                    <Field label="Job Title"><input name="jobTitle" value={formData.jobTitle} onChange={handleInput} placeholder="Role" className={inputClass} /></Field>
                   </div>
-                  <label className="form-control">
-                    <div className="label">
-                      <span className="label-text">Description</span>
-                    </div>
-                    <textarea
-                      name="description"
-                      className="textarea textarea-bordered h-24"
-                      placeholder="..."
-                      value={formData.description}
-                      onChange={handleInputChange}
-                    ></textarea>
-                  </label>
+                  <Field label="Description"><textarea name="description" value={formData.description} onChange={handleInput} placeholder="..." className={textareaClass} /></Field>
                   <div className="flex flex-col gap-2 sm:flex-row">
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Date</span>
-                      </div>
-                      <input
-                        name="date"
-                        value={formData.date}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
-                    <label className="form-control w-full flex-grow">
-                      <div className="label">
-                        <span className="label-text">Location</span>
-                      </div>
-                      <input
-                        name="location"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Type here"
-                        className="input input-bordered w-full"
-                      />
-                    </label>
+                    <Field label="Date"><input name="date" value={formData.date} onChange={handleInput} placeholder="Jun 2023 - Sep 2023" className={inputClass} /></Field>
+                    <Field label="Location"><input name="location" value={formData.location} onChange={handleInput} placeholder="London, UK" className={inputClass} /></Field>
                   </div>
-                  <div>
-                    <div className="label">
-                      <span className="label-text">Skills</span>
-                    </div>
-                    <SkillsInput
-                      initialSkills={formData.skills}
-                      inputHandler={handleInputChange}
-                    ></SkillsInput>
-                  </div>
-                  <div className="mt-4 flex w-full justify-end gap-2">
-                    <button
-                      onClick={handleDeleteClick}
-                      className="btn btn-error btn-sm mr-auto"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={handleCancelClick}
-                      className="btn btn-secondary btn-sm"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSaveClick}
-                      className="btn btn-accent btn-sm"
-                    >
-                      Save
-                    </button>
+                  <Field label="Skills"><SkillsInput initialSkills={formData.skills} inputHandler={handleInput} /></Field>
+                  <div className="mt-3 flex justify-end gap-2">
+                    <Button variant="destructive" size="sm" className="mr-auto" onClick={del}>Delete</Button>
+                    <Button variant="outline" size="sm" onClick={cancel}>Cancel</Button>
+                    <Button size="sm" onClick={save}>Save</Button>
                   </div>
                 </div>
               ) : (
-                renderJobItem(experienceItem, index)
+                <div className="flex items-center gap-2 p-3">
+                  <p className="font-semibold text-zinc-900">{item.companyName}</p>
+                  <span className="text-zinc-400">·</span>
+                  <p className="text-sm text-zinc-600">{item.jobTitle}</p>
+                  <Button size="icon" className="ml-auto size-8 shrink-0" onClick={() => { setReorderToggle(false); setEditIndex(index); setFormData(item) }}>
+                    <Pencil size={14} />
+                  </Button>
+                </div>
               )}
             </div>
           </DraggableCardItem>
         ))}
       </Reorder.Group>
 
-      <div className="card mt-3 w-full bg-base-200 shadow-sm">
-        {editIndex === localExperienceList.length ? (
+      <div className="mt-2 rounded-lg bg-zinc-100 shadow-sm">
+        {editIndex === list.length ? (
           <div className="p-3">
-            <p className="font-semibold">Add Experience</p>
+            <p className="mb-2 font-semibold text-zinc-900">Add Experience</p>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Company</span>
-                </div>
-                <input
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Job Title</span>
-                </div>
-                <input
-                  name="jobTitle"
-                  value={formData.jobTitle}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
+              <Field label="Company"><input name="companyName" value={formData.companyName} onChange={handleInput} placeholder="Company name" className={inputClass} /></Field>
+              <Field label="Job Title"><input name="jobTitle" value={formData.jobTitle} onChange={handleInput} placeholder="Role" className={inputClass} /></Field>
             </div>
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text">Description</span>
-              </div>
-              <textarea
-                name="description"
-                className="textarea textarea-bordered h-24"
-                placeholder="..."
-                value={formData.description}
-                onChange={handleInputChange}
-              ></textarea>
-            </label>
+            <Field label="Description"><textarea name="description" value={formData.description} onChange={handleInput} placeholder="..." className={textareaClass} /></Field>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Date</span>
-                </div>
-                <input
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control w-full flex-grow">
-                <div className="label">
-                  <span className="label-text">Location</span>
-                </div>
-                <input
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                />
-              </label>
+              <Field label="Date"><input name="date" value={formData.date} onChange={handleInput} placeholder="Jun 2023 - Sep 2023" className={inputClass} /></Field>
+              <Field label="Location"><input name="location" value={formData.location} onChange={handleInput} placeholder="London, UK" className={inputClass} /></Field>
             </div>
-            <div>
-              <div className="label">
-                <span className="label-text">Skills</span>
-              </div>
-              <SkillsInput
-                initialSkills={formData.skills}
-                inputHandler={handleInputChange}
-              ></SkillsInput>
-            </div>
-            <div className="mt-4 flex w-full justify-end gap-2">
-              <button
-                onClick={handleCancelClick}
-                className="btn btn-secondary btn-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveClick}
-                className="btn btn-accent btn-sm"
-              >
-                Add
-              </button>
+            <Field label="Skills"><SkillsInput initialSkills={formData.skills} inputHandler={handleInput} /></Field>
+            <div className="mt-3 flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={cancel}>Cancel</Button>
+              <Button size="sm" onClick={save}>Add</Button>
             </div>
           </div>
         ) : (
-          <div className="p-3">
-            <div className="flex items-center justify-between">
-              <p>Add Experience</p>
-              <button
-                onClick={handleAddClick}
-                className="btn btn-square btn-accent btn-sm"
-              >
-                <Plus></Plus>
-              </button>
-            </div>
+          <div className="flex items-center justify-between p-3">
+            <p className="text-sm text-zinc-600">Add Experience</p>
+            <Button size="icon" className="size-8" onClick={() => { setEditIndex(list.length); setFormData({ ...defaultFormData, id: uuidv4() }) }}>
+              <Plus size={14} />
+            </Button>
           </div>
         )}
       </div>
     </>
-  );
+  )
 }

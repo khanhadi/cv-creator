@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   Page,
   Image,
@@ -8,7 +7,8 @@ import {
   Document,
   StyleSheet,
   Font,
-} from '@react-pdf/renderer';
+} from '@react-pdf/renderer'
+import type { ResumeData } from '../defaultResumeData'
 import emailIcon from '../assets/icons/cv-icons/email.png';
 import phoneIcon from '../assets/icons/cv-icons/phone.png';
 import linkedinIcon from '../assets/icons/cv-icons/linkedin.png';
@@ -30,23 +30,26 @@ Font.register({
   ],
 });
 
+interface CVContentProps {
+  resumeData: ResumeData
+  selectedSocial: string
+  sectionsOrder: string[]
+}
+
 export default function CVContent({
   resumeData,
   selectedSocial,
   sectionsOrder,
-}) {
+}: CVContentProps) {
   const sectionsToRender = sectionsOrder.filter(
     (section) => resumeData.includeSections[section]
   );
 
-  const getCustomSectionData = (customSectionData, sectionTitle) => {
-    const existingSection = customSectionData.find(
-      (section) => section.title === sectionTitle
-    );
-    return existingSection;
+  const getCustomSectionData = (customSectionData: ResumeData['customSectionData'], sectionTitle: string) => {
+    return customSectionData.find((section) => section.title === sectionTitle);
   };
 
-  const getSocialIcon = (selectedSocial) => {
+  const getSocialIcon = (selectedSocial: string) => {
     switch (selectedSocial) {
       case 'linkedin':
         return linkedinIcon;
@@ -59,7 +62,7 @@ export default function CVContent({
     }
   };
 
-  function renderSection(sectionName) {
+  function renderSection(sectionName: string) {
     switch (sectionName) {
       case 'education':
         return (
@@ -193,7 +196,7 @@ export default function CVContent({
     }
   }
 
-  function renderSectionHeader(title) {
+  function renderSectionHeader(title: string) {
     return (
       <View style={styles.hrContainer}>
         <Text style={styles.title}>{title}</Text>

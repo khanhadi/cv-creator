@@ -1,45 +1,16 @@
-// @ts-nocheck
-import { createContext, useContext, useState } from 'react';
+import { toast } from 'sonner'
 
-// Toast component
-const Toast = ({ message, type }) => {
-  let alertClass = 'alert-info';
-  if (type === 'success') alertClass = 'alert-success';
-  if (type === 'error') alertClass = 'alert-error';
+// Preserve the existing useToast() call-site API.
+// Components that call sendToast(msg, type) keep working unchanged.
+export function useToast() {
+  return (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    if (type === 'success') toast.success(message)
+    else if (type === 'error') toast.error(message)
+    else toast(message)
+  }
+}
 
-  return (
-    <div className={`alert ${alertClass} shadow-lg`}>
-      <span className="text-sm sm:text-base">{message}</span>
-    </div>
-  );
-};
-
-// Create a context for the toast
-const ToastContext = createContext();
-
-// ToastProvider component
-export const ToastProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
-
-  const sendToast = (message, type = 'info') => {
-    const id = Date.now();
-    setToasts((prevToasts) => [...prevToasts, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
-    }, 3000); // Remove toast after 3 seconds
-  };
-
-  return (
-    <ToastContext.Provider value={sendToast}>
-      {children}
-      <div className="toast toast-end fixed bottom-0 right-0 z-50 max-w-sm p-4 sm:bottom-4 sm:right-4 sm:w-auto sm:p-0">
-        {toasts.map((toast) => (
-          <Toast key={toast.id} message={toast.message} type={toast.type} />
-        ))}
-      </div>
-    </ToastContext.Provider>
-  );
-};
-
-// Custom hook to use the toast
-export const useToast = () => useContext(ToastContext);
+// No-op provider — Toaster is mounted in App.tsx via sonner's <Toaster />
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
+}
