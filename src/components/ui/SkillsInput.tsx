@@ -1,31 +1,29 @@
-// @ts-nocheck
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Badge } from './badge'
 
-export default function SkillsInput({ initialSkills, inputHandler }) {
-  const [skills, setSkills] = useState(initialSkills)
+interface SkillsInputProps {
+  value: string[]
+  onChange: (skills: string[]) => void
+}
+
+export default function SkillsInput({ value, onChange }: SkillsInputProps) {
   const [inputValue, setInputValue] = useState('')
-  const inputRef = useRef(null)
 
-  useEffect(() => {
-    inputHandler({ target: { name: 'skills', value: skills } })
-  }, [skills, inputHandler])
-
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim()) {
       e.preventDefault()
-      setSkills([...skills, inputValue.trim()])
+      onChange([...value, inputValue.trim()])
       setInputValue('')
     }
   }
 
   return (
     <div className="flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border border-zinc-200 bg-white p-2">
-      {skills.map((skill, index) => (
+      {value.map((skill, index) => (
         <Badge key={index} variant="secondary" className="gap-1">
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); setSkills(skills.filter((_, i) => i !== index)) }}
+            onClick={() => onChange(value.filter((_, i) => i !== index))}
             className="text-zinc-500 hover:text-zinc-900"
           >
             &times;
@@ -34,7 +32,6 @@ export default function SkillsInput({ initialSkills, inputHandler }) {
         </Badge>
       ))}
       <input
-        ref={inputRef}
         type="text"
         placeholder="Add skill, press Enter"
         value={inputValue}

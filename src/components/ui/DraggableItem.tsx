@@ -1,21 +1,18 @@
-// @ts-nocheck
-import { Reorder, useDragControls } from 'framer-motion';
-import { ArrowDownUp } from 'lucide-react';
+import { Reorder, useDragControls } from 'framer-motion'
+import { ArrowDownUp } from 'lucide-react'
+
+interface DraggableItemProps {
+  item: string
+  renderSection: (item: string) => React.ReactNode
+  isReorderingEnabled: boolean
+}
 
 export default function DraggableItem({
   item,
   renderSection,
   isReorderingEnabled,
-}) {
-  const dragControls = useDragControls();
-
-  const handlePointerDown = (e) => {
-    if (isReorderingEnabled) {
-      e.stopPropagation(); // Prevent the event from bubbling up
-      e.preventDefault();
-      dragControls.start(e);
-    }
-  };
+}: DraggableItemProps) {
+  const dragControls = useDragControls()
 
   return (
     <Reorder.Item
@@ -24,20 +21,22 @@ export default function DraggableItem({
       dragListener={false}
       dragControls={dragControls}
     >
-      <div className={`flex items-start`}>
+      <div className="flex items-start">
         {isReorderingEnabled && (
-          <div className={`${isReorderingEnabled ? 'cursor-grab' : ''}`}>
+          <div className="cursor-grab">
             <ArrowDownUp
-              className={`relative left-2 top-1 z-10 touch-none rounded-lg rounded-r-none bg-white p-1`}
+              className="relative left-2 top-1 z-10 touch-none rounded-lg rounded-r-none bg-white p-1"
               size={28}
-              onPointerDown={handlePointerDown}
-              draggable={false}
-              alt="Reorder"
-            ></ArrowDownUp>
+              onPointerDown={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                dragControls.start(e)
+              }}
+            />
           </div>
         )}
         <div className="flex-1">{renderSection(item)}</div>
       </div>
     </Reorder.Item>
-  );
+  )
 }

@@ -1,7 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-import App from '../components/App'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/editor')({
-  ssr: false,
-  component: App,
+  component: EditorLayout,
 })
+
+function EditorLayout() {
+  return <Outlet />
+}

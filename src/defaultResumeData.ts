@@ -1,3 +1,8 @@
+import { classicDefaultOptions } from './templates/classic/options'
+import type { TemplateOptions } from './templates/types'
+
+export type { TemplateOptions }
+
 export interface Education {
   institutionName: string
   courseTitle: string
@@ -41,6 +46,9 @@ export interface ResumeData {
   mobileNo: string
   email: string
   socialLink: string
+  socialPlatform: string
+  templateId: string
+  templateOptions: TemplateOptions
   includeSections: Record<string, boolean>
   educationList: Education[]
   experienceList: Experience[]
@@ -48,11 +56,21 @@ export interface ResumeData {
   customSectionData: CustomSection[]
 }
 
+export const DEFAULT_SECTIONS_ORDER = [
+  'education',
+  'professionalExperience',
+  'projects',
+  'Skills',
+]
+
 export const defaultResumeData: ResumeData = {
   fullName: 'Emily Chen',
   mobileNo: '+44 7912 345678',
   email: 'emily.chen@email.com',
   socialLink: 'linkedin.com/in/emilychen',
+  socialPlatform: 'linkedin',
+  templateId: 'classic',
+  templateOptions: classicDefaultOptions,
   includeSections: {
     education: true,
     professionalExperience: true,
@@ -63,7 +81,7 @@ export const defaultResumeData: ResumeData = {
     {
       institutionName: 'University of Manchester',
       courseTitle: 'M.Sc. in Advanced Computer Science',
-      date: 'Expected Gradution: Jun. 2024',
+      date: 'Expected Graduation: Jun. 2024',
       grade: 'Distinction (Expected)',
       description:
         'Specialization in Artificial Intelligence and Machine Learning. Thesis: "Explainable AI in Healthcare Decision Support Systems"',
