@@ -36,7 +36,7 @@ export default function AddCustomSection() {
           }}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="Section title"
-          className="flex h-8 flex-1 rounded-md border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:ring-1 focus:ring-primary"
+          className="flex h-8 flex-1 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-zinc-300 focus:ring-2 focus:ring-black/[0.06]"
         />
         <Button size="sm" onClick={handleAdd}>
           Add

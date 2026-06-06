@@ -41,12 +41,16 @@ export interface CustomSection {
   items: CustomSectionItem[]
 }
 
+export interface SocialLink {
+  platform: string
+  url: string
+}
+
 export interface ResumeData {
   fullName: string
   mobileNo: string
   email: string
-  socialLink: string
-  socialPlatform: string
+  socialLinks: SocialLink[]
   templateId: string
   templateOptions: TemplateOptions
   includeSections: Record<string, boolean>
@@ -67,8 +71,7 @@ export const defaultResumeData: ResumeData = {
   fullName: 'Emily Chen',
   mobileNo: '+44 7912 345678',
   email: 'emily.chen@email.com',
-  socialLink: 'linkedin.com/in/emilychen',
-  socialPlatform: 'linkedin',
+  socialLinks: [{ platform: 'linkedin', url: 'linkedin.com/in/emilychen' }],
   templateId: 'classic',
   templateOptions: classicDefaultOptions,
   includeSections: {

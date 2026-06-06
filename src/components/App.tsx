@@ -1,13 +1,17 @@
 import { useState, useRef, useEffect, useMemo, createElement, lazy, Suspense } from 'react'
-import { usePDF } from '@react-pdf/renderer'
+import { pdf } from '@react-pdf/renderer'
 import type { DocumentProps } from '@react-pdf/renderer'
-import useResizeObserver from '@react-hook/resize-observer'
-import { Eye, Edit2 } from 'lucide-react'
+import { Eye, PencilSimple } from '@phosphor-icons/react'
 import { useResumeStore } from '../store/resumeStore'
 import { getTemplate } from '../templates'
+import { preloadFonts } from '../templates/classic/renderer'
 import EditMenu from './EditMenu'
 import { Toaster } from './ui/sonner'
 import { Button } from './ui/button'
+
+const MIN_EDITOR_W = 320
+const MAX_EDITOR_W = 640
+const DEFAULT_EDITOR_W = MAX_EDITOR_W
 
 const CVPreview = lazy(() => import('./CVPreview'))
 
@@ -18,13 +22,20 @@ function App() {
   const setViewMode = useResumeStore((s) => s.setViewMode)
 
   const previewContainerRef = useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = useState(0)
-  const [containerHeight, setContainerHeight] = useState(0)
 
-  useResizeObserver(previewContainerRef, (entry) => {
-    setContainerWidth(entry.contentRect.width)
-    setContainerHeight(entry.contentRect.height)
-  })
+  const [editorWidth, setEditorWidth] = useState(DEFAULT_EDITOR_W)
+  const dragRef = useRef<{ startX: number; startW: number } | null>(null)
+
+  const onHandleDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current = { startX: e.clientX, startW: editorWidth }
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+  const onHandleDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current) return
+    const newW = Math.max(MIN_EDITOR_W, Math.min(MAX_EDITOR_W, dragRef.current.startW + e.clientX - dragRef.current.startX))
+    setEditorWidth(newW)
+  }
+  const onHandleDragEnd = () => { dragRef.current = null }
 
   const { renderer } = getTemplate(resumeData.templateId)
 
@@ -34,49 +45,96 @@ function App() {
         data: resumeData,
         options: resumeData.templateOptions,
         sectionsOrder,
-        selectedSocial: resumeData.socialPlatform,
       }) as React.ReactElement<DocumentProps>,
     [resumeData, sectionsOrder, renderer],
   )
 
-  const [pdfInstance, updatePDF] = usePDF({ document: documentElement })
+  const [pdfBuffer, setPdfBuffer] = useState<ArrayBuffer | null>(null)
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [pdfLoading, setPdfLoading] = useState(false)
+  const prevPdfUrl = useRef<string | null>(null)
 
   useEffect(() => {
-    const id = setTimeout(() => updatePDF(documentElement), 400)
-    return () => clearTimeout(id)
-  }, [documentElement, updatePDF])
+    preloadFonts().catch(() => {})
+    return () => { if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current) }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    setPdfLoading(true)
+    const id = setTimeout(async () => {
+      if (cancelled) return
+      try {
+        const instance = pdf()
+        instance.updateContainer(documentElement)
+        const blob = await instance.toBlob()
+        if (cancelled) return
+        const [buffer, url] = await Promise.all([
+          blob.arrayBuffer(),
+          Promise.resolve(URL.createObjectURL(blob)),
+        ])
+        if (cancelled) return
+        if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
+        prevPdfUrl.current = url
+        setPdfBuffer(buffer)
+        setPdfUrl(url)
+      } catch (err) {
+        console.error('[PDF] generation failed:', err)
+      } finally {
+        if (!cancelled) setPdfLoading(false)
+      }
+    }, 150)
+    return () => { cancelled = true; clearTimeout(id) }
+  }, [documentElement])
 
   return (
     <>
       <Toaster richColors />
-      <div className="flex h-screen font-normal antialiased">
+      <div className="flex h-screen overflow-hidden font-normal antialiased">
+
+        {/* Editor panel */}
         <div
-          className={`h-full w-full overflow-y-auto border-r border-zinc-200 bg-zinc-50 lg:w-[50%] ${
+          className={`h-full shrink-0 overflow-hidden bg-background ${
             viewMode === 'edit' ? 'block' : 'hidden'
           } lg:block`}
+          style={{ width: editorWidth }}
         >
-          <EditMenu pdfInstance={pdfInstance} />
+          <div className="h-full overflow-x-hidden overflow-y-auto" style={{ width: editorWidth }}>
+            <EditMenu pdfInstance={{ loading: pdfLoading, url: pdfUrl, error: null }} />
+          </div>
         </div>
+
+        {/* Resize handle — desktop only. Single 1px line + pill + collapse on hover. */}
+        <div
+          className="group relative hidden shrink-0 cursor-col-resize select-none lg:block"
+          style={{ width: 8, marginLeft: -8, zIndex: 20 }}
+          onPointerDown={onHandleDragStart}
+          onPointerMove={onHandleDragMove}
+          onPointerUp={onHandleDragEnd}
+          onPointerCancel={onHandleDragEnd}
+        >
+          {/* The single separator line */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-zinc-200 transition-colors group-hover:bg-zinc-400" />
+          {/* Grip pill */}
+          <div className="pointer-events-none absolute top-1/2 right-0 h-10 w-px translate-x-1/2 -translate-y-1/2 rounded-full bg-transparent transition-all group-hover:w-[3px] group-hover:bg-zinc-400" />
+        </div>
+
+        {/* Preview — takes remaining width */}
         <div
           ref={previewContainerRef}
-          className={`h-full w-full lg:w-[50%] ${
+          className={`h-full min-w-0 flex-1 bg-[oklch(0.18_0_0)] ${
             viewMode === 'preview' ? 'block' : 'hidden'
           } lg:block`}
         >
           <Suspense fallback={null}>
-            <CVPreview
-              url={pdfInstance.url ?? null}
-              loading={pdfInstance.loading}
-              containerWidth={containerWidth}
-              containerHeight={containerHeight}
-            />
+            <CVPreview pdfBuffer={pdfBuffer} loading={pdfLoading} />
           </Suspense>
         </div>
+
+        {/* Mobile tab toggle */}
         <Button
           className="fixed bottom-5 right-5 z-40 gap-2 shadow-md lg:hidden"
-          onClick={() =>
-            setViewMode(viewMode === 'edit' ? 'preview' : 'edit')
-          }
+          onClick={() => setViewMode(viewMode === 'edit' ? 'preview' : 'edit')}
         >
           {viewMode === 'edit' ? (
             <>
@@ -85,7 +143,7 @@ function App() {
             </>
           ) : (
             <>
-              <Edit2 size={16} />
+              <PencilSimple size={16} />
               <span>Edit</span>
             </>
           )}

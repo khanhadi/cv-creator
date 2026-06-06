@@ -27,7 +27,6 @@ export interface TemplateRenderProps {
   data: ResumeData
   options: TemplateOptions
   sectionsOrder: string[]
-  selectedSocial: string
 }
 
 export type TemplateRenderer = (props: TemplateRenderProps) => ReactElement<DocumentProps>

@@ -1,11 +1,22 @@
 import { useState, useCallback, useEffect } from 'react'
-import { Reorder } from 'framer-motion'
-import { Pencil, Plus } from 'lucide-react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { DotsSixVertical, Plus } from '@phosphor-icons/react'
 import { v4 as uuidv4 } from 'uuid'
 import { cn } from '../../lib/utils'
 import { Button } from './button'
-import { Switch } from './switch'
-import { DraggableCardItem } from './DraggableCardItem'
+import { SortableCardItem } from './SortableCardItem'
 import SkillsInput from './SkillsInput'
 
 export type FieldType = 'text' | 'textarea' | 'skills' | 'richtext'
@@ -31,14 +42,14 @@ interface SectionEditorProps {
 }
 
 const inputClass =
-  'flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary'
+  'flex h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 py-1 text-sm outline-none transition focus:border-zinc-300 focus:ring-2 focus:ring-black/[0.06]'
 const textareaClass =
-  'flex min-h-[80px] w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary'
+  'flex min-h-[80px] w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-zinc-300 focus:ring-2 focus:ring-black/[0.06]'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-zinc-700">{label}</label>
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs font-medium text-zinc-400">{label}</label>
       {children}
     </div>
   )
@@ -79,8 +90,11 @@ export function SectionEditor({
 
   const [list, setList] = useState<SectionItem[]>(() => items.map(ensureId))
   const [editIndex, setEditIndex] = useState<number | null>(null)
-  const [reorderToggle, setReorderToggle] = useState(false)
   const [formData, setFormData] = useState<SectionItem>(defaultItem)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+  )
 
   useEffect(() => {
     setList(items.map(ensureId))
@@ -171,18 +185,18 @@ export function SectionEditor({
   function renderForm(mode: 'edit' | 'add') {
     const rows = groupIntoRows(fields)
     return (
-      <div className="p-3">
-        <p className="mb-2 font-semibold text-zinc-900">
-          {mode === 'edit' ? `Edit ${itemLabel}` : `Add ${itemLabel}`}
+      <div className="p-2">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+          {mode === 'edit' ? `Edit ${itemLabel}` : `New ${itemLabel}`}
         </p>
         <div className="flex flex-col gap-2">
           {rows.map((row, rowIdx) =>
             row.length === 1 ? (
               <div key={rowIdx}>{renderFieldInput(row[0])}</div>
             ) : (
-              <div key={rowIdx} className="flex flex-col gap-2 sm:flex-row">
+              <div key={rowIdx} className="flex flex-col gap-2">
                 {row.map((field) => (
-                  <div key={field.name} className="w-full sm:w-1/2">
+                  <div key={field.name} className="w-full">
                     {renderFieldInput(field)}
                   </div>
                 ))}
@@ -190,18 +204,18 @@ export function SectionEditor({
             ),
           )}
         </div>
-        <div className="mt-3 flex justify-end gap-2">
+        <div className="mt-3 flex justify-end gap-1.5">
           {mode === 'edit' && (
             <Button
-              variant="destructive"
+              variant="ghost"
               size="sm"
-              className="mr-auto"
+              className="mr-auto text-red-500 hover:bg-red-50 hover:text-red-600"
               onClick={del}
             >
               Delete
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={cancel}>
+          <Button variant="ghost" size="sm" onClick={cancel}>
             Cancel
           </Button>
           <Button size="sm" onClick={save}>
@@ -214,78 +228,85 @@ export function SectionEditor({
 
   return (
     <>
-      <div className="flex justify-end py-1">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-zinc-600">Reorder</label>
-          <Switch checked={reorderToggle} onCheckedChange={setReorderToggle} />
-        </div>
-      </div>
-
-      <Reorder.Group
-        values={list}
-        onReorder={(newOrder) => {
-          setList(newOrder)
-          onUpdate(newOrder)
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToVerticalAxis]}
+        onDragEnd={({ active, over }) => {
+          if (over && active.id !== over.id) {
+            const oldIndex = list.findIndex((i) => i.id === String(active.id))
+            const newIndex = list.findIndex((i) => i.id === String(over.id))
+            const updated = arrayMove(list, oldIndex, newIndex)
+            setList(updated)
+            onUpdate(updated)
+          }
         }}
       >
-        {list.map((item, index) => (
-          <DraggableCardItem key={item.id} item={item} reorderToggle={reorderToggle}>
-            <div
-              className={cn(
-                'mt-2 rounded-lg bg-zinc-100 shadow-sm',
-                reorderToggle && 'rounded-tl-none',
-              )}
-            >
-              {editIndex === index ? (
-                renderForm('edit')
-              ) : (
-                <div className="flex items-center gap-2 p-3">
-                  <p className="font-semibold text-zinc-900 truncate">
-                    {primaryField ? (item[primaryField.name] as string) : ''}
-                  </p>
-                  {secondaryField && (
-                    <>
-                      <span className="shrink-0 text-zinc-400">·</span>
-                      <p className="min-w-0 truncate text-sm text-zinc-600">
-                        {item[secondaryField.name] as string}
-                      </p>
-                    </>
+        <SortableContext
+          items={list.map((i) => i.id!)}
+          strategy={verticalListSortingStrategy}
+        >
+          {list.map((item, index) => (
+            <SortableCardItem key={item.id} id={item.id!}>
+              {(dragHandleProps) => (
+                <div className={cn(
+                  'mt-2 overflow-hidden rounded-lg border border-zinc-100 bg-white transition-shadow',
+                )}>
+                  {editIndex === index ? (
+                    renderForm('edit')
+                  ) : (
+                    <div className="flex items-center transition-colors hover:bg-zinc-100">
+                      <span
+                        className="flex cursor-grab items-center self-stretch px-3 text-zinc-500 hover:text-zinc-700 active:cursor-grabbing"
+                        aria-label="Drag to reorder"
+                        {...dragHandleProps}
+                      >
+                        <DotsSixVertical size={14} className="shrink-0" />
+                      </span>
+                      <button
+                        type="button"
+                        className="flex min-w-0 flex-1 items-center gap-2 py-3 pr-3 text-left"
+                        onClick={() => {
+                          setEditIndex(index)
+                          setFormData(item)
+                        }}
+                      >
+                        <p className="truncate text-sm font-medium text-zinc-900">
+                          {primaryField ? (item[primaryField.name] as string) : '(untitled)'}
+                        </p>
+                        {secondaryField && (item[secondaryField.name] as string) && (
+                          <>
+                            <span className="shrink-0 text-zinc-300">·</span>
+                            <p className="min-w-0 truncate text-sm text-zinc-500">
+                              {item[secondaryField.name] as string}
+                            </p>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
-                  <Button
-                    size="icon"
-                    className="ml-auto size-8 shrink-0"
-                    onClick={() => {
-                      setReorderToggle(false)
-                      setEditIndex(index)
-                      setFormData(item)
-                    }}
-                  >
-                    <Pencil size={14} />
-                  </Button>
                 </div>
               )}
-            </div>
-          </DraggableCardItem>
-        ))}
-      </Reorder.Group>
+            </SortableCardItem>
+          ))}
+        </SortableContext>
+      </DndContext>
 
-      <div className="mt-2 rounded-lg bg-zinc-100 shadow-sm">
+      <div className="mt-2 overflow-hidden rounded-lg border border-dashed border-zinc-200 bg-white transition-colors hover:border-zinc-300">
         {editIndex === list.length ? (
           renderForm('add')
         ) : (
-          <div className="flex items-center justify-between p-3">
-            <p className="text-sm text-zinc-600">Add {itemLabel}</p>
-            <Button
-              size="icon"
-              className="size-8"
-              onClick={() => {
-                setEditIndex(list.length)
-                setFormData(defaultItem)
-              }}
-            >
-              <Plus size={14} />
-            </Button>
-          </div>
+          <button
+            type="button"
+            className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors hover:bg-zinc-50"
+            onClick={() => {
+              setEditIndex(list.length)
+              setFormData(defaultItem)
+            }}
+          >
+            <Plus size={13} className="shrink-0 text-zinc-400" />
+            <span className="text-sm text-zinc-400">Add {itemLabel}</span>
+          </button>
         )}
       </div>
     </>

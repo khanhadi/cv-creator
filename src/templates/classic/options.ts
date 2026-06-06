@@ -38,7 +38,7 @@ export const CLASSIC_PALETTES: ColorScheme[] = [
 export const classicDefaultOptions: TemplateOptions = {
   colorScheme: CLASSIC_PALETTES[0],
   font: {
-    family: 'Open Sauce One',
+    family: 'Inter',
     sizeName: 30,
     sizeSection: 13,
     sizeBody: 11,

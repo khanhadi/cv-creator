@@ -1,9 +1,20 @@
 import { useState } from 'react'
-import { Reorder } from 'framer-motion'
-import { ChevronDown, Download, Loader2, Trash2 } from 'lucide-react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CaretDown, DownloadSimple, Eye, EyeSlash, DotsSixVertical, CircleNotch, Trash } from '@phosphor-icons/react'
 import { cn } from '../lib/utils'
 import { Button } from './ui/button'
-import { Checkbox } from './ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -12,7 +23,7 @@ import {
   DialogTitle,
 } from './ui/dialog'
 import ResumeDataTools from './ui/ResumeDataTools'
-import DraggableItem from './ui/DraggableItem'
+import { SortableSectionItem } from './ui/SortableSectionItem'
 import SocialInput from './ui/SocialInput'
 import { SectionEditor } from './ui/SectionEditor'
 import type { FieldDef, SectionItem } from './ui/SectionEditor'
@@ -87,72 +98,95 @@ const DEFAULT_CUSTOM_ITEM: Omit<CustomSectionItem, 'id'> = {
 
 interface SectionShellProps {
   title: string
-  checked?: boolean
-  onCheckedChange?: () => void
+  included?: boolean
+  onIncludeToggle?: () => void
   onDelete?: () => void
-  isReordering: boolean
+  dragHandleProps?: React.HTMLAttributes<HTMLElement>
   defaultOpen?: boolean
   children: React.ReactNode
 }
 
 function SectionShell({
   title,
-  checked,
-  onCheckedChange,
+  included,
+  onIncludeToggle,
   onDelete,
-  isReordering,
+  dragHandleProps,
   defaultOpen = false,
   children,
 }: SectionShellProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
+  const isHidden = onIncludeToggle !== undefined && included === false
 
   return (
-    <div
-      className={cn(
-        'mt-1 overflow-hidden rounded-lg border border-zinc-200 bg-white',
-        isReordering && 'rounded-tl-none',
-      )}
-    >
-      <div className="flex items-center gap-2 px-3 py-3">
-        {onCheckedChange && (
-          <Checkbox
-            checked={checked}
-            onCheckedChange={onCheckedChange}
+    <div className={cn(
+      'mt-2 overflow-hidden rounded-xl bg-white transition-shadow',
+      isHidden
+        ? 'opacity-50 shadow-sm'
+        : 'shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.06)]',
+    )}>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-4 py-3.5 transition-colors hover:bg-zinc-50"
+      >
+        {dragHandleProps && (
+          <span
+            className="flex shrink-0 cursor-grab items-center text-zinc-500 hover:text-zinc-700 active:cursor-grabbing"
+            aria-label="Drag to reorder"
             onClick={(e) => e.stopPropagation()}
-            className="shrink-0"
-          />
+            {...dragHandleProps}
+          >
+            <DotsSixVertical size={14} />
+          </span>
         )}
-        <button
-          type="button"
-          className="flex-1 text-left text-base font-medium text-zinc-900"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        {onIncludeToggle && (
+          <button
+            type="button"
+            aria-label={included ? 'Hide from PDF' : 'Show in PDF'}
+            onClick={(e) => { e.stopPropagation(); onIncludeToggle() }}
+            className={cn(
+              'flex shrink-0 items-center transition-colors',
+              included ? 'text-zinc-400 hover:text-zinc-600' : 'text-zinc-300 hover:text-zinc-500',
+            )}
+          >
+            {included ? <Eye size={14} /> : <EyeSlash size={14} />}
+          </button>
+        )}
+        <span className={cn(
+          'flex-1 cursor-pointer text-left text-sm font-medium',
+          isHidden ? 'text-zinc-400' : 'text-zinc-900',
+        )}>
           {title}
-        </button>
+        </span>
         {onDelete && (
           <Button
-            variant="destructive"
+            variant="ghost"
             size="icon"
-            className="size-7 shrink-0"
+            aria-label={`Delete ${title} section`}
+            className="size-6 shrink-0 text-zinc-400 hover:text-red-500 hover:bg-red-50"
             onClick={(e) => {
               e.stopPropagation()
               onDelete()
             }}
           >
-            <Trash2 size={13} />
+            <Trash size={12} />
           </Button>
         )}
-        <ChevronDown
-          size={18}
+        <CaretDown
+          size={16}
+          aria-hidden="true"
           className={cn(
-            'shrink-0 cursor-pointer text-zinc-400 transition-transform',
+            'shrink-0 text-zinc-400 transition-transform duration-200',
             isOpen && 'rotate-180',
           )}
-          onClick={() => setIsOpen(!isOpen)}
         />
       </div>
       {isOpen && (
-        <div className="border-t border-zinc-100 px-3 pb-3 pt-2">{children}</div>
+        <div className="border-t border-zinc-100 bg-zinc-50 px-3 pb-4 pt-3">{children}</div>
       )}
     </div>
   )
@@ -168,11 +202,14 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
   const deleteCustomSection = useResumeStore((s) => s.deleteCustomSection)
 
   const [activeTab, setActiveTab] = useState<'content' | 'design'>('content')
-  const [reorderToggle, setReorderToggle] = useState(false)
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean
     sectionName: string | null
   }>({ isOpen: false, sectionName: null })
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+  )
 
   const onIncludeChange = (sectionName: string) => {
     setField('includeSections', {
@@ -191,15 +228,15 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
     setField('customSectionData', updated)
   }
 
-  function renderSection(sectionName: string) {
+  function renderSection(sectionName: string, dragHandleProps?: React.HTMLAttributes<HTMLElement>) {
     switch (sectionName) {
       case 'professionalExperience':
         return (
           <SectionShell
             title="Professional Experience"
-            checked={resumeData.includeSections.professionalExperience}
-            onCheckedChange={() => onIncludeChange('professionalExperience')}
-            isReordering={reorderToggle}
+            included={resumeData.includeSections.professionalExperience}
+            onIncludeToggle={() => onIncludeChange('professionalExperience')}
+            dragHandleProps={dragHandleProps}
           >
             <SectionEditor
               items={resumeData.experienceList as unknown as SectionItem[]}
@@ -215,9 +252,9 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
         return (
           <SectionShell
             title="Education"
-            checked={resumeData.includeSections.education}
-            onCheckedChange={() => onIncludeChange('education')}
-            isReordering={reorderToggle}
+            included={resumeData.includeSections.education}
+            onIncludeToggle={() => onIncludeChange('education')}
+            dragHandleProps={dragHandleProps}
           >
             <SectionEditor
               items={resumeData.educationList as unknown as SectionItem[]}
@@ -233,9 +270,9 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
         return (
           <SectionShell
             title="Projects"
-            checked={resumeData.includeSections.projects}
-            onCheckedChange={() => onIncludeChange('projects')}
-            isReordering={reorderToggle}
+            included={resumeData.includeSections.projects}
+            onIncludeToggle={() => onIncludeChange('projects')}
+            dragHandleProps={dragHandleProps}
           >
             <SectionEditor
               items={resumeData.projectsList as unknown as SectionItem[]}
@@ -254,12 +291,12 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
         return (
           <SectionShell
             title={sectionName}
-            checked={resumeData.includeSections[sectionName]}
-            onCheckedChange={() => onIncludeChange(sectionName)}
+            included={resumeData.includeSections[sectionName]}
+            onIncludeToggle={() => onIncludeChange(sectionName)}
             onDelete={() =>
               setDeleteModal({ isOpen: true, sectionName })
             }
-            isReordering={reorderToggle}
+            dragHandleProps={dragHandleProps}
           >
             <SectionEditor
               items={(sectionData?.items ?? []) as unknown as SectionItem[]}
@@ -274,22 +311,25 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
     }
   }
 
+  const inputClass =
+    'flex h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 py-1 text-sm outline-none transition focus:border-zinc-300 focus:ring-2 focus:ring-black/[0.06]'
+
   return (
     <div className="flex h-full flex-col">
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 border-b border-zinc-200 bg-zinc-50">
-        <div className="flex items-center justify-between px-4 pt-4 pb-0">
+      <div className="sticky top-0 z-20 border-b border-zinc-100 bg-white">
+        <div className="flex items-center justify-between px-5 pt-4 pb-0">
           <div>
-            <h1 className="text-lg font-semibold tracking-tight text-zinc-900">
-              cv<span className="text-primary">creator</span>
+            <h1 className="text-sm font-semibold tracking-tight text-zinc-900">
+              cv<span className="font-medium text-zinc-400">creator</span>
             </h1>
-            <p className="text-xs text-zinc-400">
+            <p className="mt-0.5 text-[11px] text-zinc-400">
               by{' '}
               <a
                 href="https://khanhadi.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-primary hover:opacity-80"
+                className="text-zinc-500 hover:text-zinc-800"
               >
                 khanhadi
               </a>
@@ -297,11 +337,11 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
           </div>
           <div className="flex items-center gap-2">
             {pdfInstance.loading ? (
-              <Loader2 size={15} className="animate-spin text-zinc-400" />
+              <CircleNotch size={15} className="animate-spin text-zinc-400" />
             ) : pdfInstance.url ? (
               <a href={pdfInstance.url} download="CV.pdf">
                 <Button size="sm" className="gap-1.5">
-                  <Download size={13} />
+                  <DownloadSimple size={13} />
                   Download
                 </Button>
               </a>
@@ -316,10 +356,10 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                'border-b-2 px-4 py-2 text-sm font-medium capitalize transition-colors',
+                'border-b-2 px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors',
                 activeTab === tab
-                  ? 'border-primary text-zinc-900'
-                  : 'border-transparent text-zinc-500 hover:text-zinc-700',
+                  ? 'border-zinc-900 text-zinc-900'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-700',
               )}
             >
               {tab}
@@ -331,41 +371,21 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === 'content' && (
-          <div className="px-4 py-4">
-            {/* Tools + reorder toggle */}
-            <div className="mb-3 flex items-center justify-between">
+          <div className="px-5 py-4">
+            {/* Tools row */}
+            <div className="mb-3">
               <ResumeDataTools />
-              <div className="flex items-center gap-2">
-                <label className="cursor-pointer text-sm text-zinc-500">
-                  Reorder
-                </label>
-                <button
-                  onClick={() => setReorderToggle((v) => !v)}
-                  className={cn(
-                    'relative inline-flex h-5 w-9 items-center rounded-full border-2 border-transparent transition-colors focus:outline-none',
-                    reorderToggle ? 'bg-primary' : 'bg-zinc-200',
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'inline-block h-4 w-4 rounded-full bg-white shadow transition-transform',
-                      reorderToggle ? 'translate-x-4' : 'translate-x-0',
-                    )}
-                  />
-                </button>
-              </div>
             </div>
 
             {/* Personal Information */}
             <SectionShell
               title="Personal Information"
               defaultOpen
-              isReordering={false}
             >
               <div className="flex flex-col gap-3 pt-1">
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <div className="flex w-full flex-col gap-1 sm:w-1/2">
-                    <label className="text-sm font-medium text-zinc-700">
+                  <div className="flex w-full flex-col gap-1.5 sm:w-1/2">
+                    <label className="text-xs font-medium text-zinc-400">
                       Name
                     </label>
                     <input
@@ -373,67 +393,70 @@ export default function EditMenu({ pdfInstance }: EditMenuProps) {
                       onChange={(e) => setField('fullName', e.target.value)}
                       type="text"
                       placeholder="Full name"
-                      className="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary"
+                      className={inputClass}
                     />
                   </div>
-                  <div className="flex w-full flex-col gap-1 sm:w-1/2">
-                    <label className="text-sm font-medium text-zinc-700">
-                      Mobile No.
+                  <div className="flex w-full flex-col gap-1.5 sm:w-1/2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Mobile
                     </label>
                     <input
                       value={resumeData.mobileNo}
                       onChange={(e) => setField('mobileNo', e.target.value)}
                       type="text"
                       placeholder="+44 7000 000000"
-                      className="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary"
+                      className={inputClass}
                     />
                   </div>
                 </div>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <div className="flex w-full flex-col gap-1 sm:w-1/2">
-                    <label className="text-sm font-medium text-zinc-700">
-                      Email
-                    </label>
-                    <input
-                      value={resumeData.email}
-                      onChange={(e) => setField('email', e.target.value)}
-                      type="text"
-                      placeholder="email@example.com"
-                      className="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm outline-none transition focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div className="w-full sm:w-1/2">
-                    <SocialInput />
-                  </div>
+                <div className="flex w-full flex-col gap-1.5">
+                  <label className="text-xs font-medium text-zinc-400">Email</label>
+                  <input
+                    value={resumeData.email}
+                    onChange={(e) => setField('email', e.target.value)}
+                    type="text"
+                    placeholder="email@example.com"
+                    className={inputClass}
+                  />
                 </div>
+                <SocialInput />
               </div>
             </SectionShell>
 
             {/* Sections */}
-            <Reorder.Group
-              axis="y"
-              values={sectionsOrder}
-              onReorder={setSectionsOrder}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}
+              onDragEnd={({ active, over }) => {
+                if (over && active.id !== over.id) {
+                  const oldIndex = sectionsOrder.indexOf(String(active.id))
+                  const newIndex = sectionsOrder.indexOf(String(over.id))
+                  setSectionsOrder(arrayMove(sectionsOrder, oldIndex, newIndex))
+                }
+              }}
             >
-              {sectionsOrder.map((section) => (
-                <DraggableItem
-                  key={section}
-                  item={section}
-                  renderSection={renderSection}
-                  isReorderingEnabled={reorderToggle}
-                />
-              ))}
-            </Reorder.Group>
+              <SortableContext
+                items={sectionsOrder}
+                strategy={verticalListSortingStrategy}
+              >
+                {sectionsOrder.map((section) => (
+                  <SortableSectionItem key={section} id={section}>
+                    {(dragHandleProps) => renderSection(section, dragHandleProps)}
+                  </SortableSectionItem>
+                ))}
+              </SortableContext>
+            </DndContext>
 
             {/* Add custom section */}
-            <div className="mt-1 rounded-lg border border-dashed border-zinc-300 bg-white p-4">
+            <div className="mt-2 rounded-xl border border-dashed border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300">
               <AddCustomSection />
             </div>
           </div>
         )}
 
         {activeTab === 'design' && (
-          <div className="px-4 py-4">
+          <div className="px-5 py-4">
             <DesignTab />
           </div>
         )}

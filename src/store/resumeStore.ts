@@ -31,12 +31,24 @@ interface ResumeStore {
 }
 
 export function normalizeResumeData(data: Partial<ResumeData>): ResumeData {
+  // Migrate old single-link fields to the new array format
+  const raw = data as Record<string, unknown>
+  const socialLinks: ResumeData['socialLinks'] = data.socialLinks ?? (
+    typeof raw['socialLink'] === 'string' && raw['socialLink']
+      ? [{ platform: typeof raw['socialPlatform'] === 'string' ? raw['socialPlatform'] : 'linkedin', url: raw['socialLink'] }]
+      : defaultResumeData.socialLinks
+  )
+  const templateOptions = data.templateOptions ?? classicDefaultOptions
+  // Migrate font family if stored with old name
+  const font = templateOptions.font?.family === 'Open Sauce One'
+    ? { ...templateOptions.font, family: 'Inter' }
+    : templateOptions.font
   return {
     ...defaultResumeData,
     ...data,
     templateId: data.templateId ?? 'classic',
-    templateOptions: data.templateOptions ?? classicDefaultOptions,
-    socialPlatform: data.socialPlatform ?? 'linkedin',
+    templateOptions: { ...templateOptions, font },
+    socialLinks,
   }
 }
 
@@ -93,7 +105,7 @@ export const useResumeStore = create<ResumeStore>()(
             fullName: '',
             mobileNo: '',
             email: '',
-            socialLink: '',
+            socialLinks: [],
             includeSections: {},
             educationList: [],
             experienceList: [],
@@ -190,6 +202,16 @@ export const useResumeStore = create<ResumeStore>()(
 
       setViewMode: (mode) => set({ viewMode: mode }),
     }),
-    { name: 'resume-store' },
+    {
+      name: 'resume-store',
+      merge: (persisted: unknown, current: ResumeStore): ResumeStore => {
+        const p = persisted as Partial<ResumeStore>
+        return {
+          ...current,
+          ...p,
+          resumeData: normalizeResumeData((p.resumeData ?? {}) as Partial<ResumeData>),
+        }
+      },
+    },
   ),
 )

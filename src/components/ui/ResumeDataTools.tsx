@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { toast } from 'sonner'
-import { Upload } from 'lucide-react'
+import { UploadSimple, Export, ArrowCounterClockwise } from '@phosphor-icons/react'
 import validateResumeData from '../../utils/validateResumeData'
 import { Button } from '../ui/button'
 import {
@@ -91,7 +91,8 @@ export default function ResumeDataTools() {
           <span className="mb-1 text-xs text-zinc-400">{loadedFile}</span>
         )}
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" onClick={handleExport}>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Export size={13} />
             Export
           </Button>
           <a
@@ -100,10 +101,12 @@ export default function ResumeDataTools() {
             download={`${resumeData.fullName?.split(' ')[0] ?? 'resume'}_data.json`}
             className="hidden"
           />
-          <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+            <UploadSimple size={13} />
             Import
           </Button>
-          <Button variant="secondary" size="sm" onClick={() => setResetOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setResetOpen(true)}>
+            <ArrowCounterClockwise size={13} />
             Reset
           </Button>
         </div>
@@ -129,7 +132,7 @@ export default function ResumeDataTools() {
               if (file) handleImport(file)
             }}
           >
-            <Upload size={40} className="mb-3 text-zinc-400" />
+            <UploadSimple size={40} className="mb-3 text-zinc-400" />
             <p className="mb-1 text-sm text-zinc-500">
               <span className="font-semibold">Click to upload</span> or drag and drop
             </p>

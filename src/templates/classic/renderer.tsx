@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   Page,
   Image,
@@ -16,21 +17,28 @@ import githubIcon from '../../assets/icons/cv-icons/github.png'
 import xIcon from '../../assets/icons/cv-icons/x.png'
 import linkIcon from '../../assets/icons/cv-icons/link.png'
 import { richTextToPdf } from '../../utils/richTextToPdf'
+import interRegular from '@fontsource/inter/files/inter-latin-400-normal.woff'
+import interMedium from '@fontsource/inter/files/inter-latin-500-normal.woff'
 
 let fontsRegistered = false
 function ensureFonts() {
   if (fontsRegistered) return
   Font.register({
-    family: 'Open Sauce One',
+    family: 'Inter',
     fonts: [
-      { src: 'https://fonts.cdnfonts.com/s/88496/OpenSauceOne-Regular.woff' },
-      {
-        src: 'https://fonts.cdnfonts.com/s/88496/OpenSauceOne-SemiBold.woff',
-        fontWeight: 'semibold',
-      },
+      { src: interRegular },
+      { src: interMedium, fontWeight: 500 },
     ],
   })
   fontsRegistered = true
+}
+
+export async function preloadFonts() {
+  ensureFonts()
+  await Promise.all([
+    Font.load({ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 400 }),
+    Font.load({ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 500 }),
+  ])
 }
 
 function createStyles(options: TemplateOptions) {
@@ -52,12 +60,15 @@ function createStyles(options: TemplateOptions) {
     },
     fullName: {
       fontSize: font.sizeName,
+      fontWeight: 500,
       color: colorScheme.heading,
     },
     contact: {
-      fontSize: font.sizeBody,
+      marginTop: 4,
+      fontSize: Math.max(8, font.sizeBody - 1),
       display: 'flex',
       flexDirection: 'row',
+      flexWrap: 'wrap',
     },
     contactItem: {
       color: colorScheme.primary,
@@ -67,43 +78,54 @@ function createStyles(options: TemplateOptions) {
     icon: {
       alignSelf: 'flex-end',
       marginRight: 3,
-      width: 13,
-      height: 13,
+      width: 12,
+      height: 12,
     },
     title: {
-      marginTop: 12,
+      marginTop: 10,
+      marginBottom: 2,
       fontSize: font.sizeSection,
+      fontWeight: 500,
       color: colorScheme.heading,
+      letterSpacing: 0.1,
     },
     hrContainer: {
       width: '100%',
+      marginBottom: 3,
     },
     hr: {
-      borderBottomWidth: '0.5',
+      borderBottomWidth: '0.75',
       borderBottomColor: colorScheme.divider,
     },
     section: {
       width: '100%',
       alignSelf: 'flex-start',
       fontSize: font.sizeBody,
-      marginTop: 2,
+      marginTop: 6,
     },
     sectionSplit: {
       width: '100%',
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
+      alignItems: 'flex-start',
     },
     leftTitle: {
-      fontWeight: 'semibold',
+      fontWeight: 500,
+      fontSize: font.sizeBody + 0.5,
       color: colorScheme.heading,
+      lineHeight: 1.4,
     },
     rightTitle: {
+      fontSize: Math.max(8, font.sizeBody - 0.5),
       color: colorScheme.subtext,
+      lineHeight: 1.4,
     },
     rightTitleBold: {
-      fontWeight: 'semibold',
+      fontWeight: 500,
+      fontSize: Math.max(8, font.sizeBody - 0.5),
       color: colorScheme.subtext,
+      lineHeight: 1.4,
     },
     link: {
       color: colorScheme.heading,
@@ -120,7 +142,10 @@ function createStyles(options: TemplateOptions) {
       alignItems: 'center',
     },
     body: {
+      marginTop: 2,
+      fontSize: Math.max(8, font.sizeBody - 1),
       color: colorScheme.text,
+      lineHeight: 1.5,
     },
   })
 }
@@ -131,8 +156,10 @@ function getSocialIcon(platform: string) {
       return githubIcon
     case 'x':
       return xIcon
-    default:
+    case 'linkedin':
       return linkedinIcon
+    default:
+      return linkIcon
   }
 }
 
@@ -140,7 +167,6 @@ export default function ClassicRenderer({
   data,
   options,
   sectionsOrder,
-  selectedSocial,
 }: TemplateRenderProps) {
   ensureFonts()
   const styles = createStyles(options)
@@ -285,17 +311,21 @@ export default function ClassicRenderer({
             <Image src={phoneIcon} style={styles.icon} />
           )}
           <Text style={styles.contactItem}>{data.mobileNo}</Text>
-          {options.showIcons && (
-            <Image src={getSocialIcon(selectedSocial)} style={styles.icon} />
-          )}
-          <Text style={styles.contactItem}>
-            <Link src={data.socialLink}></Link>
-            {data.socialLink}
-          </Text>
+          {(data.socialLinks ?? []).map(({ platform, url }) => (
+            <React.Fragment key={platform}>
+              {options.showIcons && (
+                <Image src={getSocialIcon(platform)} style={styles.icon} />
+              )}
+              <Text style={styles.contactItem}>
+                <Link src={url.startsWith('http') ? url : `https://${url}`} />
+                {url}
+              </Text>
+            </React.Fragment>
+          ))}
         </View>
         <View>
-          {sectionsToRender.map((section, index) => (
-            <View key={index}>{renderSection(section)}</View>
+          {sectionsToRender.map((section) => (
+            <View key={section}>{renderSection(section)}</View>
           ))}
         </View>
       </Page>

@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react'
+import { Check } from '@phosphor-icons/react'
 import { cn } from '../lib/utils'
 import { useResumeStore } from '../store/resumeStore'
 import { TEMPLATE_REGISTRY } from '../templates'
@@ -28,8 +28,8 @@ function TemplateCard({
       className={cn(
         'relative flex flex-col overflow-hidden rounded-lg border-2 transition-all',
         isSelected
-          ? 'border-primary shadow-sm'
-          : 'border-zinc-200 hover:border-zinc-300',
+          ? 'border-zinc-900 shadow-sm'
+          : 'border-zinc-200 bg-white hover:border-zinc-400',
         !isAvailable && 'cursor-not-allowed opacity-50',
       )}
     >
@@ -57,7 +57,7 @@ function TemplateCard({
         </div>
       </div>
 
-      <div className="border-t border-zinc-100 px-2 py-1.5">
+      <div className="border-t border-zinc-200 px-2 py-1.5">
         <p className="text-center text-xs font-medium text-zinc-700">{name}</p>
         {!isAvailable && (
           <p className="text-center text-[10px] text-zinc-400">Coming soon</p>
@@ -155,8 +155,8 @@ export default function DesignTab() {
                 className={cn(
                   'h-7 w-7 rounded-full border-2 transition-transform',
                   isActive
-                    ? 'scale-110 border-zinc-700 shadow'
-                    : 'border-transparent hover:scale-105 hover:border-zinc-300',
+                    ? 'scale-110 border-zinc-900 shadow-md ring-2 ring-white'
+                    : 'border-transparent hover:scale-105 hover:border-zinc-400',
                 )}
                 style={{ backgroundColor: palette.primary }}
               />
@@ -169,7 +169,7 @@ export default function DesignTab() {
             type="color"
             value={templateOptions.colorScheme.primary}
             onChange={(e) => setPrimaryColor(e.target.value)}
-            className="h-7 w-10 cursor-pointer rounded border border-zinc-200 bg-white p-0.5"
+            className="h-7 w-10 cursor-pointer rounded-lg border border-zinc-200 bg-white p-0.5"
           />
           <span className="font-mono text-xs text-zinc-400">
             {templateOptions.colorScheme.primary}
@@ -188,10 +188,10 @@ export default function DesignTab() {
               key={preset}
               onClick={() => setFontSizePreset(preset)}
               className={cn(
-                'flex-1 rounded-md border py-1.5 text-sm font-medium transition',
+                'flex-1 rounded-lg border py-1.5 text-sm font-medium transition-all duration-150',
                 currentPreset === preset
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300',
+                  ? 'border-zinc-900 bg-zinc-900 text-white shadow-sm'
+                  : 'border-zinc-200 bg-white text-zinc-500 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)]',
               )}
             >
               {FONT_SIZE_LABELS[preset]}
