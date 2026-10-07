@@ -18,6 +18,7 @@ import { cn } from '../../lib/utils'
 import { Button } from './button'
 import { SortableCardItem } from './SortableCardItem'
 import SkillsInput from './SkillsInput'
+import RichTextInput from './RichTextInput'
 
 export type FieldType = 'text' | 'textarea' | 'skills' | 'richtext'
 
@@ -155,7 +156,19 @@ export function SectionEditor({
       )
     }
 
-    if (field.type === 'textarea' || field.type === 'richtext') {
+    if (field.type === 'richtext') {
+      return (
+        <Field key={field.name} label={field.label}>
+          <RichTextInput
+            key={`rt-${editIndex}-${field.name}`}
+            value={(value as string) ?? ''}
+            onChange={(html) => handleFieldChange(field.name, html)}
+          />
+        </Field>
+      )
+    }
+
+    if (field.type === 'textarea') {
       return (
         <Field key={field.name} label={field.label}>
           <textarea

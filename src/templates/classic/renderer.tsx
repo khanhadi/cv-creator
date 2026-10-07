@@ -19,6 +19,7 @@ import linkIcon from '../../assets/icons/cv-icons/link.png'
 import { richTextToPdf } from '../../utils/richTextToPdf'
 import interRegular from '@fontsource/inter/files/inter-latin-400-normal.woff'
 import interMedium from '@fontsource/inter/files/inter-latin-500-normal.woff'
+import interBold from '@fontsource/inter/files/inter-latin-700-normal.woff'
 
 let fontsRegistered = false
 function ensureFonts() {
@@ -28,6 +29,7 @@ function ensureFonts() {
     fonts: [
       { src: interRegular },
       { src: interMedium, fontWeight: 500 },
+      { src: interBold, fontWeight: 700 },
     ],
   })
   fontsRegistered = true
@@ -38,6 +40,7 @@ export async function preloadFonts() {
   await Promise.all([
     Font.load({ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 400 }),
     Font.load({ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 500 }),
+    Font.load({ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 700 }),
   ])
 }
 

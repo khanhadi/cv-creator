@@ -54,7 +54,7 @@ const EDUCATION_FIELDS: FieldDef[] = [
   { name: 'date', label: 'Date', type: 'text', placeholder: 'Sep 2020 - Jun 2024', span: 'half' },
   { name: 'courseTitle', label: 'Course / Degree', type: 'text', placeholder: 'Degree / course', previewSecondary: true, span: 'half' },
   { name: 'grade', label: 'Grade', type: 'text', placeholder: 'First Class', span: 'half' },
-  { name: 'description', label: 'Description', type: 'textarea', span: 'full' },
+  { name: 'description', label: 'Description', type: 'richtext', span: 'full' },
 ]
 const DEFAULT_EDUCATION: Omit<Education, 'id'> = {
   institutionName: '', courseTitle: '', date: '', grade: '', description: '',
@@ -63,7 +63,7 @@ const DEFAULT_EDUCATION: Omit<Education, 'id'> = {
 const EXPERIENCE_FIELDS: FieldDef[] = [
   { name: 'companyName', label: 'Company', type: 'text', placeholder: 'Company name', previewPrimary: true, span: 'half' },
   { name: 'jobTitle', label: 'Job Title', type: 'text', placeholder: 'Role', previewSecondary: true, span: 'half' },
-  { name: 'description', label: 'Description', type: 'textarea', span: 'full' },
+  { name: 'description', label: 'Description', type: 'richtext', span: 'full' },
   { name: 'date', label: 'Date', type: 'text', placeholder: 'Jun 2023 - Sep 2023', span: 'half' },
   { name: 'location', label: 'Location', type: 'text', placeholder: 'London, UK', span: 'half' },
   { name: 'skills', label: 'Skills', type: 'skills', span: 'full' },
@@ -75,7 +75,7 @@ const DEFAULT_EXPERIENCE: Omit<Experience, 'id'> = {
 const PROJECTS_FIELDS: FieldDef[] = [
   { name: 'projectName', label: 'Project Name', type: 'text', placeholder: 'Project name', previewPrimary: true, span: 'half' },
   { name: 'subHeading', label: 'Sub Heading', type: 'text', placeholder: 'One-liner', previewSecondary: true, span: 'half' },
-  { name: 'description', label: 'Description', type: 'textarea', span: 'full' },
+  { name: 'description', label: 'Description', type: 'richtext', span: 'full' },
   { name: 'link', label: 'Project Link', type: 'text', placeholder: 'https://...', span: 'half' },
   { name: 'date', label: 'Date', type: 'text', placeholder: 'Jan 2023 - Apr 2023', span: 'half' },
 ]
@@ -86,7 +86,7 @@ const DEFAULT_PROJECT: Omit<Project, 'id'> = {
 const CUSTOM_SECTION_FIELDS: FieldDef[] = [
   { name: 'heading', label: 'Heading', type: 'text', placeholder: 'Heading', previewPrimary: true, span: 'half' },
   { name: 'subHeading', label: 'Sub Heading', type: 'text', placeholder: 'Sub heading', previewSecondary: true, span: 'half' },
-  { name: 'description', label: 'Description', type: 'textarea', span: 'full' },
+  { name: 'description', label: 'Description', type: 'richtext', span: 'full' },
   { name: 'date', label: 'Date', type: 'text', placeholder: 'Date', span: 'half' },
   { name: 'additionalInfo', label: 'Additional Info', type: 'text', placeholder: 'Extra info', span: 'half' },
 ]
